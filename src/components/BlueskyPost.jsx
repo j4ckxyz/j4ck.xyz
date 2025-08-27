@@ -41,6 +41,10 @@ const BlueskyPost = () => {
         )?.post
 
         if (latestPost) {
+          console.log('Bluesky post data:', latestPost) // Debug log
+          if (latestPost.embed) {
+            console.log('Embed data:', latestPost.embed) // Debug embed structure
+          }
           setPost(latestPost)
         } else {
           throw new Error('No posts found')
@@ -150,12 +154,32 @@ const BlueskyPost = () => {
   }
 
   const getQuotePostUrl = (record) => {
-    if (!record?.uri) return '#'
-    const parts = record.uri.split('/')
-    const postId = parts[parts.length - 1]
-    const did = parts[2]
-    // Convert DID to handle if possible, otherwise use the DID
-    return `https://bsky.app/profile/${did}/post/${postId}`
+    console.log('Quote post record:', record) // Debug log
+    
+    if (!record) return '#'
+    
+    // Check different possible locations for the URI
+    const uri = record.uri || record.value?.uri || record.record?.uri
+    console.log('Quote post URI:', uri) // Debug log
+    
+    if (!uri) return '#'
+    
+    // AT URI format: at://did:plc:xxx/app.bsky.feed.post/postid
+    const atUriMatch = uri.match(/at:\/\/([^\/]+)\/app\.bsky\.feed\.post\/(.+)/)
+    if (!atUriMatch) {
+      console.log('URI does not match expected format:', uri)
+      return '#'
+    }
+    
+    const [, did, postId] = atUriMatch
+    
+    // If we have the author info, use the handle, otherwise use the DID
+    const authorHandle = record.author?.handle || record.value?.author?.handle || did
+    
+    const finalUrl = `https://bsky.app/profile/${authorHandle}/post/${postId}`
+    console.log('Generated quote URL:', finalUrl) // Debug log
+    
+    return finalUrl
   }
 
   if (loading) {
@@ -250,56 +274,65 @@ const BlueskyPost = () => {
         {/* Handle embedded media */}
         {post.embed && (
           <div className="post-embed">
-            {post.embed.images && (
+            {/* Handle images - check different possible structures */}
+            {(post.embed.images || post.embed.$type === 'app.bsky.embed.images') && (
               <div className="embed-images">
-                {post.embed.images.map((image, index) => (
+                {(post.embed.images || []).map((image, index) => (
                   <img
                     key={index}
-                    src={image.thumb}
+                    src={image.fullsize || image.thumb || image.image?.ref}
                     alt={image.alt || 'Post image'}
                     className="embed-image"
+                    loading="lazy"
                   />
                 ))}
               </div>
             )}
-            {post.embed.video && (
+            
+            {/* Handle video embeds */}
+            {(post.embed.video || post.embed.$type === 'app.bsky.embed.video') && (
               <div className="embed-video">
                 <video
-                  src={post.embed.video.playlist}
-                  poster={post.embed.video.thumbnail}
+                  src={post.embed.video?.playlist || post.embed.playlist}
+                  poster={post.embed.video?.thumbnail || post.embed.thumbnail}
                   controls
                   className="embed-video-player"
                   preload="metadata"
                 >
-                  <source src={post.embed.video.playlist} type="application/x-mpegURL" />
+                  <source src={post.embed.video?.playlist || post.embed.playlist} type="application/x-mpegURL" />
                   Your browser does not support the video tag.
                 </video>
-                {post.embed.video.alt && (
-                  <div className="embed-video-alt">{post.embed.video.alt}</div>
+                {(post.embed.video?.alt || post.embed.alt) && (
+                  <div className="embed-video-alt">{post.embed.video?.alt || post.embed.alt}</div>
                 )}
               </div>
             )}
-            {post.embed.external && (
+            
+            {/* Handle external link embeds */}
+            {(post.embed.external || post.embed.$type === 'app.bsky.embed.external') && (
               <div className="embed-external">
-                {post.embed.external.thumb && (
+                {post.embed.external?.thumb && (
                   <img 
                     src={post.embed.external.thumb} 
                     alt="Link preview"
                     className="embed-thumb"
+                    loading="lazy"
                   />
                 )}
                 <div className="embed-external-content">
                   <div className="embed-title">
-                    <TwemojiText>{post.embed.external.title}</TwemojiText>
+                    <TwemojiText>{post.embed.external?.title}</TwemojiText>
                   </div>
                   <div className="embed-description">
-                    <TwemojiText>{post.embed.external.description}</TwemojiText>
+                    <TwemojiText>{post.embed.external?.description}</TwemojiText>
                   </div>
-                  <div className="embed-uri">{post.embed.external.uri}</div>
+                  <div className="embed-uri">{post.embed.external?.uri}</div>
                 </div>
               </div>
             )}
-            {post.embed.record && (
+            
+            {/* Handle quote posts */}
+            {(post.embed.record || post.embed.$type === 'app.bsky.embed.record') && (
               <a 
                 href={getQuotePostUrl(post.embed.record)}
                 target="_blank"
@@ -307,7 +340,33 @@ const BlueskyPost = () => {
                 className="embed-quote"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="quote-indicator">[Quote post]</div>
+                <div className="quote-header">
+                  {(post.embed.record?.author || post.embed.record?.value?.author) && (
+                    <>
+                      {(post.embed.record.author?.avatar || post.embed.record.value?.author?.avatar) && (
+                        <img 
+                          src={post.embed.record.author?.avatar || post.embed.record.value?.author?.avatar} 
+                          alt={`${(post.embed.record.author?.displayName || post.embed.record.value?.author?.displayName || post.embed.record.author?.handle || post.embed.record.value?.author?.handle)} avatar`}
+                          className="quote-avatar"
+                        />
+                      )}
+                      <div className="quote-author">
+                        <div className="quote-author-name">
+                          <TwemojiText>{(post.embed.record.author?.displayName || post.embed.record.value?.author?.displayName || post.embed.record.author?.handle || post.embed.record.value?.author?.handle)}</TwemojiText>
+                        </div>
+                        <div className="quote-author-handle">@{(post.embed.record.author?.handle || post.embed.record.value?.author?.handle)}</div>
+                      </div>
+                    </>
+                  )}
+                </div>
+                {(post.embed.record?.value?.text || post.embed.record?.text) && (
+                  <div className="quote-content">
+                    <TwemojiText>{post.embed.record?.value?.text || post.embed.record?.text}</TwemojiText>
+                  </div>
+                )}
+                {!(post.embed.record?.value?.text || post.embed.record?.text) && (
+                  <div className="quote-indicator">[Quote post]</div>
+                )}
               </a>
             )}
           </div>
