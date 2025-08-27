@@ -1,11 +1,12 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBluesky, faTwitter } from '@fortawesome/free-brands-svg-icons'
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope, faCloud } from '@fortawesome/free-solid-svg-icons'
 import TwemojiText from './components/TwemojiText'
 import BlueskyBio from './components/BlueskyBio'
 import BlueskyPost from './components/BlueskyPost'
 import ThemeToggle from './components/ThemeToggle'
+import DropdownLink from './components/DropdownLink'
 import './App.css'
 
 function App() {
@@ -33,6 +34,25 @@ function App() {
     }
   ]
 
+  const atmosphereLink = {
+    name: 'Follow me on ATmosphere - @j4ck.xyz',
+    handle: '@j4ck.xyz',
+    icon: faCloud,
+    ariaLabel: 'Access my ATmosphere profile and services',
+    options: [
+      {
+        name: '⚡ Flashes',
+        url: 'https://app.flashes.blue/profile/j4ck.xyz',
+        ariaLabel: 'Visit my Flashes profile'
+      },
+      {
+        name: '📝 Whitewind (Blogs)',
+        url: 'https://whtwnd.com/j4ck.xyz',
+        ariaLabel: 'Read my blogs on Whitewind'
+      }
+    ]
+  }
+
   return (
     <div className="app">
       <ThemeToggle />
@@ -48,7 +68,44 @@ function App() {
         
         <nav className="social-links" role="navigation" aria-label="Social media links">
           <ul className="links-list">
-            {socialLinks.map((link) => (
+            {/* Regular social links - Bluesky and Twitter first */}
+            {socialLinks.slice(0, 2).map((link) => (
+              <li key={link.name} className="link-item">
+                <a
+                  href={link.url}
+                  className="social-link"
+                  target={link.name !== 'Email' ? '_blank' : undefined}
+                  rel={link.name !== 'Email' ? 'noopener noreferrer' : undefined}
+                  aria-label={link.ariaLabel}
+                >
+                  <FontAwesomeIcon 
+                    icon={link.icon} 
+                    className="social-icon"
+                    aria-hidden="true" 
+                  />
+                  <span className="link-text">
+                    <span className="platform">
+                      <TwemojiText>{link.name}</TwemojiText>
+                    </span>
+                    <span className="handle">{link.handle}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+            
+            {/* ATmosphere dropdown */}
+            <li className="link-item">
+              <DropdownLink
+                name={atmosphereLink.name}
+                handle={atmosphereLink.handle}
+                icon={atmosphereLink.icon}
+                options={atmosphereLink.options}
+                ariaLabel={atmosphereLink.ariaLabel}
+              />
+            </li>
+            
+            {/* Email link (last item) */}
+            {socialLinks.slice(2).map((link) => (
               <li key={link.name} className="link-item">
                 <a
                   href={link.url}

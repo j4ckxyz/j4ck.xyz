@@ -36,6 +36,8 @@
 
 html {
   font-size: 16px;
+  /* Prevent horizontal scrolling on mobile */
+  overflow-x: hidden;
 }
 
 body {
@@ -46,6 +48,10 @@ body {
   background-attachment: fixed;
   min-height: 100vh;
   transition: all 0.3s ease;
+  /* Prevent horizontal scrolling and improve mobile performance */
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Accessibility improvements */
