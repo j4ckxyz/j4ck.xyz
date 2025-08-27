@@ -10,6 +10,9 @@
   width: 100%;
   max-width: 100vw;
   overflow-x: hidden;
+  /* Fix mobile overscroll behavior */
+  overscroll-behavior: contain;
+  background: var(--bg-primary);
 }
 
 /* Theme Toggle */

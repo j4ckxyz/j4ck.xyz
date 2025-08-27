@@ -38,6 +38,8 @@ html {
   font-size: 16px;
   /* Prevent horizontal scrolling on mobile */
   overflow-x: hidden;
+  /* Fix mobile overscroll color to match background */
+  background: var(--bg-primary);
 }
 
 body {
