@@ -1,0 +1,83 @@
+/* CSS Custom Properties for Theme System */
+:root {
+  /* Light theme colors - improved contrast and readability */
+  --bg-primary: linear-gradient(135deg, #FAFAFF 0%, #F8F8FF 50%, #F6F6FF 100%);
+  --bg-secondary: rgba(255, 255, 255, 0.92);
+  --bg-tertiary: #f3f5f8;
+  --text-primary: #1a1a1a;
+  --text-secondary: #2c2c2c;
+  --text-muted: #5a5a5a;
+  --border-color: rgba(0, 0, 0, 0.125);
+  --shadow-light: rgba(0, 0, 0, 0.08);
+  --shadow-medium: rgba(0, 0, 0, 0.12);
+  --accent-color: #4A90E2;
+}
+
+[data-theme="dark"] {
+  /* Dark theme colors matching your gradient */
+  --bg-primary: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #404040 100%);
+  --bg-secondary: rgba(45, 45, 45, 0.95);
+  --bg-tertiary: #3a3a3a;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #b0b0b0;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-light: rgba(0, 0, 0, 0.3);
+  --shadow-medium: rgba(0, 0, 0, 0.5);
+  --accent-color: #5ba3f5;
+}
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Space Mono', monospace;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  background-attachment: fixed;
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
+/* Accessibility improvements */
+*:focus {
+  outline: 3px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Skip link for screen readers */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--text-primary);
+  color: var(--bg-secondary);
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 4px;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
