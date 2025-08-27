@@ -40,6 +40,10 @@ html {
   overflow-x: hidden;
   /* Fix mobile overscroll color to match background */
   background: var(--bg-primary);
+  /* iOS Safari overscroll fix */
+  background-size: 100% 100%;
+  -webkit-background-size: 100% 100%;
+  background-attachment: fixed;
 }
 
 body {
@@ -54,6 +58,10 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* iOS Safari specific fixes */
+  position: relative;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 /* Accessibility improvements */

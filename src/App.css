@@ -1,5 +1,6 @@
 .app {
   min-height: 100vh;
+  min-height: -webkit-fill-available; /* iOS Safari fix */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,7 +13,33 @@
   overflow-x: hidden;
   /* Fix mobile overscroll behavior */
   overscroll-behavior: contain;
+  -webkit-overscroll-behavior: contain;
   background: var(--bg-primary);
+  /* iOS specific fixes */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS Safari overscroll area fix */
+.app::before {
+  content: '';
+  position: fixed;
+  top: -100vh;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background: var(--bg-primary);
+  z-index: -1;
+}
+
+.app::after {
+  content: '';
+  position: fixed;
+  bottom: -100vh;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background: var(--bg-primary);
+  z-index: -1;
 }
 
 /* Theme Toggle */
