@@ -137,7 +137,7 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  background: var(--bg-tertiary);
+  background: var(--bg-secondary);
   border: 2px solid var(--border-color);
   border-radius: 12px;
   text-decoration: none;
@@ -158,11 +158,13 @@
   border-color: var(--accent-color);
   transform: translateY(-3px);
   box-shadow: 0 6px 20px var(--shadow-medium);
+  opacity: 1;
 }
 
 .social-link:focus {
   background: var(--bg-secondary);
   border-color: var(--accent-color);
+  opacity: 1;
 }
 
 .social-link .social-icon {
@@ -173,20 +175,25 @@
   transition: all 0.3s ease;
 }
 
-/* Platform-specific icon colors */
+/* Platform-specific icon colors - using accent color */
 .link-item:nth-child(1) .social-link:hover .social-icon,
 .link-item:nth-child(1) .social-link:focus .social-icon {
-  color: #0085ff; /* Bluesky blue */
+  color: var(--accent-color); /* Bluesky */
 }
 
 .link-item:nth-child(2) .social-link:hover .social-icon,
 .link-item:nth-child(2) .social-link:focus .social-icon {
-  color: #1DA1F2; /* Twitter blue */
+  color: var(--accent-color); /* ATmosphere */
 }
 
 .link-item:nth-child(3) .social-link:hover .social-icon,
 .link-item:nth-child(3) .social-link:focus .social-icon {
-  color: #dc3545; /* Email red */
+  color: var(--accent-color); /* Twitter */
+}
+
+.link-item:nth-child(4) .social-link:hover .social-icon,
+.link-item:nth-child(4) .social-link:focus .social-icon {
+  color: var(--accent-color); /* Email */
 }
 
 .link-text {
@@ -917,7 +924,7 @@ html[data-theme="light"] .platform {
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  background: var(--bg-tertiary);
+  background: var(--bg-secondary);
   border: 2px solid var(--border-color);
   border-radius: 12px;
   text-decoration: none;
@@ -1019,10 +1026,10 @@ html[data-theme="light"] .platform {
   font-size: 0.875rem;
 }
 
-/* ATmosphere-specific styling - now in 3rd position */
-.link-item:nth-child(3) .dropdown-trigger:hover .social-icon,
-.link-item:nth-child(3) .dropdown-trigger:focus .social-icon {
-  color: #87ceeb; /* Sky blue for atmosphere/cloud */
+/* ATmosphere-specific styling - now in 2nd position */
+.link-item:nth-child(2) .dropdown-trigger:hover .social-icon,
+.link-item:nth-child(2) .dropdown-trigger:focus .social-icon {
+  color: var(--accent-color); /* ATmosphere using accent color */
 }
 
 /* Update icon colors for new order */

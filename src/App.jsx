@@ -46,9 +46,9 @@ function App() {
         ariaLabel: 'Visit my Flashes profile'
       },
       {
-        name: '📝 Whitewind (Blogs)',
-        url: 'https://whtwnd.com/j4ck.xyz',
-        ariaLabel: 'Read my blogs on Whitewind'
+        name: '🍃 Leaflet',
+        url: 'https://blog.j4ck.xyz',
+        ariaLabel: 'Read my blog on Leaflet'
       }
     ]
   }
@@ -68,31 +68,29 @@ function App() {
         
         <nav className="social-links" role="navigation" aria-label="Social media links">
           <ul className="links-list">
-            {/* Regular social links - Bluesky and Twitter first */}
-            {socialLinks.slice(0, 2).map((link) => (
-              <li key={link.name} className="link-item">
-                <a
-                  href={link.url}
-                  className="social-link"
-                  target={link.name !== 'Email' ? '_blank' : undefined}
-                  rel={link.name !== 'Email' ? 'noopener noreferrer' : undefined}
-                  aria-label={link.ariaLabel}
-                >
-                  <FontAwesomeIcon 
-                    icon={link.icon} 
-                    className="social-icon"
-                    aria-hidden="true" 
-                  />
-                  <span className="link-text">
-                    <span className="platform">
-                      <TwemojiText>{link.name}</TwemojiText>
-                    </span>
-                    <span className="handle">{link.handle}</span>
+            {/* Bluesky first */}
+            <li className="link-item">
+              <a
+                href={socialLinks[0].url}
+                className="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={socialLinks[0].ariaLabel}
+              >
+                <FontAwesomeIcon 
+                  icon={socialLinks[0].icon} 
+                  className="social-icon"
+                  aria-hidden="true" 
+                />
+                <span className="link-text">
+                  <span className="platform">
+                    <TwemojiText>{socialLinks[0].name}</TwemojiText>
                   </span>
-                </a>
-              </li>
-            ))}
-            
+                  <span className="handle">{socialLinks[0].handle}</span>
+                </span>
+              </a>
+            </li>
+
             {/* ATmosphere dropdown */}
             <li className="link-item">
               <DropdownLink
@@ -104,8 +102,8 @@ function App() {
               />
             </li>
             
-            {/* Email link (last item) */}
-            {socialLinks.slice(2).map((link) => (
+            {/* Twitter and Email */}
+            {socialLinks.slice(1).map((link) => (
               <li key={link.name} className="link-item">
                 <a
                   href={link.url}
