@@ -272,105 +272,157 @@ const BlueskyPost = () => {
         </div>
 
         {/* Handle embedded media */}
-        {post.embed && (
-          <div className="post-embed">
-            {/* Handle images - check different possible structures */}
-            {(post.embed.images || post.embed.$type === 'app.bsky.embed.images') && (
-              <div className="embed-images">
-                {(post.embed.images || []).map((image, index) => (
-                  <img
-                    key={index}
-                    src={image.fullsize || image.thumb || image.image?.ref}
-                    alt={image.alt || 'Post image'}
-                    className="embed-image"
-                    loading="lazy"
-                  />
-                ))}
-              </div>
-            )}
-            
-            {/* Handle video embeds */}
-            {(post.embed.video || post.embed.$type === 'app.bsky.embed.video') && (
-              <div className="embed-video">
-                <video
-                  src={post.embed.video?.playlist || post.embed.playlist}
-                  poster={post.embed.video?.thumbnail || post.embed.thumbnail}
-                  controls
-                  className="embed-video-player"
-                  preload="metadata"
-                >
-                  <source src={post.embed.video?.playlist || post.embed.playlist} type="application/x-mpegURL" />
-                  Your browser does not support the video tag.
-                </video>
-                {(post.embed.video?.alt || post.embed.alt) && (
-                  <div className="embed-video-alt">{post.embed.video?.alt || post.embed.alt}</div>
-                )}
-              </div>
-            )}
-            
-            {/* Handle external link embeds */}
-            {(post.embed.external || post.embed.$type === 'app.bsky.embed.external') && (
-              <div className="embed-external">
-                {post.embed.external?.thumb && (
-                  <img 
-                    src={post.embed.external.thumb} 
-                    alt="Link preview"
-                    className="embed-thumb"
-                    loading="lazy"
-                  />
-                )}
-                <div className="embed-external-content">
-                  <div className="embed-title">
-                    <TwemojiText>{post.embed.external?.title}</TwemojiText>
-                  </div>
-                  <div className="embed-description">
-                    <TwemojiText>{post.embed.external?.description}</TwemojiText>
-                  </div>
-                  <div className="embed-uri">{post.embed.external?.uri}</div>
-                </div>
-              </div>
-            )}
-            
-            {/* Handle quote posts */}
-            {(post.embed.record || post.embed.$type === 'app.bsky.embed.record') && (
+        {post.embed && (() => {
+          const e = post.embed
+          // Detect possible structures, including recordWithMedia
+          const hasImages = !!(e.images || e.media?.images || e.$type === 'app.bsky.embed.images' || e.media?.$type === 'app.bsky.embed.images')
+          const hasVideo = !!(e.video || e.media?.video || e.$type === 'app.bsky.embed.video' || e.media?.$type === 'app.bsky.embed.video')
+          const hasExternal = !!(e.external || e.$type === 'app.bsky.embed.external')
+          const hasQuote = !!(e.record || e.$type === 'app.bsky.embed.record' || e.$type === 'app.bsky.embed.recordWithMedia')
+          const onlyQuote = hasQuote && !hasImages && !hasVideo && !hasExternal
+
+          // If it's only a quoted post, render just the quote (no extra container)
+          if (onlyQuote) {
+            return (
               <a 
-                href={getQuotePostUrl(post.embed.record)}
+                href={getQuotePostUrl(e.record)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="embed-quote"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(ev) => ev.stopPropagation()}
               >
                 <div className="quote-header">
-                  {(post.embed.record?.author || post.embed.record?.value?.author) && (
+                  {(e.record?.author || e.record?.value?.author) && (
                     <>
-                      {(post.embed.record.author?.avatar || post.embed.record.value?.author?.avatar) && (
+                      {(e.record.author?.avatar || e.record.value?.author?.avatar) && (
                         <img 
-                          src={post.embed.record.author?.avatar || post.embed.record.value?.author?.avatar} 
-                          alt={`${(post.embed.record.author?.displayName || post.embed.record.value?.author?.displayName || post.embed.record.author?.handle || post.embed.record.value?.author?.handle)} avatar`}
+                          src={e.record.author?.avatar || e.record.value?.author?.avatar} 
+                          alt={`${(e.record.author?.displayName || e.record.value?.author?.displayName || e.record.author?.handle || e.record.value?.author?.handle)} avatar`}
                           className="quote-avatar"
                         />
                       )}
                       <div className="quote-author">
                         <div className="quote-author-name">
-                          <TwemojiText>{(post.embed.record.author?.displayName || post.embed.record.value?.author?.displayName || post.embed.record.author?.handle || post.embed.record.value?.author?.handle)}</TwemojiText>
+                          <TwemojiText>{(e.record.author?.displayName || e.record.value?.author?.displayName || e.record.author?.handle || e.record.value?.author?.handle)}</TwemojiText>
                         </div>
-                        <div className="quote-author-handle">@{(post.embed.record.author?.handle || post.embed.record.value?.author?.handle)}</div>
+                        <div className="quote-author-handle">@{(e.record.author?.handle || e.record.value?.author?.handle)}</div>
                       </div>
                     </>
                   )}
                 </div>
-                {(post.embed.record?.value?.text || post.embed.record?.text) && (
+                {(e.record?.value?.text || e.record?.text) && (
                   <div className="quote-content">
-                    <TwemojiText>{post.embed.record?.value?.text || post.embed.record?.text}</TwemojiText>
+                    <TwemojiText>{e.record?.value?.text || e.record?.text}</TwemojiText>
                   </div>
                 )}
-                {!(post.embed.record?.value?.text || post.embed.record?.text) && (
+                {!(e.record?.value?.text || e.record?.text) && (
                   <div className="quote-indicator">[Quote post]</div>
                 )}
               </a>
-            )}
-          </div>
-        )}
+            )
+          }
+
+          // Otherwise, render the standard embed container and include any quote inside it
+          return (
+            <div className="post-embed">
+              {/* Handle images - check different possible structures */}
+              {(e.images || e.$type === 'app.bsky.embed.images' || e.media?.images || e.media?.$type === 'app.bsky.embed.images') && (
+                <div className="embed-images">
+                  {(e.images || e.media?.images || []).map((image, index) => (
+                    <img
+                      key={index}
+                      src={image.fullsize || image.thumb || image.image?.ref}
+                      alt={image.alt || 'Post image'}
+                      className="embed-image"
+                      loading="lazy"
+                    />
+                  ))}
+                </div>
+              )}
+              
+              {/* Handle video embeds */}
+              {(e.video || e.$type === 'app.bsky.embed.video' || e.media?.video || e.media?.$type === 'app.bsky.embed.video') && (
+                <div className="embed-video">
+                  <video
+                    src={e.video?.playlist || e.media?.video?.playlist || e.playlist}
+                    poster={e.video?.thumbnail || e.media?.video?.thumbnail || e.thumbnail}
+                    controls
+                    className="embed-video-player"
+                    preload="metadata"
+                  >
+                    <source src={e.video?.playlist || e.media?.video?.playlist || e.playlist} type="application/x-mpegURL" />
+                    Your browser does not support the video tag.
+                  </video>
+                  {(e.video?.alt || e.media?.video?.alt || e.alt) && (
+                    <div className="embed-video-alt">{e.video?.alt || e.media?.video?.alt || e.alt}</div>
+                  )}
+                </div>
+              )}
+              
+              {/* Handle external link embeds */}
+              {(e.external || e.$type === 'app.bsky.embed.external') && (
+                <div className="embed-external">
+                  {e.external?.thumb && (
+                    <img 
+                      src={e.external.thumb} 
+                      alt="Link preview"
+                      className="embed-thumb"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="embed-external-content">
+                    <div className="embed-title">
+                      <TwemojiText>{e.external?.title}</TwemojiText>
+                    </div>
+                    <div className="embed-description">
+                      <TwemojiText>{e.external?.description}</TwemojiText>
+                    </div>
+                    <div className="embed-uri">{e.external?.uri}</div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Include quote when part of recordWithMedia */}
+              {(e.record || e.$type === 'app.bsky.embed.record') && (
+                <a 
+                  href={getQuotePostUrl(e.record)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="embed-quote"
+                  onClick={(ev) => ev.stopPropagation()}
+                >
+                  <div className="quote-header">
+                    {(e.record?.author || e.record?.value?.author) && (
+                      <>
+                        {(e.record.author?.avatar || e.record.value?.author?.avatar) && (
+                          <img 
+                            src={e.record.author?.avatar || e.record.value?.author?.avatar} 
+                            alt={`${(e.record.author?.displayName || e.record.value?.author?.displayName || e.record.author?.handle || e.record.value?.author?.handle)} avatar`}
+                            className="quote-avatar"
+                          />
+                        )}
+                        <div className="quote-author">
+                          <div className="quote-author-name">
+                            <TwemojiText>{(e.record.author?.displayName || e.record.value?.author?.displayName || e.record.author?.handle || e.record.value?.author?.handle)}</TwemojiText>
+                          </div>
+                          <div className="quote-author-handle">@{(e.record.author?.handle || e.record.value?.author?.handle)}</div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {(e.record?.value?.text || e.record?.text) && (
+                    <div className="quote-content">
+                      <TwemojiText>{e.record?.value?.text || e.record?.text}</TwemojiText>
+                    </div>
+                  )}
+                  {!(e.record?.value?.text || e.record?.text) && (
+                    <div className="quote-indicator">[Quote post]</div>
+                  )}
+                </a>
+              )}
+            </div>
+          )
+        })()}
       </a>
       
       <div className="post-actions">

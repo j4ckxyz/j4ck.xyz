@@ -355,30 +355,30 @@
   display: inline-block;
 }
 
-/* Platform-specific icon colors */
+/* Platform-specific icon colors — unify to accent */
 .link-item:nth-child(1) .social-link:hover .social-icon,
 .link-item:nth-child(1) .social-link:focus .social-icon {
-  color: #0085ff; /* Bluesky blue */
+  color: var(--accent-color);
 }
 
 .link-item:nth-child(2) .social-link:hover .social-icon,
 .link-item:nth-child(2) .social-link:focus .social-icon {
-  color: #1DA1F2; /* Twitter blue */
+  color: var(--accent-color);
 }
 
 .link-item:nth-child(3) .social-link:hover .social-icon,
 .link-item:nth-child(3) .social-link:focus .social-icon {
-  color: #dc3545; /* Email red */
+  color: var(--accent-color);
 }
 
 .social-link:hover .fa-twitter,
 .social-link:focus .fa-twitter {
-  color: #1DA1F2;
+  color: var(--accent-color);
 }
 
 .social-link:hover .fa-envelope,
 .social-link:focus .fa-envelope {
-  color: #dc3545;
+  color: var(--accent-color);
 }
 
 .link-text {
@@ -391,12 +391,12 @@
 .platform {
   font-weight: 700;
   font-size: 1rem;
-  color: #2c3e50;
+  color: var(--text-primary);
 }
 
 .handle {
   font-size: 0.875rem;
-  color: #6c757d;
+  color: var(--text-muted);
   font-family: 'Space Mono', monospace;
 }
 
@@ -417,94 +417,94 @@
   }
 }
 
-/* Dark mode support */
+/* Dark mode support (aligned to theme variables) */
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+    /* Background is handled via index.css var(--bg-primary) */
+    color: var(--text-primary);
   }
   
   .container {
-    background: #2d2d2d;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    background: var(--bg-secondary);
+    box-shadow: 0 4px 6px var(--shadow-medium);
   }
   
   .title {
-    color: #ffffff;
+    color: var(--text-primary);
   }
   
   .subtitle {
-    color: #b0b0b0;
+    color: var(--text-secondary);
   }
   /* When the OS prefers dark but the site is in LIGHT theme,
-     ensure the bio text matches the subtitle color for contrast */
+     keep bio text using theme variables */
   html[data-theme="light"] .bio-content {
-    color: #b0b0b0 !important;
+    color: var(--text-secondary) !important;
   }
   
   .social-link {
-    background: #3a3a3a;
-    border-color: #4a4a4a;
-    color: #e0e0e0;
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
   }
   
   .social-link:hover,
   .social-link:focus {
-    background: #4a4a4a;
-    border-color: #4A90E2;
+    background: var(--bg-secondary);
+    border-color: var(--accent-color);
   }
   
   .platform {
-    color: #ffffff;
+    color: var(--text-primary);
   }
   
   .handle {
-    color: #b0b0b0;
+    color: var(--text-muted);
   }
 }
 
 /* Force a lighter, subtle grey container in LIGHT theme (not plain white) */
 html[data-theme="light"] .container {
-  /* Very pale blue/purple gradient, nearly white */
-  background: linear-gradient(180deg, #FAFAFF 0%, #F8F8FF 100%);
+  /* Use light container color */
+  background: var(--bg-secondary);
 }
 
 /* Make ALL text black in LIGHT theme */
 html[data-theme="light"] .bio-content {
-  color: black !important;
+  color: var(--text-primary) !important;
 }
 
 /* Make "Find my socials!" text black in light theme */
 html[data-theme="light"] .subtitle {
-  color: black;
+  color: var(--text-primary);
 }
 
 /* Make title black in light theme */
 html[data-theme="light"] .title {
-  color: black;
+  color: var(--text-primary);
 }
 
 /* Light theme: lighter cards to stand out against the new gradient */
 html[data-theme="light"] .social-link {
-  background: #F0F0F8; /* very light blue-tinted background */
-  border: 2px solid rgba(100, 100, 150, 0.2); /* subtle blue-tinted border */
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
   opacity: 0.8; /* Slightly more opaque in light mode for readability */
-  color: black; /* Force text to be black */
+  color: var(--text-primary);
 }
 
 /* Light theme: soften the Bluesky post embed background */
 html[data-theme="light"] .bluesky-post {
-  background: rgba(255, 255, 255, 0.4); /* softer, less harsh */
+  background: var(--bg-tertiary);
 }
 
 /* Make usernames/handles black in light theme social links */
 html[data-theme="light"] .handle {
-  color: black;
+  color: var(--text-primary);
 }
 
 /* Make platform names black in light theme */
 html[data-theme="light"] .platform {
-  color: black;
+  color: var(--text-primary);
 }
 
 /* Twemoji styling */
@@ -556,6 +556,23 @@ html[data-theme="light"] .platform {
 
 .bio-line:last-child {
   margin-bottom: 0;
+}
+
+/* Final overrides: ensure correct icon hover colors by position
+   1 = Bluesky, 2 = ATmosphere dropdown, 3 = Twitter, 4 = Email */
+.link-item:nth-child(1) .social-link:hover .social-icon,
+.link-item:nth-child(1) .social-link:focus .social-icon {
+  color: #0085ff; /* Bluesky blue */
+}
+
+.link-item:nth-child(3) .social-link:hover .social-icon,
+.link-item:nth-child(3) .social-link:focus .social-icon {
+  color: #1DA1F2; /* Twitter blue */
+}
+
+.link-item:nth-child(4) .social-link:hover .social-icon,
+.link-item:nth-child(4) .social-link:focus .social-icon {
+  color: #dc3545; /* Email red */
 }
 
 .bio-link {
@@ -805,10 +822,10 @@ html[data-theme="light"] .platform {
 .embed-quote {
   display: block;
   text-decoration: none;
-  margin-top: 0.75rem;
-  padding: 0.5rem;
-  background: rgba(0, 133, 255, 0.1);
-  border: 1px solid rgba(0, 133, 255, 0.3);
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 133, 255, 0.08);
+  border: 1px solid rgba(0, 133, 255, 0.25);
   border-radius: 6px;
   transition: all 0.2s ease;
 }
