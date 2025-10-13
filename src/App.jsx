@@ -61,6 +61,10 @@ function App() {
           <h1 className="title">j4ck.xyz</h1>
           <BlueskyBio />
           <div className="bio-separator"></div>
+          <div id="statuscafe">
+            <div id="statuscafe-username"></div>
+            <div id="statuscafe-content"></div>
+          </div>
           <p className="subtitle">
             <TwemojiText>Find my socials! 👇</TwemojiText>
           </p>

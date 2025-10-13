@@ -605,6 +605,79 @@ html[data-theme="light"] .platform {
   opacity: 0.6;
 }
 
+/* Status.cafe Widget Styles */
+#statuscafe {
+  padding: 0.875rem 1rem;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  margin: 1.5rem 0;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+#statuscafe:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 12px var(--shadow-medium);
+}
+
+#statuscafe-username {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+#statuscafe-username a {
+  color: var(--accent-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+#statuscafe-username a:hover {
+  text-decoration: underline;
+}
+
+#statuscafe-content {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  #statuscafe {
+    padding: 0.75rem 0.875rem;
+    margin: 1.25rem 0;
+    border-radius: 10px;
+  }
+  
+  #statuscafe-username {
+    font-size: 0.8rem;
+  }
+  
+  #statuscafe-content {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #statuscafe {
+    padding: 0.625rem 0.75rem;
+    margin: 1rem 0;
+  }
+  
+  #statuscafe-username {
+    font-size: 0.75rem;
+  }
+  
+  #statuscafe-content {
+    font-size: 0.8rem;
+  }
+}
+
 /* Bluesky Post Styles */
 .bluesky-post {
   background: var(--bg-tertiary);
