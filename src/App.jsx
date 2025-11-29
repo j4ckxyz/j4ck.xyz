@@ -5,6 +5,7 @@ import { faEnvelope, faCloud } from '@fortawesome/free-solid-svg-icons'
 import TwemojiText from './components/TwemojiText'
 import BlueskyBio from './components/BlueskyBio'
 import BlueskyPost from './components/BlueskyPost'
+import KibunStatus from './components/KibunStatus'
 import ThemeToggle from './components/ThemeToggle'
 import DropdownLink from './components/DropdownLink'
 import './App.css'
@@ -61,10 +62,8 @@ function App() {
           <h1 className="title">j4ck.xyz</h1>
           <BlueskyBio />
           <div className="bio-separator"></div>
-          <div id="statuscafe">
-            <div id="statuscafe-username"></div>
-            <div id="statuscafe-content"></div>
-          </div>
+          <KibunStatus username="j4ck.xyz" />
+          <div className="bio-separator"></div>
           <p className="subtitle">
             <TwemojiText>Find my socials! 👇</TwemojiText>
           </p>

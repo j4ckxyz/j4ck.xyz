@@ -1,0 +1,107 @@
+.kibun-container {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  position: relative;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px var(--shadow-light);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.kibun-container:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--shadow-medium);
+}
+
+.kibun-header {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.kibun-displayname {
+  color: var(--text-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.kibun-displayname:hover {
+  text-decoration: underline;
+}
+
+.kibun-emoji {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.kibun-handle {
+  color: var(--text-muted);
+  font-size: 0.85em;
+  font-family: 'Space Mono', monospace;
+  text-decoration: none;
+}
+
+.kibun-handle:hover {
+  color: var(--accent-color);
+}
+
+.kibun-datetime {
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+
+.kibun-datetime::before {
+  content: "•";
+  margin-right: 0.5rem;
+  margin-left: 0.2rem;
+  opacity: 0.5;
+}
+
+.kibun-status {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  font-size: 1rem;
+  word-wrap: break-word;
+}
+
+.kibun-link {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.65em;
+  color: var(--text-muted);
+  text-decoration: none;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.kibun-link:hover {
+  opacity: 1;
+  color: var(--accent-color);
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .kibun-container {
+    padding: 1.25rem;
+    padding-bottom: 1.75rem; /* Make room for the link */
+    margin: 1rem 0;
+  }
+  
+  .kibun-status {
+    font-size: 0.95rem;
+  }
+}
