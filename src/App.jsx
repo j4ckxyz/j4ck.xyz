@@ -5,12 +5,23 @@ import { faEnvelope, faCloud } from '@fortawesome/free-solid-svg-icons'
 import TwemojiText from './components/TwemojiText'
 import BlueskyBio from './components/BlueskyBio'
 import BlueskyPost from './components/BlueskyPost'
-import KibunStatus from './components/KibunStatus'
 import ThemeToggle from './components/ThemeToggle'
 import DropdownLink from './components/DropdownLink'
 import './App.css'
 
 function App() {
+  React.useEffect(() => {
+    const handleMouseMove = (e) => {
+      const x = (e.clientX / window.innerWidth) * 100
+      const y = (e.clientY / window.innerHeight) * 100
+      document.documentElement.style.setProperty('--mouse-x', `${x}%`)
+      document.documentElement.style.setProperty('--mouse-y', `${y}%`)
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
+
   const socialLinks = [
     {
       name: 'Bluesky',
@@ -61,8 +72,6 @@ function App() {
         <header className="header">
           <h1 className="title">j4ck.xyz</h1>
           <BlueskyBio />
-          <div className="bio-separator"></div>
-          <KibunStatus username="j4ck.xyz" />
           <div className="bio-separator"></div>
           <p className="subtitle">
             <TwemojiText>Find my socials! 👇</TwemojiText>

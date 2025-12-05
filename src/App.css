@@ -96,7 +96,12 @@
   text-align: center;
   backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  transition: all 0.3s ease, transform 0.1s ease-out;
+}
+
+.container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px var(--shadow-medium);
 }
 
 .header {
@@ -628,6 +633,24 @@ html[data-theme="light"] .platform {
   text-decoration: none;
   color: inherit;
   display: block;
+}
+
+.repost-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #00BA7C;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.repost-indicator svg {
+  font-size: 1rem;
 }
 
 .post-header {
