@@ -3,13 +3,11 @@ import TwemojiText from './TwemojiText'
 import './KibunStatus.css'
 
 const timeAgo = (dateString) => {
-  const date = Date.parse(dateString);
-  const curDate = new Date(date);
-  const now = Date.now();
-  const yest = new Date(Date.parse(dateString));
-  const today = new Date(date);
-  yest.setDate(today - 1);
-  const diff = (now - date) / 1000; // difference in seconds
+  const timestamp = Date.parse(dateString);
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diff = (now.getTime() - timestamp) / 1000; // difference in seconds
+
   if (diff < 5) {
     return "just now";
   } else if (diff < 60) {
@@ -20,10 +18,18 @@ const timeAgo = (dateString) => {
   } else if (diff < 60*60*24) {
     const hr = Math.floor(diff / (60*60));
     return `${hr} hour${hr > 1 ? 's' : ''} ago`;
-  } else if (date.getDate() === yest.getDate() && date.getMonth() === yest.getMonth() && date.getYear() === yest.getYear()) {
+  }
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+
+  if (date.getDate() === yesterday.getDate() &&
+      date.getMonth() === yesterday.getMonth() &&
+      date.getFullYear() === yesterday.getFullYear()) {
     return "yesterday";
   }
-  return `${curDate.toLocaleDateString(undefined, {
+
+  return `${date.toLocaleDateString(undefined, {
     weekday: 'short',
     year: 'numeric',
     month: 'short',
