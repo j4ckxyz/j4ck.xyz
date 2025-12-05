@@ -52,10 +52,16 @@ body {
   font-family: 'Space Mono', monospace;
   line-height: 1.6;
   color: var(--text-primary);
-  background: var(--bg-primary);
+  background:
+    radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(0, 133, 255, 0.04) 0%,
+      transparent 50%
+    ),
+    var(--bg-primary);
   background-attachment: fixed;
   min-height: 100vh;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease, background-color 0.3s ease;
   /* Prevent horizontal scrolling and improve mobile performance */
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
