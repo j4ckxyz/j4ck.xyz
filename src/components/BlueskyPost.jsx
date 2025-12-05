@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { faSpinner, faExternalLinkAlt, faRetweet } from '@fortawesome/free-solid-svg-icons'
 import { faBluesky } from '@fortawesome/free-brands-svg-icons'
 import TwemojiText from './TwemojiText'
 
 const BlueskyPost = () => {
-  const [post, setPost] = useState(null)
+  const [feedItem, setFeedItem] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -34,18 +34,18 @@ const BlueskyPost = () => {
         const data = await response.json()
         
         // Find the first post that's not a reply
-        const latestPost = data.feed?.find(item => 
+        // We accept reposts (where author might not be HANDLE)
+        const item = data.feed?.find(item =>
           item.post && 
-          !item.post.record.reply && 
-          item.post.author.handle === HANDLE
-        )?.post
+          !item.post.record.reply
+        )
 
-        if (latestPost) {
-          console.log('Bluesky post data:', latestPost) // Debug log
-          if (latestPost.embed) {
-            console.log('Embed data:', latestPost.embed) // Debug embed structure
+        if (item) {
+          console.log('Bluesky post data:', item.post) // Debug log
+          if (item.post.embed) {
+            console.log('Embed data:', item.post.embed) // Debug embed structure
           }
-          setPost(latestPost)
+          setFeedItem(item)
         } else {
           throw new Error('No posts found')
         }
@@ -216,7 +216,7 @@ const BlueskyPost = () => {
     )
   }
 
-  if (error || !post) {
+  if (error || !feedItem) {
     return (
       <div className="bluesky-post error">
         <div className="post-header">
@@ -246,8 +246,17 @@ const BlueskyPost = () => {
     )
   }
 
+  const post = feedItem.post
+  const isRepost = feedItem.reason?.$type === 'app.bsky.feed.defs#reasonRepost'
+
   return (
     <div className="bluesky-post">
+      {isRepost && (
+         <div className="repost-indicator">
+           <FontAwesomeIcon icon={faRetweet} />
+           <span>Reposted</span>
+         </div>
+      )}
       <a 
         href={getPostUrl(post)}
         target="_blank"
