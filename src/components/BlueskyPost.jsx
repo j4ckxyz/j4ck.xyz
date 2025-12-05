@@ -61,17 +61,29 @@ const BlueskyPost = () => {
   }, [])
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffTime = Math.abs(now - date)
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
-    const diffMinutes = Math.floor(diffTime / (1000 * 60))
+    try {
+      // Ensure we have a valid date string
+      if (!dateString) return 'recently'
+      
+      const date = new Date(dateString)
+      
+      // Check if the date is valid
+      if (isNaN(date.getTime())) return 'recently'
+      
+      const now = new Date()
+      const diffTime = Math.abs(now - date)
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+      const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
+      const diffMinutes = Math.floor(diffTime / (1000 * 60))
 
-    if (diffDays > 0) return `${diffDays}d`
-    if (diffHours > 0) return `${diffHours}h`
-    if (diffMinutes > 0) return `${diffMinutes}m`
-    return 'now'
+      if (diffDays > 0) return `${diffDays}d`
+      if (diffHours > 0) return `${diffHours}h`
+      if (diffMinutes > 0) return `${diffMinutes}m`
+      return 'now'
+    } catch (error) {
+      console.error('Error formatting date:', error, dateString)
+      return 'recently'
+    }
   }
 
   const formatPostText = (text, facets = []) => {
