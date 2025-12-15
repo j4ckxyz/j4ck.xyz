@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { faSpinner, faExternalLinkAlt, faPlay, faRetweet, faQuoteLeft } from '@fortawesome/free-solid-svg-icons'
 import { faBluesky } from '@fortawesome/free-brands-svg-icons'
 import TwemojiText from './TwemojiText'
-import Hls from 'hls.js'
 
 const BlueskyPost = () => {
   const [post, setPost] = useState(null)
-  const [repost, setRepost] = useState(null) // State for repost info
+  const [repost, setRepost] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -20,7 +19,7 @@ const BlueskyPost = () => {
         setLoading(true)
 
         const response = await fetch(
-          `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${HANDLE}&limit=10`,
+          `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${HANDLE}&limit=20`,
           {
             headers: {
               'Accept': 'application/json',
@@ -91,6 +90,7 @@ const BlueskyPost = () => {
   }
 
   const formatPostText = (text, facets = []) => {
+    if (!text) return null
     if (!facets || facets.length === 0) {
       return <TwemojiText>{text}</TwemojiText>
     }
@@ -121,20 +121,21 @@ const BlueskyPost = () => {
             href={uri}
             target="_blank"
             rel="noopener noreferrer"
-            className="post-link"
+            className="post-link text-blue-400 hover:underline"
+            onClick={(e) => e.stopPropagation()}
           >
             <TwemojiText>{facetText}</TwemojiText>
           </a>
         )
       } else if (facet.features?.[0]?.['$type'] === 'app.bsky.richtext.facet#mention') {
         result.push(
-          <span key={`mention-${i}`} className="post-mention">
+          <span key={`mention-${i}`} className="post-mention text-blue-400">
             <TwemojiText>{facetText}</TwemojiText>
           </span>
         )
       } else if (facet.features?.[0]?.['$type'] === 'app.bsky.richtext.facet#tag') {
         result.push(
-          <span key={`tag-${i}`} className="post-hashtag">
+          <span key={`tag-${i}`} className="post-hashtag text-blue-400">
             <TwemojiText>{facetText}</TwemojiText>
           </span>
         )
@@ -167,57 +168,68 @@ const BlueskyPost = () => {
 
   const getQuotePostUrl = (record) => {
     if (!record) return '#'
-
-    // Check different possible locations for the URI
-    const uri = record.uri || record.value?.uri || record.record?.uri
-
-    if (!uri) return '#'
-
-    // AT URI format: at://did:plc:xxx/app.bsky.feed.post/postid
-    const atUriMatch = uri.match(/at:\/\/([^\/]+)\/app\.bsky\.feed\.post\/(.+)/)
-    if (!atUriMatch) {
-      return '#'
+    
+    // Handle ViewRecord (the typical case)
+    if (record.$type === 'app.bsky.embed.record#viewRecord') {
+      const handle = record.author.handle
+      const uri = record.uri
+      const parts = uri.split('/')
+      const postId = parts[parts.length - 1]
+      return `https://bsky.app/profile/${handle}/post/${postId}`
     }
 
-    const [, did, postId] = atUriMatch
+    // Fallback for record objects inside the post record itself (not the view)
+    const uri = record.uri || record.value?.uri
+    if (!uri) return '#'
 
-    // If we have the author info, use the handle, otherwise use the DID
-    const authorHandle = record.author?.handle || record.value?.author?.handle || did
+    const atUriMatch = uri.match(/at:\/\/([^\/]+)\/app\.bsky\.feed\.post\/(.+)/)
+    if (!atUriMatch) return '#'
+
+    const [, did, postId] = atUriMatch
+    // Best effort: if we don't have the handle, we might only have DID. 
+    // Bsky.app supports /profile/DID/post/POSTID links too.
+    const authorHandle = record.author?.handle || did
 
     return `https://bsky.app/profile/${authorHandle}/post/${postId}`
   }
 
-  if (loading) {
-    return (
-      <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4 text-[#666]">
-          <FontAwesomeIcon icon={faSpinner} spin className="text-2xl text-red-500" />
-          <span className="font-mono text-sm">Initializing feed feed...</span>
+  const renderQuote = (record) => {
+    // Handle deleted/blocked posts
+    if (!record || record.$type === 'app.bsky.embed.record#viewNotFound' || record.$type === 'app.bsky.embed.record#viewBlocked' || record.$type === 'app.bsky.embed.record#viewDetached') {
+      return (
+        <div className="mt-2 p-3 border border-[#333] rounded bg-[#151515] text-[#666] text-xs font-mono">
+          [Quote unavailable]
         </div>
-      </div>
-    )
-  }
-
-  if (error || !post) {
-    return (
-      <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex flex-col justify-between">
-        <div className="text-[#666] font-mono mb-4">
-           // ERROR: Feed Connection Failed
-        </div>
-        <div className="text-center py-8">
-          <TwemojiText>Unable to establish link 😅</TwemojiText>
-        </div>
-        <a
-          href={PROFILE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-[#222] hover:bg-[#333] text-white py-2 px-4 rounded-lg text-center transition-colors border border-[#333] hover:border-red-500 font-mono text-sm flex items-center justify-center gap-2"
+      )
+    }
+    
+    // Handle viewRecord
+    if (record.$type === 'app.bsky.embed.record#viewRecord') {
+      return (
+        <a 
+          href={getQuotePostUrl(record)} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="block mt-2 p-3 border border-[#333] rounded bg-[#1a1a1a] hover:bg-[#222] transition-colors group/quote"
+          onClick={(e) => e.stopPropagation()}
         >
-          <FontAwesomeIcon icon={faBluesky} />
-          Manual Ovveride
+          <div className="flex items-center gap-2 mb-2">
+            <img 
+              src={record.author.avatar} 
+              alt={record.author.handle}
+              className="w-4 h-4 rounded-full bg-[#333]"
+            />
+            <span className="font-bold text-xs text-[#eee]">{record.author.displayName}</span>
+            <span className="text-xs text-[#666]">@{record.author.handle}</span>
+          </div>
+          <div className="text-xs text-[#ccc] line-clamp-4">
+            {record.value?.text}
+          </div>
         </a>
-      </div>
-    )
+      )
+    }
+
+    return null
   }
 
   const renderEmbed = (embed) => {
@@ -248,49 +260,55 @@ const BlueskyPost = () => {
     if (embed.$type === 'app.bsky.embed.external#view') {
       const { external } = embed;
       return (
-        <div className="mt-3 border border-[#333] rounded-lg overflow-hidden bg-[#1a1a1a] hover:bg-[#222] transition-colors">
+        <a 
+          href={external.uri}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block mt-3 border border-[#333] rounded-lg overflow-hidden bg-[#1a1a1a] hover:bg-[#222] transition-colors group/card"
+          onClick={(e) => e.stopPropagation()}
+        >
           {external.thumb && (
             <div className="h-32 w-full overflow-hidden border-b border-[#333]">
-              <img src={external.thumb} alt={external.title} className="w-full h-full object-cover" />
+              <img src={external.thumb} alt={external.title} className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500" />
             </div>
           )}
           <div className="p-3">
             <div className="text-sm font-bold text-[#eee] line-clamp-1">{external.title}</div>
             <div className="text-xs text-[#888] line-clamp-2 mt-1 font-mono">{external.description}</div>
           </div>
-        </div>
+        </a>
       );
     }
 
-    // 3. Record (Quote Post) or RecordWithMedia
+    // 3. Record (Quote Post only)
+    if (embed.$type === 'app.bsky.embed.record#view') {
+      return renderQuote(embed.record);
+    }
+
+    // 4. Record With Media (Media + Quote)
     if (embed.$type === 'app.bsky.embed.recordWithMedia#view') {
       return (
         <div className="mt-2">
           {renderEmbed(embed.media)}
-          <div className="mt-2 pl-2 border-l-2 border-[#333]">
-            {/* Simplified quote rendering to prevent infinite recursion or layout break */}
-            <a href={getQuotePostUrl(embed.record?.record)} target="_blank" rel="noopener noreferrer" className="block p-2 bg-[#1a1a1a] rounded hover:bg-[#222] transition-colors">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-4 h-4 rounded-full bg-[#333]">
-                  {embed.record.record?.author?.avatar && <img src={embed.record.record.author.avatar} alt="" className="w-full h-full rounded-full" />}
-                </div>
-                <span className="font-bold text-xs text-[#eee]">{embed.record.record?.author?.displayName}</span>
-                <span className="text-xs text-[#666]">@{embed.record.record?.author?.handle}</span>
-              </div>
-              <div className="text-xs text-[#ccc] line-clamp-3">
-                {embed.record.record?.value?.text}
-              </div>
-            </a>
-          </div>
+          {renderQuote(embed.record.record)}
         </div>
       )
     }
 
-    // 4. Video
+    // 5. Video (Thumbnail only)
     if (embed.$type === 'app.bsky.embed.video#view') {
       return (
-        <div className="mt-3 rounded-lg overflow-hidden border border-[#333] bg-black">
-          <VideoPlayer playlist={embed.playlist} thumbnail={embed.thumbnail} />
+        <div className="mt-3 rounded-lg overflow-hidden border border-[#333] bg-black relative aspect-video group/video">
+           <img 
+             src={embed.thumbnail} 
+             alt={embed.alt || "Video thumbnail"} 
+             className="w-full h-full object-cover opacity-80 group-hover/video:opacity-60 transition-opacity"
+           />
+           <div className="absolute inset-0 flex items-center justify-center">
+             <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center pl-1 shadow-lg transform group-hover/video:scale-110 transition-transform">
+               <FontAwesomeIcon icon={faPlay} className="text-black text-lg" />
+             </div>
+           </div>
         </div>
       )
     }
@@ -298,62 +316,37 @@ const BlueskyPost = () => {
     return null;
   };
 
-  // Internal Video Player Component
-  const VideoPlayer = ({ playlist, thumbnail }) => {
-    const videoRef = React.useRef(null);
-    const [isPlaying, setIsPlaying] = React.useState(false);
-
-    React.useEffect(() => {
-      let hls = null;
-      if (videoRef.current) {
-        const video = videoRef.current;
-
-        // Check if native HLS is supported (Safari)
-        if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          video.src = playlist;
-        }
-        // Check if Hls.js is supported
-        else if (Hls.isSupported()) {
-          hls = new Hls();
-          hls.loadSource(playlist);
-          hls.attachMedia(video);
-        }
-      }
-
-      return () => {
-        if (hls) {
-          hls.destroy();
-        }
-      }
-    }, [playlist]);
-
+  if (loading) {
     return (
-      <div className="relative w-full aspect-video group">
-        <video
-          ref={videoRef}
-          poster={thumbnail}
-          controls={isPlaying}
-          className="w-full h-full object-contain"
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
-        />
-        {!isPlaying && (
-          <div
-            className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors cursor-pointer"
-            onClick={() => {
-              if (videoRef.current) {
-                videoRef.current.play();
-                setIsPlaying(true);
-              }
-            }}
-          >
-            <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center pl-1 shadow-lg transform group-hover:scale-110 transition-transform">
-              <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-black border-b-[8px] border-b-transparent"></div>
-            </div>
-          </div>
-        )}
+      <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex items-center justify-center min-h-[300px]">
+        <div className="flex flex-col items-center gap-4 text-[#666]">
+          <FontAwesomeIcon icon={faSpinner} spin className="text-2xl text-red-500" />
+          <span className="font-mono text-sm">Initializing feed...</span>
+        </div>
       </div>
-    );
+    )
+  }
+
+  if (error || !post) {
+    return (
+      <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex flex-col justify-between min-h-[300px]">
+        <div className="text-[#666] font-mono mb-4">
+           // ERROR: Feed Connection Failed
+        </div>
+        <div className="text-center py-8">
+          <TwemojiText>Unable to establish link 😅</TwemojiText>
+        </div>
+        <a
+          href={PROFILE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-[#222] hover:bg-[#333] text-white py-2 px-4 rounded-lg text-center transition-colors border border-[#333] hover:border-red-500 font-mono text-sm flex items-center justify-center gap-2"
+        >
+          <FontAwesomeIcon icon={faBluesky} />
+          Manual Override
+        </a>
+      </div>
+    )
   }
 
   return (
@@ -361,8 +354,8 @@ const BlueskyPost = () => {
 
       {/* Repost Header */}
       {repost && (
-        <div className="text-xs text-[#666] mb-2 flex items-center gap-2 font-mono">
-          <FontAwesomeIcon icon={faSpinner} className="fa-spin-pulse" style={{ animationDuration: '3s' }} />
+        <div className="text-xs text-[#666] mb-3 flex items-center gap-2 font-mono pb-2 border-b border-[#222]">
+          <FontAwesomeIcon icon={faRetweet} className="text-green-500" />
           <span>{repost.by.handle === 'j4ck.xyz' ? 'j4ck.xyz' : repost.by.displayName} reposted</span>
         </div>
       )}
@@ -399,7 +392,7 @@ const BlueskyPost = () => {
         rel="noopener noreferrer"
         className="flex-1 block mb-4 group-hover:opacity-90 transition-opacity relative z-10"
       >
-        <div className="text-[#ccc] text-sm leading-relaxed mb-4 font-mono">
+        <div className="text-[#ccc] text-sm leading-relaxed mb-4 font-mono whitespace-pre-wrap">
           {formatPostText(post.record.text, post.record.facets)}
         </div>
 
@@ -407,7 +400,7 @@ const BlueskyPost = () => {
         {post.embed && renderEmbed(post.embed)}
       </a>
 
-      <div className="pt-4 border-t border-[#222] flex justify-between items-center relative z-10">
+      <div className="pt-4 border-t border-[#222] flex justify-between items-center relative z-10 mt-auto">
         <div className="text-xs text-[#444] font-mono">
             // LATEST TRANSMISSION
         </div>
