@@ -9,7 +9,7 @@ const SocialCard = ({ name, handle, url, icon, color = "#ff3333", delay = 0 }) =
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full h-full bg-[#111] border border-[#333] hover:border-red-500 p-6 relative overflow-hidden group transition-colors duration-300"
+            className="block w-full h-full bg-[#111] border border-[#333] hover:border-red-500 p-6 relative overflow-hidden group transition-colors duration-300 rounded-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay, duration: 0.5 }}
@@ -17,7 +17,6 @@ const SocialCard = ({ name, handle, url, icon, color = "#ff3333", delay = 0 }) =
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                borderRadius: '16px'
             }}
         >
             <div className="flex justify-between items-start">

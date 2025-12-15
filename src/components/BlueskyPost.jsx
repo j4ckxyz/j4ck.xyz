@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 import { faBluesky } from '@fortawesome/free-brands-svg-icons'
 import TwemojiText from './TwemojiText'
+import Hls from 'hls.js'
 
 const BlueskyPost = () => {
   const [post, setPost] = useState(null)
@@ -244,8 +245,30 @@ const BlueskyPost = () => {
       return (
         <div className="mt-2">
           {renderEmbed(embed.media)}
-          {/* We won't nest quotes too deep to avoid layout breaking, maybe just a link? */}
-          {renderEmbed(embed.record?.record)} {/* Assuming record is nested */}
+          <div className="mt-2 pl-2 border-l-2 border-[#333]">
+            {/* Simplified quote rendering to prevent infinite recursion or layout break */}
+            <a href={getQuotePostUrl(embed.record?.record)} target="_blank" rel="noopener noreferrer" className="block p-2 bg-[#1a1a1a] rounded hover:bg-[#222] transition-colors">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-4 h-4 rounded-full bg-[#333]">
+                  {embed.record.record?.author?.avatar && <img src={embed.record.record.author.avatar} alt="" className="w-full h-full rounded-full" />}
+                </div>
+                <span className="font-bold text-xs text-[#eee]">{embed.record.record?.author?.displayName}</span>
+                <span className="text-xs text-[#666]">@{embed.record.record?.author?.handle}</span>
+              </div>
+              <div className="text-xs text-[#ccc] line-clamp-3">
+                {embed.record.record?.value?.text}
+              </div>
+            </a>
+          </div>
+        </div>
+      )
+    }
+
+    // 4. Video
+    if (embed.$type === 'app.bsky.embed.video#view') {
+      return (
+        <div className="mt-3 rounded-lg overflow-hidden border border-[#333] bg-black">
+          <VideoPlayer playlist={embed.playlist} thumbnail={embed.thumbnail} />
         </div>
       )
     }
@@ -253,8 +276,66 @@ const BlueskyPost = () => {
     return null;
   };
 
+  // Internal Video Player Component
+  const VideoPlayer = ({ playlist, thumbnail }) => {
+    const videoRef = React.useRef(null);
+    const [isPlaying, setIsPlaying] = React.useState(false);
+
+    React.useEffect(() => {
+      let hls = null;
+      if (videoRef.current) {
+        const video = videoRef.current;
+
+        // Check if native HLS is supported (Safari)
+        if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          video.src = playlist;
+        }
+        // Check if Hls.js is supported
+        else if (Hls.isSupported()) {
+          hls = new Hls();
+          hls.loadSource(playlist);
+          hls.attachMedia(video);
+        }
+      }
+
+      return () => {
+        if (hls) {
+          hls.destroy();
+        }
+      }
+    }, [playlist]);
+
+    return (
+      <div className="relative w-full aspect-video group">
+        <video
+          ref={videoRef}
+          poster={thumbnail}
+          controls={isPlaying}
+          className="w-full h-full object-contain"
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+        />
+        {!isPlaying && (
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors cursor-pointer"
+            onClick={() => {
+              if (videoRef.current) {
+                videoRef.current.play();
+                setIsPlaying(true);
+              }
+            }}
+          >
+            <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center pl-1 shadow-lg transform group-hover:scale-110 transition-transform">
+              <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-black border-b-[8px] border-b-transparent"></div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-[#111] border border-[#333] p-6 h-full flex flex-col hover:border-red-500 transition-colors duration-300 group relative overflow-hidden cut-corners">
+    <div className="bg-[#111] border border-[#333] p-6 h-full flex flex-col hover:border-red-500 transition-colors duration-300 group relative overflow-hidden rounded-lg">
 
       {/* Repost Header */}
       {repost && (

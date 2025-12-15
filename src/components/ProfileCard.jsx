@@ -4,12 +4,11 @@ import { motion } from 'framer-motion';
 const ProfileCard = () => {
     return (
         <motion.div
-            className="bg-[#111] border border-[#333] p-8 md:p-12 h-full flex flex-col justify-center relative overflow-hidden"
+            className="bg-[#111] border border-[#333] p-8 md:p-12 h-full flex flex-col justify-center relative overflow-hidden rounded-lg"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
             style={{
-                borderRadius: '24px',
                 gridColumn: 'span 2', // default span for grid
             }}
         >
