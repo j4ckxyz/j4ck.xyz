@@ -76,7 +76,7 @@ function Home() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <SocialCard
                         name="Flashes"
-                        handle="My best photography"
+                        handle="My photos!"
                         url="https://app.flashes.blue/profile/j4ck.xyz"
                         icon={faBolt}
                         color="#FFD700"
