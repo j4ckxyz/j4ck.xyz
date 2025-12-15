@@ -16,7 +16,7 @@ const BlueskyPost = () => {
     const fetchLatestPost = async () => {
       try {
         setLoading(true)
-        
+
         // Using the public Bluesky API
         const response = await fetch(
           `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${HANDLE}&limit=10`,
@@ -32,11 +32,11 @@ const BlueskyPost = () => {
         }
 
         const data = await response.json()
-        
+
         // Find the first post that's not a reply
-        const latestPost = data.feed?.find(item => 
-          item.post && 
-          !item.post.record.reply && 
+        const latestPost = data.feed?.find(item =>
+          item.post &&
+          !item.post.record.reply &&
           item.post.author.handle === HANDLE
         )?.post
 
@@ -64,12 +64,12 @@ const BlueskyPost = () => {
     try {
       // Ensure we have a valid date string
       if (!dateString) return 'recently'
-      
+
       const date = new Date(dateString)
-      
+
       // Check if the date is valid
       if (isNaN(date.getTime())) return 'recently'
-      
+
       const now = new Date()
       const diffTime = Math.abs(now - date)
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
@@ -99,7 +99,7 @@ const BlueskyPost = () => {
 
     sortedFacets.forEach((facet, i) => {
       const { byteStart, byteEnd } = facet.index
-      
+
       // Add text before this facet
       if (byteStart > lastIndex) {
         result.push(
@@ -110,12 +110,12 @@ const BlueskyPost = () => {
       }
 
       const facetText = text.slice(byteStart, byteEnd)
-      
+
       // Handle different facet types
       if (facet.features?.[0]?.['$type'] === 'app.bsky.richtext.facet#link') {
         const uri = facet.features[0].uri
         result.push(
-          <a 
+          <a
             key={`link-${i}`}
             href={uri}
             target="_blank"
@@ -167,50 +167,39 @@ const BlueskyPost = () => {
 
   const getQuotePostUrl = (record) => {
     console.log('Quote post record:', record) // Debug log
-    
+
     if (!record) return '#'
-    
+
     // Check different possible locations for the URI
     const uri = record.uri || record.value?.uri || record.record?.uri
     console.log('Quote post URI:', uri) // Debug log
-    
+
     if (!uri) return '#'
-    
+
     // AT URI format: at://did:plc:xxx/app.bsky.feed.post/postid
     const atUriMatch = uri.match(/at:\/\/([^\/]+)\/app\.bsky\.feed\.post\/(.+)/)
     if (!atUriMatch) {
       console.log('URI does not match expected format:', uri)
       return '#'
     }
-    
+
     const [, did, postId] = atUriMatch
-    
+
     // If we have the author info, use the handle, otherwise use the DID
     const authorHandle = record.author?.handle || record.value?.author?.handle || did
-    
+
     const finalUrl = `https://bsky.app/profile/${authorHandle}/post/${postId}`
     console.log('Generated quote URL:', finalUrl) // Debug log
-    
+
     return finalUrl
   }
 
   if (loading) {
     return (
-      <div className="bluesky-post loading">
-        <div className="post-header">
-          <div className="post-avatar">
-            <div className="avatar-placeholder"></div>
-          </div>
-          <div className="post-author">
-            <div className="author-name">jack</div>
-            <div className="author-handle">@j4ck.xyz</div>
-          </div>
-          <div className="post-time">
-            <FontAwesomeIcon icon={faSpinner} spin className="loading-spinner" />
-          </div>
-        </div>
-        <div className="post-content">
-          <div className="loading-text">Loading latest post...</div>
+      <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-[#666]">
+          <FontAwesomeIcon icon={faSpinner} spin className="text-2xl text-red-500" />
+          <span className="font-mono text-sm">Initializing feed feed...</span>
         </div>
       </div>
     )
@@ -218,236 +207,81 @@ const BlueskyPost = () => {
 
   if (error || !post) {
     return (
-      <div className="bluesky-post error">
-        <div className="post-header">
-          <div className="post-avatar">
-            <div className="avatar-placeholder"></div>
-          </div>
-          <div className="post-author">
-            <div className="author-name">jack</div>
-            <div className="author-handle">@j4ck.xyz</div>
-          </div>
+      <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex flex-col justify-between">
+        <div className="text-[#666] font-mono mb-4">
+           // ERROR: Feed Connection Failed
         </div>
-        <div className="post-content">
-          <TwemojiText>Unable to load latest post 😅</TwemojiText>
+        <div className="text-center py-8">
+          <TwemojiText>Unable to establish link 😅</TwemojiText>
         </div>
-        <div className="post-actions">
-          <a 
-            href={PROFILE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="view-profile-btn"
-          >
-            <FontAwesomeIcon icon={faBluesky} />
-            View Profile
-          </a>
-        </div>
+        <a
+          href={PROFILE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-[#222] hover:bg-[#333] text-white py-2 px-4 rounded-lg text-center transition-colors border border-[#333] hover:border-red-500 font-mono text-sm flex items-center justify-center gap-2"
+        >
+          <FontAwesomeIcon icon={faBluesky} />
+          Manual Ovveride
+        </a>
       </div>
     )
   }
 
   return (
-    <div className="bluesky-post">
-      <a 
+    <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex flex-col hover:border-red-500 transition-colors duration-300 group relative overflow-hidden">
+      <div className="flex justify-between items-start mb-4 relative z-10">
+        <div className="flex items-center gap-3">
+          {post.author.avatar ? (
+            <img
+              src={post.author.avatar}
+              alt="avatar"
+              className="w-10 h-10 rounded-full border border-[#333]"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-[#222] border border-[#333]"></div>
+          )}
+          <div>
+            <div className="font-bold text-white leading-tight">
+              <TwemojiText>{post.author.displayName || 'jack'}</TwemojiText>
+            </div>
+            <div className="text-xs text-[#666] font-mono">
+              @{post.author.handle}
+            </div>
+          </div>
+        </div>
+        <a href={getPostUrl(post)} target="_blank" rel="noopener noreferrer" className="text-[#666] hover:text-red-500 transition-colors text-xs font-mono">
+          {formatDate(post.record.createdAt)}
+          <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-2" />
+        </a>
+      </div>
+
+      <a
         href={getPostUrl(post)}
         target="_blank"
         rel="noopener noreferrer"
-        className="post-link-wrapper"
-        aria-label={`View post on Bluesky: ${post.record.text?.slice(0, 100)}...`}
+        className="flex-1 block mb-4 group-hover:opacity-90 transition-opacity relative z-10"
       >
-        <div className="post-header">
-          <div className="post-avatar">
-            {post.author.avatar ? (
-              <img 
-                src={post.author.avatar} 
-                alt={`${post.author.displayName || post.author.handle} avatar`}
-                className="avatar-image"
-              />
-            ) : (
-              <div className="avatar-placeholder"></div>
-            )}
-          </div>
-          <div className="post-author">
-            <div className="author-name">
-              <TwemojiText>{post.author.displayName || 'jack'}</TwemojiText>
-            </div>
-            <div className="author-handle">@{post.author.handle}</div>
-          </div>
-          <div className="post-time">
-            {formatDate(post.record.createdAt)}
-            <FontAwesomeIcon icon={faExternalLinkAlt} className="external-link" />
-          </div>
-        </div>
-        
-        <div className="post-content">
+        <div className="text-[#ccc] text-sm leading-relaxed mb-4 font-mono">
           {formatPostText(post.record.text, post.record.facets)}
         </div>
 
-        {/* Handle embedded media */}
-        {post.embed && (() => {
-          const e = post.embed
-          // Detect possible structures, including recordWithMedia
-          const hasImages = !!(e.images || e.media?.images || e.$type === 'app.bsky.embed.images' || e.media?.$type === 'app.bsky.embed.images')
-          const hasVideo = !!(e.video || e.media?.video || e.$type === 'app.bsky.embed.video' || e.media?.$type === 'app.bsky.embed.video')
-          const hasExternal = !!(e.external || e.$type === 'app.bsky.embed.external')
-          const hasQuote = !!(e.record || e.$type === 'app.bsky.embed.record' || e.$type === 'app.bsky.embed.recordWithMedia')
-          const onlyQuote = hasQuote && !hasImages && !hasVideo && !hasExternal
-
-          // If it's only a quoted post, render just the quote (no extra container)
-          if (onlyQuote) {
-            return (
-              <a 
-                href={getQuotePostUrl(e.record)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="embed-quote"
-                onClick={(ev) => ev.stopPropagation()}
-              >
-                <div className="quote-header">
-                  {(e.record?.author || e.record?.value?.author) && (
-                    <>
-                      {(e.record.author?.avatar || e.record.value?.author?.avatar) && (
-                        <img 
-                          src={e.record.author?.avatar || e.record.value?.author?.avatar} 
-                          alt={`${(e.record.author?.displayName || e.record.value?.author?.displayName || e.record.author?.handle || e.record.value?.author?.handle)} avatar`}
-                          className="quote-avatar"
-                        />
-                      )}
-                      <div className="quote-author">
-                        <div className="quote-author-name">
-                          <TwemojiText>{(e.record.author?.displayName || e.record.value?.author?.displayName || e.record.author?.handle || e.record.value?.author?.handle)}</TwemojiText>
-                        </div>
-                        <div className="quote-author-handle">@{(e.record.author?.handle || e.record.value?.author?.handle)}</div>
-                      </div>
-                    </>
-                  )}
-                </div>
-                {(e.record?.value?.text || e.record?.text) && (
-                  <div className="quote-content">
-                    <TwemojiText>{e.record?.value?.text || e.record?.text}</TwemojiText>
-                  </div>
-                )}
-                {!(e.record?.value?.text || e.record?.text) && (
-                  <div className="quote-indicator">[Quote post]</div>
-                )}
-              </a>
-            )
-          }
-
-          // Otherwise, render the standard embed container and include any quote inside it
-          return (
-            <div className="post-embed">
-              {/* Handle images - check different possible structures */}
-              {(e.images || e.$type === 'app.bsky.embed.images' || e.media?.images || e.media?.$type === 'app.bsky.embed.images') && (
-                <div className="embed-images">
-                  {(e.images || e.media?.images || []).map((image, index) => (
-                    <img
-                      key={index}
-                      src={image.fullsize || image.thumb || image.image?.ref}
-                      alt={image.alt || 'Post image'}
-                      className="embed-image"
-                      loading="lazy"
-                    />
-                  ))}
-                </div>
-              )}
-              
-              {/* Handle video embeds */}
-              {(e.video || e.$type === 'app.bsky.embed.video' || e.media?.video || e.media?.$type === 'app.bsky.embed.video') && (
-                <div className="embed-video">
-                  <video
-                    src={e.video?.playlist || e.media?.video?.playlist || e.playlist}
-                    poster={e.video?.thumbnail || e.media?.video?.thumbnail || e.thumbnail}
-                    controls
-                    className="embed-video-player"
-                    preload="metadata"
-                  >
-                    <source src={e.video?.playlist || e.media?.video?.playlist || e.playlist} type="application/x-mpegURL" />
-                    Your browser does not support the video tag.
-                  </video>
-                  {(e.video?.alt || e.media?.video?.alt || e.alt) && (
-                    <div className="embed-video-alt">{e.video?.alt || e.media?.video?.alt || e.alt}</div>
-                  )}
-                </div>
-              )}
-              
-              {/* Handle external link embeds */}
-              {(e.external || e.$type === 'app.bsky.embed.external') && (
-                <div className="embed-external">
-                  {e.external?.thumb && (
-                    <img 
-                      src={e.external.thumb} 
-                      alt="Link preview"
-                      className="embed-thumb"
-                      loading="lazy"
-                    />
-                  )}
-                  <div className="embed-external-content">
-                    <div className="embed-title">
-                      <TwemojiText>{e.external?.title}</TwemojiText>
-                    </div>
-                    <div className="embed-description">
-                      <TwemojiText>{e.external?.description}</TwemojiText>
-                    </div>
-                    <div className="embed-uri">{e.external?.uri}</div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Include quote when part of recordWithMedia */}
-              {(e.record || e.$type === 'app.bsky.embed.record') && (
-                <a 
-                  href={getQuotePostUrl(e.record)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="embed-quote"
-                  onClick={(ev) => ev.stopPropagation()}
-                >
-                  <div className="quote-header">
-                    {(e.record?.author || e.record?.value?.author) && (
-                      <>
-                        {(e.record.author?.avatar || e.record.value?.author?.avatar) && (
-                          <img 
-                            src={e.record.author?.avatar || e.record.value?.author?.avatar} 
-                            alt={`${(e.record.author?.displayName || e.record.value?.author?.displayName || e.record.author?.handle || e.record.value?.author?.handle)} avatar`}
-                            className="quote-avatar"
-                          />
-                        )}
-                        <div className="quote-author">
-                          <div className="quote-author-name">
-                            <TwemojiText>{(e.record.author?.displayName || e.record.value?.author?.displayName || e.record.author?.handle || e.record.value?.author?.handle)}</TwemojiText>
-                          </div>
-                          <div className="quote-author-handle">@{(e.record.author?.handle || e.record.value?.author?.handle)}</div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  {(e.record?.value?.text || e.record?.text) && (
-                    <div className="quote-content">
-                      <TwemojiText>{e.record?.value?.text || e.record?.text}</TwemojiText>
-                    </div>
-                  )}
-                  {!(e.record?.value?.text || e.record?.text) && (
-                    <div className="quote-indicator">[Quote post]</div>
-                  )}
-                </a>
-              )}
-            </div>
-          )
-        })()}
+        {/* Embedded Content Simplification for Grid */}
+        {post.embed && (
+          <div className="border border-[#333] rounded-lg p-2 bg-[#1a1a1a] text-xs text-[#666] font-mono truncate">
+            [Media Attachment Detected]
+          </div>
+        )}
       </a>
-      
-      <div className="post-actions">
-        <a 
-          href={PROFILE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="show-more-btn"
-        >
-          <FontAwesomeIcon icon={faBluesky} />
-          Show More
-        </a>
+
+      <div className="pt-4 border-t border-[#222] flex justify-between items-center relative z-10">
+        <div className="text-xs text-[#444] font-mono">
+            // LATEST TRANSMISSION
+        </div>
+        <FontAwesomeIcon icon={faBluesky} className="text-[#222] group-hover:text-[#0085ff] transition-colors" />
       </div>
+
+      {/* Decorative */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#0085ff10] to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
     </div>
   )
 }

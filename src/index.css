@@ -1,101 +1,133 @@
-/* CSS Custom Properties for Theme System */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-  /* Light Mode — "Crimson Graphite (Light)" */
-  --bg-primary: #FAFAFC;
-  --bg-secondary: #FFFFFF;
-  --bg-tertiary: #FFFFFF;
-  --text-primary: #121417;
-  --text-secondary: #121417;
-  --text-muted: #121417;
-  --border-color: rgba(18, 20, 23, 0.125);
-  --shadow-light: rgba(18, 20, 23, 0.08);
-  --shadow-medium: rgba(18, 20, 23, 0.12);
-  --accent-color: #B91C1C;
-  --accent-text: #FFFFFF;
+  --bg-color: #0a0a0a;
+  --card-bg: #111111;
+  --text-primary: #ffffff;
+  --text-secondary: #999999;
+  --accent-red: #ff3333;
+  --border-color: #333333;
 }
 
-[data-theme="dark"] {
-  /* Dark Mode — "Crimson Graphite" */
-  --bg-primary: #0B0B0F;
-  --bg-secondary: #15161A;
-  --bg-tertiary: #15161A;
-  --text-primary: #E8E9EF;
-  --text-secondary: #E8E9EF;
-  --text-muted: #E8E9EF;
-  --border-color: rgba(232, 233, 239, 0.1);
-  --shadow-light: rgba(0, 0, 0, 0.3);
-  --shadow-medium: rgba(0, 0, 0, 0.5);
-  --accent-color: #B91C1C;
-  --accent-text: #FFFFFF;
-}
-
-/* Reset and base styles */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  font-size: 16px;
-  /* Prevent horizontal scrolling on mobile */
-  overflow-x: hidden;
-  /* Fix mobile overscroll color to match background */
-  background: var(--bg-primary);
-  /* iOS Safari overscroll fix */
-  background-size: 100% 100%;
-  -webkit-background-size: 100% 100%;
-  background-attachment: fixed;
 }
 
 body {
-  font-family: 'Space Mono', monospace;
-  line-height: 1.6;
+  background-color: var(--bg-color);
   color: var(--text-primary);
-  background: var(--bg-primary);
-  background-attachment: fixed;
-  min-height: 100vh;
-  transition: all 0.3s ease;
-  /* Prevent horizontal scrolling and improve mobile performance */
-  overflow-x: hidden;
+  font-family: 'JetBrains Mono', monospace;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* iOS Safari specific fixes */
-  position: relative;
   min-height: 100vh;
-  min-height: -webkit-fill-available;
+  overflow-x: hidden;
 }
 
-/* Accessibility improvements */
-*:focus {
-  outline: 3px solid var(--accent-color);
-  outline-offset: 2px;
-}
-
-/* Skip link for screen readers */
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 6px;
-  background: var(--text-primary);
-  color: var(--bg-secondary);
-  padding: 8px;
+a {
   text-decoration: none;
-  z-index: 100;
+  color: inherit;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
   border-radius: 4px;
 }
 
-.skip-link:focus {
-  top: 6px;
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-red);
 }
 
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+/* Utilities */
+.text-red {
+  color: var(--accent-red);
+}
+
+.hover-red:hover {
+  color: var(--accent-red);
+  transition: color 0.2s ease;
+}
+
+.border-red-hover:hover {
+  border-color: var(--accent-red);
+  transition: border-color 0.2s ease;
+}
+
+/* Twemoji global fix */
+.twemoji {
+  height: 1.2em;
+  width: 1.2em;
+  vertical-align: -0.2em;
+}
+
+/* Glitch Animations */
+@keyframes glitch-1 {
+  0% {
+    transform: translate(0);
   }
+
+  20% {
+    transform: translate(-2px, 2px);
+  }
+
+  40% {
+    transform: translate(-2px, -2px);
+  }
+
+  60% {
+    transform: translate(2px, 2px);
+  }
+
+  80% {
+    transform: translate(2px, -2px);
+  }
+
+  100% {
+    transform: translate(0);
+  }
+}
+
+@keyframes glitch-2 {
+  0% {
+    transform: translate(0);
+  }
+
+  20% {
+    transform: translate(2px, -2px);
+  }
+
+  40% {
+    transform: translate(2px, 2px);
+  }
+
+  60% {
+    transform: translate(-2px, 2px);
+  }
+
+  80% {
+    transform: translate(-2px, -2px);
+  }
+
+  100% {
+    transform: translate(0);
+  }
+}
+
+.animate-glitch-1 {
+  animation: glitch-1 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+}
+
+.animate-glitch-2 {
+  animation: glitch-2 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
 }

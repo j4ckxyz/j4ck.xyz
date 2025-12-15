@@ -1,138 +1,50 @@
-import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBluesky, faTwitter } from '@fortawesome/free-brands-svg-icons'
-import { faEnvelope, faCloud } from '@fortawesome/free-solid-svg-icons'
-import TwemojiText from './components/TwemojiText'
-import BlueskyBio from './components/BlueskyBio'
-import BlueskyPost from './components/BlueskyPost'
-import KibunStatus from './components/KibunStatus'
-import ThemeToggle from './components/ThemeToggle'
-import DropdownLink from './components/DropdownLink'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import Home from './pages/Home'
+import Blogs from './pages/Blogs'
+import Photos from './pages/Photos'
+import Repos from './pages/Repos'
+import Navigation from './components/Navigation'
 import './App.css'
 
-function App() {
-  const socialLinks = [
-    {
-      name: 'Bluesky',
-      handle: '@j4ck.xyz',
-      url: 'https://bsky.app/profile/j4ck.xyz',
-      icon: faBluesky,
-      ariaLabel: 'Visit my Bluesky profile @j4ck.xyz'
-    },
-    {
-      name: 'Twitter',
-      handle: '@jglypt',
-      url: 'https://twitter.com/jglypt',
-      icon: faTwitter,
-      ariaLabel: 'Visit my Twitter profile @jglypt'
-    },
-    {
-      name: 'Email',
-      handle: 'jack@jglypt.net',
-      url: 'mailto:jack@jglypt.net',
-      icon: faEnvelope,
-      ariaLabel: 'Send me an email at jack@jglypt.net'
-    }
-  ]
+// Page Transition Wrapper
+const PageWrapper = ({ children }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.98 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0, scale: 1.02 }}
+    transition={{ duration: 0.2, ease: "easeOut" }}
+    className="w-full"
+  >
+    {children}
+  </motion.div>
+);
 
-  const atmosphereLink = {
-    name: 'Follow me on ATmosphere - @j4ck.xyz',
-    handle: '@j4ck.xyz',
-    icon: faCloud,
-    ariaLabel: 'Access my ATmosphere profile and services',
-    options: [
-      {
-        name: '⚡ Flashes',
-        url: 'https://app.flashes.blue/profile/j4ck.xyz',
-        ariaLabel: 'Visit my Flashes profile'
-      },
-      {
-        name: '🍃 Leaflet',
-        url: 'https://blog.j4ck.xyz',
-        ariaLabel: 'Read my blog on Leaflet'
-      }
-    ]
-  }
+function App() {
+  const location = useLocation();
 
   return (
-    <div className="app">
-      <ThemeToggle />
-      <main className="container">
-        <header className="header">
-          <h1 className="title">j4ck.xyz</h1>
-          <BlueskyBio />
-          <div className="bio-separator"></div>
-          <KibunStatus username="j4ck.xyz" />
-          <div className="bio-separator"></div>
-          <p className="subtitle">
-            <TwemojiText>Find my socials! 👇</TwemojiText>
-          </p>
-        </header>
-        
-        <nav className="social-links" role="navigation" aria-label="Social media links">
-          <ul className="links-list">
-            {/* Bluesky first */}
-            <li className="link-item">
-              <a
-                href={socialLinks[0].url}
-                className="social-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={socialLinks[0].ariaLabel}
-              >
-                <FontAwesomeIcon 
-                  icon={socialLinks[0].icon} 
-                  className="social-icon"
-                  aria-hidden="true" 
-                />
-                <span className="link-text">
-                  <span className="platform">
-                    <TwemojiText>{socialLinks[0].name}</TwemojiText>
-                  </span>
-                  <span className="handle">{socialLinks[0].handle}</span>
-                </span>
-              </a>
-            </li>
+    <div className="app bg-[#0a0a0a] min-h-screen text-white font-mono selection:bg-red-500/30">
+      <Navigation />
 
-            {/* ATmosphere dropdown */}
-            <li className="link-item">
-              <DropdownLink
-                name={atmosphereLink.name}
-                handle={atmosphereLink.handle}
-                icon={atmosphereLink.icon}
-                options={atmosphereLink.options}
-                ariaLabel={atmosphereLink.ariaLabel}
-              />
-            </li>
-            
-            {/* Twitter and Email */}
-            {socialLinks.slice(1).map((link) => (
-              <li key={link.name} className="link-item">
-                <a
-                  href={link.url}
-                  className="social-link"
-                  target={link.name !== 'Email' ? '_blank' : undefined}
-                  rel={link.name !== 'Email' ? 'noopener noreferrer' : undefined}
-                  aria-label={link.ariaLabel}
-                >
-                  <FontAwesomeIcon 
-                    icon={link.icon} 
-                    className="social-icon"
-                    aria-hidden="true" 
-                  />
-                  <span className="link-text">
-                    <span className="platform">
-                      <TwemojiText>{link.name}</TwemojiText>
-                    </span>
-                    <span className="handle">{link.handle}</span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        
-        <BlueskyPost />
+      {/* 
+        Responsive Padding:
+        Mobile: pt-4 (top), pb-32 (bottom nav + status line)
+        Desktop: pt-24 (top nav), pb-12
+      */}
+      <main className="w-full max-w-[1200px] mx-auto pt-4 pb-32 md:pt-24 md:pb-12 px-4 flex flex-col items-center">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+            <Route path="/blogs" element={<PageWrapper><Blogs /></PageWrapper>} />
+            <Route path="/photos" element={<PageWrapper><Photos /></PageWrapper>} />
+            <Route path="/repos" element={<PageWrapper><Repos /></PageWrapper>} />
+          </Routes>
+        </AnimatePresence>
+
+        <footer className="text-center text-[#333] mt-12 text-xs w-full">
+          SYSTEM_ID: J4CK-XYZ-V3 // <span className="text-red-900">TERMINAL_ACTIVE</span>
+        </footer>
       </main>
     </div>
   )
