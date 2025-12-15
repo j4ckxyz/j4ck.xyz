@@ -1,6 +1,6 @@
-import React from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect } from 'react'
 import Home from './pages/Home'
 import Blogs from './pages/Blogs'
 import Photos from './pages/Photos'
@@ -21,8 +21,30 @@ const PageWrapper = ({ children }) => (
   </motion.div>
 );
 
+
+
 function App() {
   const location = useLocation();
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === 'Tab' || e.key.startsWith('Arrow') || ['j', 'k', '[', ']'].includes(e.key.toLowerCase())) {
+        document.body.classList.add('user-is-tabbing');
+      }
+    }
+
+    function handleMouseDown() {
+      document.body.classList.remove('user-is-tabbing');
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('mousedown', handleMouseDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, []);
 
   const getCommand = (path) => {
     switch (path) {
@@ -32,24 +54,6 @@ function App() {
       default: return './home.sh --verbose';
     }
   };
-
-  // Input method tracking for focus styles
-  React.useEffect(() => {
-    const handleMouseDown = () => document.body.classList.remove('keyboard-nav');
-    const handleKeyDown = (e) => {
-      // Add class for navigation keys
-      if (['Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', 'j', 'k', '[', ']'].includes(e.key)) {
-        document.body.classList.add('keyboard-nav');
-      }
-    };
-
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
 
   return (
     <div className="app bg-[#0a0a0a] min-h-screen text-white font-mono selection:bg-red-500/30">

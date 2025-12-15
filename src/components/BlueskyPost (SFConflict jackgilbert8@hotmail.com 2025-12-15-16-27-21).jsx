@@ -6,7 +6,6 @@ import TwemojiText from './TwemojiText'
 
 const BlueskyPost = () => {
   const [post, setPost] = useState(null)
-  const [repost, setRepost] = useState(null) // State for repost info
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -18,6 +17,7 @@ const BlueskyPost = () => {
       try {
         setLoading(true)
 
+        // Using the public Bluesky API
         const response = await fetch(
           `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${HANDLE}&limit=10`,
           {
@@ -33,28 +33,19 @@ const BlueskyPost = () => {
 
         const data = await response.json()
 
-        // Find the first post that matches our criteria:
-        // 1. It's my own post (and NOT a reply)
-        // 2. OR it's a repost (by me)
-        const feedItem = data.feed?.find(item => {
-          const isRepost = item.reason?.$type === 'app.bsky.feed.defs#reasonRepost'
-          const isMyPost = item.post.author.handle === HANDLE
-          const isReply = !!item.post.record.reply
+        // Find the first post that's not a reply
+        const latestPost = data.feed?.find(item =>
+          item.post &&
+          !item.post.record.reply &&
+          item.post.author.handle === HANDLE
+        )?.post
 
-          if (isRepost) return true; // Always show reposts
-          if (isMyPost && !isReply) return true; // Show my posts (no replies)
-
-          return false;
-        })
-
-        if (feedItem) {
-          console.log('Bluesky feed item:', feedItem)
-          setPost(feedItem.post)
-          if (feedItem.reason) {
-            setRepost(feedItem.reason)
-          } else {
-            setRepost(null)
+        if (latestPost) {
+          console.log('Bluesky post data:', latestPost) // Debug log
+          if (latestPost.embed) {
+            console.log('Embed data:', latestPost.embed) // Debug embed structure
           }
+          setPost(latestPost)
         } else {
           throw new Error('No posts found')
         }
@@ -71,14 +62,20 @@ const BlueskyPost = () => {
 
   const formatDate = (dateString) => {
     try {
+      // Ensure we have a valid date string
       if (!dateString) return 'recently'
+
       const date = new Date(dateString)
+
+      // Check if the date is valid
       if (isNaN(date.getTime())) return 'recently'
+
       const now = new Date()
       const diffTime = Math.abs(now - date)
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
       const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
       const diffMinutes = Math.floor(diffTime / (1000 * 60))
+
       if (diffDays > 0) return `${diffDays}d`
       if (diffHours > 0) return `${diffHours}h`
       if (diffMinutes > 0) return `${diffMinutes}m`
@@ -97,11 +94,13 @@ const BlueskyPost = () => {
     let result = []
     let lastIndex = 0
 
+    // Sort facets by index
     const sortedFacets = [...facets].sort((a, b) => a.index.byteStart - b.index.byteStart)
 
     sortedFacets.forEach((facet, i) => {
       const { byteStart, byteEnd } = facet.index
 
+      // Add text before this facet
       if (byteStart > lastIndex) {
         result.push(
           <TwemojiText key={`text-${i}`}>
@@ -112,6 +111,7 @@ const BlueskyPost = () => {
 
       const facetText = text.slice(byteStart, byteEnd)
 
+      // Handle different facet types
       if (facet.features?.[0]?.['$type'] === 'app.bsky.richtext.facet#link') {
         const uri = facet.features[0].uri
         result.push(
@@ -146,6 +146,7 @@ const BlueskyPost = () => {
       lastIndex = byteEnd
     })
 
+    // Add remaining text
     if (lastIndex < text.length) {
       result.push(
         <TwemojiText key="text-end">
@@ -162,6 +163,35 @@ const BlueskyPost = () => {
     const parts = post.uri.split('/')
     const postId = parts[parts.length - 1]
     return `https://bsky.app/profile/${post.author.handle}/post/${postId}`
+  }
+
+  const getQuotePostUrl = (record) => {
+    console.log('Quote post record:', record) // Debug log
+
+    if (!record) return '#'
+
+    // Check different possible locations for the URI
+    const uri = record.uri || record.value?.uri || record.record?.uri
+    console.log('Quote post URI:', uri) // Debug log
+
+    if (!uri) return '#'
+
+    // AT URI format: at://did:plc:xxx/app.bsky.feed.post/postid
+    const atUriMatch = uri.match(/at:\/\/([^\/]+)\/app\.bsky\.feed\.post\/(.+)/)
+    if (!atUriMatch) {
+      console.log('URI does not match expected format:', uri)
+      return '#'
+    }
+
+    const [, did, postId] = atUriMatch
+
+    // If we have the author info, use the handle, otherwise use the DID
+    const authorHandle = record.author?.handle || record.value?.author?.handle || did
+
+    const finalUrl = `https://bsky.app/profile/${authorHandle}/post/${postId}`
+    console.log('Generated quote URL:', finalUrl) // Debug log
+
+    return finalUrl
   }
 
   if (loading) {
@@ -197,73 +227,8 @@ const BlueskyPost = () => {
     )
   }
 
-  const renderEmbed = (embed) => {
-    if (!embed) return null;
-
-    // 1. Images
-    if (embed.$type === 'app.bsky.embed.images#view') {
-      return (
-        <div className="grid grid-cols-2 gap-1 rounded-lg overflow-hidden mt-3 border border-[#333]">
-          {embed.images.map((img, i) => (
-            <div
-              key={i}
-              className={`relative ${embed.images.length === 1 ? 'col-span-2' : ''} ${embed.images.length === 3 && i === 0 ? 'col-span-2' : ''}`}
-            >
-              <img
-                src={img.thumb}
-                alt={img.alt}
-                className="w-full h-full object-cover max-h-48 bg-[#222]"
-                loading="lazy"
-              />
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    // 2. External Link
-    if (embed.$type === 'app.bsky.embed.external#view') {
-      const { external } = embed;
-      return (
-        <div className="mt-3 border border-[#333] rounded-lg overflow-hidden bg-[#1a1a1a] hover:bg-[#222] transition-colors">
-          {external.thumb && (
-            <div className="h-32 w-full overflow-hidden border-b border-[#333]">
-              <img src={external.thumb} alt={external.title} className="w-full h-full object-cover" />
-            </div>
-          )}
-          <div className="p-3">
-            <div className="text-sm font-bold text-[#eee] line-clamp-1">{external.title}</div>
-            <div className="text-xs text-[#888] line-clamp-2 mt-1 font-mono">{external.description}</div>
-          </div>
-        </div>
-      );
-    }
-
-    // 3. Record (Quote Post) or RecordWithMedia
-    if (embed.$type === 'app.bsky.embed.recordWithMedia#view') {
-      return (
-        <div className="mt-2">
-          {renderEmbed(embed.media)}
-          {/* We won't nest quotes too deep to avoid layout breaking, maybe just a link? */}
-          {renderEmbed(embed.record?.record)} {/* Assuming record is nested */}
-        </div>
-      )
-    }
-
-    return null;
-  };
-
   return (
-    <div className="bg-[#111] border border-[#333] p-6 h-full flex flex-col hover:border-red-500 transition-colors duration-300 group relative overflow-hidden cut-corners">
-
-      {/* Repost Header */}
-      {repost && (
-        <div className="text-xs text-[#666] mb-2 flex items-center gap-2 font-mono">
-          <FontAwesomeIcon icon={faSpinner} className="fa-spin-pulse" style={{ animationDuration: '3s' }} />
-          <span>{repost.by.handle === 'j4ck.xyz' ? 'j4ck.xyz' : repost.by.displayName} reposted</span>
-        </div>
-      )}
-
+    <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex flex-col hover:border-red-500 transition-colors duration-300 group relative overflow-hidden">
       <div className="flex justify-between items-start mb-4 relative z-10">
         <div className="flex items-center gap-3">
           {post.author.avatar ? (
@@ -300,8 +265,12 @@ const BlueskyPost = () => {
           {formatPostText(post.record.text, post.record.facets)}
         </div>
 
-        {/* Render Embeds */}
-        {post.embed && renderEmbed(post.embed)}
+        {/* Embedded Content Simplification for Grid */}
+        {post.embed && (
+          <div className="border border-[#333] rounded-lg p-2 bg-[#1a1a1a] text-xs text-[#666] font-mono truncate">
+            [Media Attachment Detected]
+          </div>
+        )}
       </a>
 
       <div className="pt-4 border-t border-[#222] flex justify-between items-center relative z-10">
@@ -312,7 +281,7 @@ const BlueskyPost = () => {
       </div>
 
       {/* Decorative */}
-      <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-t from-[#0085ff20] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" style={{ clipPath: 'polygon(100% 0, 0 100%, 100% 100%)' }}></div>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#0085ff10] to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
     </div>
   )
 }

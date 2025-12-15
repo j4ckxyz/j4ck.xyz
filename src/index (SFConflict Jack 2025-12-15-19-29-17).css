@@ -63,18 +63,6 @@ body::before {
 a {
   text-decoration: none;
   color: inherit;
-  outline: none;
-  /* Remove default outline */
-}
-
-/* Keyboard Navigation Focus styles */
-body.keyboard-nav a:focus,
-body.keyboard-nav button:focus,
-body.keyboard-nav [tabindex="0"]:focus {
-  outline: 2px solid var(--accent-red);
-  outline-offset: 4px;
-  position: relative;
-  z-index: 50;
 }
 
 /* Custom Scrollbar */
@@ -176,4 +164,19 @@ body.keyboard-nav [tabindex="0"]:focus {
 
 .animate-glitch-2 {
   animation: glitch-2 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+}
+
+/* Focus Indicators */
+:focus {
+  outline: none;
+}
+
+body.user-is-tabbing a:focus:not(:active),
+body.user-is-tabbing button:focus:not(:active),
+body.user-is-tabbing [tabindex]:focus:not(:active) {
+  outline: none;
+  border-color: #ff3333 !important;
+  box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+  position: relative;
+  z-index: 50;
 }
