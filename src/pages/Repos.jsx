@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faStar, faCodeBranch } from '@fortawesome/free-solid-svg-icons';
+import SEO from '../components/SEO';
 
 const Repos = () => {
     const [repos, setRepos] = useState([]);
@@ -28,6 +29,12 @@ const Repos = () => {
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white p-8 font-mono">
+            <SEO
+                title="Repos"
+                description="Public code repositories."
+                image="repos.png"
+                path="/repos"
+            />
             <div className="max-w-5xl mx-auto">
                 <Link to="/" className="text-red-500 hover:text-white transition-colors mb-8 inline-block">← Back Home</Link>
                 <h1 className="text-4xl font-bold mb-12 flex items-center gap-4">

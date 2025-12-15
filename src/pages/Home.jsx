@@ -5,10 +5,17 @@ import BentoGrid from '../components/BentoGrid'
 import ProfileCard from '../components/ProfileCard'
 import SocialCard from '../components/SocialCard'
 import BlueskyPost from '../components/BlueskyPost'
+import SEO from '../components/SEO'
 
 function Home() {
     return (
         <BentoGrid>
+            <SEO
+                title="Home"
+                description="Jack's digital garden. Code, photos, and thoughts."
+                image="home.png"
+                path="/"
+            />
             {/* Row 1 */}
             <div className="md:col-span-1 h-64">
                 <ProfileCard />

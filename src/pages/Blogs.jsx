@@ -1,5 +1,6 @@
 import React from 'react';
 import { useData } from '../context/DataContext';
+import SEO from '../components/SEO';
 
 const Blogs = () => {
     const { blogs, loadingBlogs } = useData();
@@ -11,6 +12,12 @@ const Blogs = () => {
 
     return (
         <div className="w-full">
+            <SEO
+                title="Blogs"
+                description="Thoughts and articles via Leaflet."
+                image="blogs.png"
+                path="/blogs"
+            />
             <h1 className="text-4xl font-bold mb-12">
                 /blogs <span className="text-sm font-normal text-gray-600">via <a href="https://leaflet.pub" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Leaflet</a></span>
             </h1>

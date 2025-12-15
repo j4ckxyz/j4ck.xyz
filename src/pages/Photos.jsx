@@ -1,11 +1,18 @@
 import React from 'react';
 import { useData } from '../context/DataContext';
+import SEO from '../components/SEO';
 
 const Photos = () => {
     const { photos, loadingPhotos } = useData();
 
     return (
         <div className="w-full">
+            <SEO
+                title="Photos"
+                description="Visual stream via Grain."
+                image="photos.png"
+                path="/photos"
+            />
             <h1 className="text-4xl font-bold mb-12">
                 /photos <span className="text-sm font-normal text-gray-600">via <a href="https://grain.social" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Grain</a></span>
             </h1>
