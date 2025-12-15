@@ -165,6 +165,28 @@ const BlueskyPost = () => {
     return `https://bsky.app/profile/${post.author.handle}/post/${postId}`
   }
 
+  const getQuotePostUrl = (record) => {
+    if (!record) return '#'
+
+    // Check different possible locations for the URI
+    const uri = record.uri || record.value?.uri || record.record?.uri
+
+    if (!uri) return '#'
+
+    // AT URI format: at://did:plc:xxx/app.bsky.feed.post/postid
+    const atUriMatch = uri.match(/at:\/\/([^\/]+)\/app\.bsky\.feed\.post\/(.+)/)
+    if (!atUriMatch) {
+      return '#'
+    }
+
+    const [, did, postId] = atUriMatch
+
+    // If we have the author info, use the handle, otherwise use the DID
+    const authorHandle = record.author?.handle || record.value?.author?.handle || did
+
+    return `https://bsky.app/profile/${authorHandle}/post/${postId}`
+  }
+
   if (loading) {
     return (
       <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex items-center justify-center">
