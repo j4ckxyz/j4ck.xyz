@@ -74,7 +74,7 @@ export const DataProvider = ({ children }) => {
     };
 
     // Transform Bluesky post to our format
-    const transformBlueskyPost = (feedItem) => {
+    const transformBlueskyPost = useCallback((feedItem) => {
         const post = feedItem.post;
         const record = post.record;
         
@@ -130,7 +130,7 @@ export const DataProvider = ({ children }) => {
             repostCount: post.repostCount || 0,
             replyCount: post.replyCount || 0
         };
-    };
+    }, []);
 
     // Fetch posts from Bluesky with pagination to get enough original posts
     const fetchBlueskyPosts = useCallback(async (targetCount = 100) => {
@@ -183,7 +183,7 @@ export const DataProvider = ({ children }) => {
             console.error("Failed to fetch Bluesky posts:", e);
             return [];
         }
-    }, []);
+    }, [transformBlueskyPost]);
 
     // Fetch Flashes photos using QuickSlices GraphQL API
     const fetchFlashesPhotos = useCallback(async () => {
