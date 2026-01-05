@@ -132,30 +132,53 @@ export const DataProvider = ({ children }) => {
         };
     };
 
-    // Fetch posts from Bluesky
-    const fetchBlueskyPosts = useCallback(async (limit = 100) => {
+    // Fetch posts from Bluesky with pagination to get enough original posts
+    const fetchBlueskyPosts = useCallback(async (targetCount = 100) => {
         try {
-            const response = await fetch(
-                `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${HANDLE}&limit=${limit}`,
-                {
+            let allPosts = [];
+            let cursor = undefined;
+            const maxIterations = 10; // Safety limit to prevent infinite loops
+            let iterations = 0;
+            
+            // Keep fetching until we have targetCount original posts (non-replies, non-reposts)
+            while (allPosts.length < targetCount && iterations < maxIterations) {
+                const url = cursor 
+                    ? `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${HANDLE}&limit=100&cursor=${cursor}`
+                    : `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${HANDLE}&limit=100`;
+                
+                const response = await fetch(url, {
                     headers: {
                         'Accept': 'application/json',
                     }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Bluesky posts');
                 }
-            );
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch Bluesky posts');
+                const data = await response.json();
+                
+                // Transform and filter posts
+                const transformed = data.feed
+                    .map(transformBlueskyPost)
+                    .filter(post => !post.isReply && !post.isRepost); // Exclude replies and reposts
+                
+                allPosts = [...allPosts, ...transformed];
+                
+                // Check if there's more data
+                if (!data.cursor) {
+                    console.log(`[Bluesky] Reached end of feed after ${iterations + 1} iterations`);
+                    break;
+                }
+                
+                cursor = data.cursor;
+                iterations++;
+                
+                console.log(`[Bluesky] Iteration ${iterations}: Fetched ${transformed.length} original posts (total: ${allPosts.length})`);
             }
-
-            const data = await response.json();
             
-            // Transform and filter posts
-            const transformed = data.feed
-                .map(transformBlueskyPost)
-                .filter(post => !post.isReply && !post.isRepost); // Exclude replies and reposts
-            
-            return transformed;
+            console.log(`[Bluesky] Final count: ${allPosts.length} original posts`);
+            return allPosts;
         } catch (e) {
             console.error("Failed to fetch Bluesky posts:", e);
             return [];
