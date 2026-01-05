@@ -4,21 +4,15 @@ import { BskyAgent } from '@atproto/api';
 const DataContext = createContext();
 
 const CACHE_KEY = 'bluesky_posts_cache';
-const PHOTOS_CACHE_KEY = 'flashes_photos_cache';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const HANDLE = 'j4ck.xyz';
-const DID = 'did:plc:4hawmtgzjx3vclfyphbhfn7v';
-const PDS_URL = 'https://pds.j4ck.xyz';
-const QUICKSLICES_URL = 'https://quickslices.atproto.uk/graphql';
 
 export const DataProvider = ({ children }) => {
     const [blogs, setBlogs] = useState([]);
     const [posts, setPosts] = useState([]);
     const [allPosts, setAllPosts] = useState([]);
-    const [photos, setPhotos] = useState([]);
     const [loadingBlogs, setLoadingBlogs] = useState(true);
     const [loadingPosts, setLoadingPosts] = useState(true);
-    const [loadingPhotos, setLoadingPhotos] = useState(true);
     const [hasMorePosts, setHasMorePosts] = useState(true);
 
     // Load from cache
@@ -160,100 +154,6 @@ export const DataProvider = ({ children }) => {
         }
     }, []);
 
-    // Fetch Flashes photos
-    const fetchFlashesPhotos = useCallback(async () => {
-        try {
-            // Query Flashes posts using QuickSlices GraphQL API
-            const query = `
-                query GetFlashesPosts {
-                    blueFlashesFeedPost(
-                        first: 100
-                        where: { did: { eq: "${DID}" } }
-                        sortBy: [{ field: createdAt, direction: DESC }]
-                    ) {
-                        edges {
-                            node {
-                                uri
-                                cid
-                                did
-                                createdAt
-                                actorHandle
-                            }
-                        }
-                    }
-                }
-            `;
-            
-            const response = await fetch(QUICKSLICES_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ query })
-            });
-            
-            if (!response.ok) {
-                throw new Error('Failed to fetch from QuickSlices');
-            }
-            
-            const result = await response.json();
-            const flashesPosts = result.data?.blueFlashesFeedPost?.edges || [];
-            const photos = [];
-            
-            // For each Flashes post, get the linked Bluesky posts with images
-            for (const edge of flashesPosts) {
-                const flashesPost = edge.node;
-                
-                // Extract rkey from URI for the root post
-                const rkey = flashesPost.uri.split('/').pop();
-                
-                // Try to get the corresponding Bluesky post from PDS
-                // The pattern is: Flashes post has same rkey as root Bluesky post
-                try {
-                    const bskyResponse = await fetch(
-                        `${PDS_URL}/xrpc/com.atproto.repo.getRecord?repo=${DID}&collection=app.bsky.feed.post&rkey=${rkey}`
-                    );
-                    
-                    if (bskyResponse.ok) {
-                        const bskyData = await bskyResponse.json();
-                        const bskyPost = bskyData.value;
-                        
-                        // Check if post has images
-                        if (bskyPost.embed?.$type === 'app.bsky.embed.images' && bskyPost.embed.images) {
-                            bskyPost.embed.images.forEach((img) => {
-                                const cid = img.image.ref.$link;
-                                photos.push({
-                                    id: `${flashesPost.uri}-${cid}`,
-                                    url: `https://bsky.app/profile/${HANDLE}/post/${rkey}`,
-                                    flashesUri: flashesPost.uri,
-                                    postUri: bskyData.uri,
-                                    image: {
-                                        thumb: `${PDS_URL}/xrpc/com.atproto.sync.getBlob?did=${DID}&cid=${cid}`,
-                                        fullsize: `${PDS_URL}/xrpc/com.atproto.sync.getBlob?did=${DID}&cid=${cid}`,
-                                        alt: img.alt || '',
-                                        aspectRatio: img.aspectRatio
-                                    },
-                                    text: bskyPost.text || '',
-                                    createdAt: flashesPost.createdAt,
-                                    tags: bskyPost.tags || []
-                                });
-                            });
-                        }
-                    }
-                } catch (e) {
-                    console.error(`Failed to fetch Bluesky post for ${rkey}:`, e);
-                }
-            }
-            
-            console.log(`[QuickSlices] Fetched ${photos.length} photos from Flashes`);
-            
-            return photos;
-        } catch (e) {
-            console.error("Failed to fetch Flashes photos:", e);
-            return [];
-        }
-    }, []);
-
     // Initial load
     useEffect(() => {
         const initializePosts = async () => {
@@ -308,62 +208,9 @@ export const DataProvider = ({ children }) => {
             }
         };
 
-        const fetchPhotos = async () => {
-            setLoadingPhotos(true);
-            
-            // Try cache first
-            try {
-                const cached = localStorage.getItem(PHOTOS_CACHE_KEY);
-                if (cached) {
-                    const { data, timestamp } = JSON.parse(cached);
-                    const age = Date.now() - timestamp;
-                    
-                    if (age < CACHE_DURATION) {
-                        console.log('[Cache] Using cached Flashes photos:', data.length, 'photos');
-                        setPhotos(data);
-                        setLoadingPhotos(false);
-                        
-                        // Background refresh
-                        setTimeout(async () => {
-                            const fresh = await fetchFlashesPhotos();
-                            if (fresh.length > 0) {
-                                setPhotos(fresh);
-                                localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
-                                    data: fresh,
-                                    timestamp: Date.now()
-                                }));
-                            }
-                        }, 1000);
-                        return;
-                    }
-                }
-            } catch (e) {
-                console.error('Photos cache load error:', e);
-            }
-            
-            // No cache - fetch
-            console.log('[API] Fetching Flashes photos...');
-            const flashesPhotos = await fetchFlashesPhotos();
-            
-            if (flashesPhotos.length > 0) {
-                setPhotos(flashesPhotos);
-                try {
-                    localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
-                        data: flashesPhotos,
-                        timestamp: Date.now()
-                    }));
-                } catch (e) {
-                    console.error('Photos cache save error:', e);
-                }
-            }
-            
-            setLoadingPhotos(false);
-        };
-
         fetchBlogs();
         initializePosts();
-        fetchPhotos();
-    }, [fetchBlueskyPosts, fetchFlashesPhotos]);
+    }, [fetchBlueskyPosts]);
 
     // Fetch more posts (for infinite scroll in /posts page)
     const fetchMorePosts = useCallback(() => {
@@ -381,10 +228,8 @@ export const DataProvider = ({ children }) => {
             blogs, 
             posts, 
             allPosts,
-            photos,
             loadingBlogs, 
             loadingPosts,
-            loadingPhotos,
             hasMorePosts,
             fetchMorePosts
         }}>
