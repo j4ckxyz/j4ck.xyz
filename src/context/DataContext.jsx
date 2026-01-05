@@ -163,24 +163,49 @@ export const DataProvider = ({ children }) => {
     // Fetch Flashes photos
     const fetchFlashesPhotos = useCallback(async () => {
         try {
-            // Fetch Flashes posts directly from PDS (QuickSlices doesn't have them indexed yet)
-            const response = await fetch(
-                `${PDS_URL}/xrpc/com.atproto.repo.listRecords?repo=${DID}&collection=blue.flashes.feed.post&limit=100`
-            );
+            // Query Flashes posts using QuickSlices GraphQL API
+            const query = `
+                query GetFlashesPosts {
+                    blueFlashesFeedPost(
+                        first: 100
+                        where: { did: { eq: "${DID}" } }
+                        sortBy: [{ field: createdAt, direction: DESC }]
+                    ) {
+                        edges {
+                            node {
+                                uri
+                                cid
+                                did
+                                createdAt
+                                actorHandle
+                            }
+                        }
+                    }
+                }
+            `;
+            
+            const response = await fetch(QUICKSLICES_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query })
+            });
             
             if (!response.ok) {
-                throw new Error('Failed to fetch Flashes posts from PDS');
+                throw new Error('Failed to fetch from QuickSlices');
             }
             
-            const data = await response.json();
+            const result = await response.json();
+            const flashesPosts = result.data?.blueFlashesFeedPost?.edges || [];
             const photos = [];
             
             // For each Flashes post, get the linked Bluesky posts with images
-            for (const record of data.records) {
-                const flashesPost = record.value;
+            for (const edge of flashesPosts) {
+                const flashesPost = edge.node;
                 
                 // Extract rkey from URI for the root post
-                const rkey = record.uri.split('/').pop();
+                const rkey = flashesPost.uri.split('/').pop();
                 
                 // Try to get the corresponding Bluesky post from PDS
                 // The pattern is: Flashes post has same rkey as root Bluesky post
@@ -198,9 +223,9 @@ export const DataProvider = ({ children }) => {
                             bskyPost.embed.images.forEach((img) => {
                                 const cid = img.image.ref.$link;
                                 photos.push({
-                                    id: `${record.uri}-${cid}`,
+                                    id: `${flashesPost.uri}-${cid}`,
                                     url: `https://bsky.app/profile/${HANDLE}/post/${rkey}`,
-                                    flashesUri: record.uri,
+                                    flashesUri: flashesPost.uri,
                                     postUri: bskyData.uri,
                                     image: {
                                         thumb: `${PDS_URL}/xrpc/com.atproto.sync.getBlob?did=${DID}&cid=${cid}`,
@@ -220,7 +245,7 @@ export const DataProvider = ({ children }) => {
                 }
             }
             
-            console.log(`[PDS] Fetched ${photos.length} photos from Flashes`);
+            console.log(`[QuickSlices] Fetched ${photos.length} photos from Flashes`);
             
             return photos;
         } catch (e) {
