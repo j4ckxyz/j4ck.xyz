@@ -4,15 +4,20 @@ import { BskyAgent } from '@atproto/api';
 const DataContext = createContext();
 
 const CACHE_KEY = 'bluesky_posts_cache';
+const PHOTOS_CACHE_KEY = 'flashes_photos_cache';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const HANDLE = 'j4ck.xyz';
+const DID = 'did:plc:4hawmtgzjx3vclfyphbhfn7v';
+const QUICKSLICES_URL = 'https://quickslices.atproto.uk/graphql';
 
 export const DataProvider = ({ children }) => {
     const [blogs, setBlogs] = useState([]);
     const [posts, setPosts] = useState([]);
     const [allPosts, setAllPosts] = useState([]);
+    const [photos, setPhotos] = useState([]);
     const [loadingBlogs, setLoadingBlogs] = useState(true);
     const [loadingPosts, setLoadingPosts] = useState(true);
+    const [loadingPhotos, setLoadingPhotos] = useState(true);
     const [hasMorePosts, setHasMorePosts] = useState(true);
 
     // Load from cache
@@ -154,6 +159,71 @@ export const DataProvider = ({ children }) => {
         }
     }, []);
 
+    // Fetch Flashes photos using QuickSlices GraphQL API
+    const fetchFlashesPhotos = useCallback(async () => {
+        try {
+            // Query Flashes posts from QuickSlices
+            const query = `
+                query GetFlashesPosts($did: String!) {
+                    blueFlashesFeedPost(
+                        where: { did: { eq: $did } }
+                        sortBy: [{ field: createdAt, direction: DESC }]
+                        first: 100
+                    ) {
+                        edges {
+                            node {
+                                uri
+                                cid
+                                did
+                                createdAt
+                                actorHandle
+                            }
+                        }
+                    }
+                }
+            `;
+            
+            const response = await fetch(QUICKSLICES_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    query,
+                    variables: { did: DID }
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch from QuickSlices');
+            }
+            
+            const result = await response.json();
+            
+            if (result.errors) {
+                console.error('[QuickSlices] GraphQL errors:', result.errors);
+                return [];
+            }
+            
+            const flashesPosts = result.data?.blueFlashesFeedPost?.edges || [];
+            
+            // Transform Flashes posts into photo objects
+            // Note: Flashes posts themselves don't contain images directly
+            // They're meant to be displayed via portfolio or linked Bluesky posts
+            // For now, we'll return empty array until backfill completes
+            
+            console.log(`[QuickSlices] Found ${flashesPosts.length} Flashes posts`);
+            
+            // When backfill completes, we can fetch the associated Bluesky posts
+            // For now, just log the count
+            return [];
+            
+        } catch (e) {
+            console.error("Failed to fetch Flashes photos:", e);
+            return [];
+        }
+    }, []);
+
     // Initial load
     useEffect(() => {
         const initializePosts = async () => {
@@ -208,9 +278,62 @@ export const DataProvider = ({ children }) => {
             }
         };
 
+        const fetchPhotos = async () => {
+            setLoadingPhotos(true);
+            
+            // Try cache first
+            try {
+                const cached = localStorage.getItem(PHOTOS_CACHE_KEY);
+                if (cached) {
+                    const { data, timestamp } = JSON.parse(cached);
+                    const age = Date.now() - timestamp;
+                    
+                    if (age < CACHE_DURATION) {
+                        console.log('[Cache] Using cached Flashes photos:', data.length, 'photos');
+                        setPhotos(data);
+                        setLoadingPhotos(false);
+                        
+                        // Background refresh
+                        setTimeout(async () => {
+                            const fresh = await fetchFlashesPhotos();
+                            if (fresh.length > 0) {
+                                setPhotos(fresh);
+                                localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
+                                    data: fresh,
+                                    timestamp: Date.now()
+                                }));
+                            }
+                        }, 1000);
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error('Photos cache load error:', e);
+            }
+            
+            // No cache - fetch
+            console.log('[API] Fetching Flashes photos from QuickSlices...');
+            const flashesPhotos = await fetchFlashesPhotos();
+            
+            if (flashesPhotos.length > 0) {
+                setPhotos(flashesPhotos);
+                try {
+                    localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
+                        data: flashesPhotos,
+                        timestamp: Date.now()
+                    }));
+                } catch (e) {
+                    console.error('Photos cache save error:', e);
+                }
+            }
+            
+            setLoadingPhotos(false);
+        };
+
         fetchBlogs();
         initializePosts();
-    }, [fetchBlueskyPosts]);
+        fetchPhotos();
+    }, [fetchBlueskyPosts, fetchFlashesPhotos]);
 
     // Fetch more posts (for infinite scroll in /posts page)
     const fetchMorePosts = useCallback(() => {
@@ -228,8 +351,10 @@ export const DataProvider = ({ children }) => {
             blogs, 
             posts, 
             allPosts,
+            photos,
             loadingBlogs, 
             loadingPosts,
+            loadingPhotos,
             hasMorePosts,
             fetchMorePosts
         }}>
