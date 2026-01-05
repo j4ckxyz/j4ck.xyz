@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Home from './pages/Home'
 import Blogs from './pages/Blogs'
+import Posts from './pages/Posts'
 import Photos from './pages/Photos'
 import Repos from './pages/Repos'
 import Navigation from './components/Navigation'
@@ -26,6 +27,7 @@ function App() {
 
   const getCommand = (path) => {
     switch (path) {
+      case '/posts': return './posts.sh --verbose';
       case '/photos': return './photos.sh --verbose';
       case '/blogs': return './blogs.sh --verbose';
       case '/repos': return './repos.sh --verbose';
@@ -67,8 +69,9 @@ function App() {
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-            <Route path="/blogs" element={<PageWrapper><Blogs /></PageWrapper>} />
+            <Route path="/posts" element={<PageWrapper><Posts /></PageWrapper>} />
             <Route path="/photos" element={<PageWrapper><Photos /></PageWrapper>} />
+            <Route path="/blogs" element={<PageWrapper><Blogs /></PageWrapper>} />
             <Route path="/repos" element={<PageWrapper><Repos /></PageWrapper>} />
           </Routes>
         </AnimatePresence>

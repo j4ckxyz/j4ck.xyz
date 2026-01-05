@@ -26,6 +26,9 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
+  /* Smooth scrolling optimizations */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 body::before {
@@ -176,4 +179,192 @@ body.keyboard-nav [tabindex="0"]:focus {
 
 .animate-glitch-2 {
   animation: glitch-2 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+}
+
+/* Post Content Styles */
+.post-content {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.post-content p {
+  margin-bottom: 1rem;
+}
+
+.post-content a {
+  color: var(--accent-red);
+  text-decoration: underline;
+  transition: opacity 0.2s ease;
+}
+
+.post-content a:hover {
+  opacity: 0.8;
+}
+
+.post-content img {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin: 1.5rem auto;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .post-content img {
+    max-width: 100%;
+  }
+}
+
+/* Compact Post Content (Twitter-style) */
+.post-content-compact {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.post-content-compact p {
+  margin-bottom: 0.5rem;
+}
+
+.post-content-compact p:last-child {
+  margin-bottom: 0;
+}
+
+.post-content-compact a {
+  color: var(--accent-red);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.post-content-compact a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Remove images from compact content as they're displayed separately */
+.post-content-compact img {
+  display: none;
+}
+
+/* Performance optimizations for post cards */
+.post-card {
+  contain: layout style paint;
+  content-visibility: auto;
+}
+
+.post-card img {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Instagram-style Photo Grid */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 4px;
+  grid-auto-flow: dense;
+  /* Performance optimizations */
+  will-change: transform;
+  contain: layout style paint;
+}
+
+.photo-grid-item {
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  /* Performance optimizations */
+  contain: layout style paint;
+  content-visibility: auto;
+}
+
+.photo-grid-item img {
+  /* GPU acceleration for smooth transforms */
+  transform: translateZ(0);
+  will-change: opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Aspect ratio variations for dynamic layout */
+.photo-grid-item.landscape {
+  grid-column: span 2;
+  height: 280px;
+}
+
+.photo-grid-item.portrait {
+  grid-row: span 2;
+  height: 564px;
+}
+
+.photo-grid-item.square {
+  height: 280px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .photo-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  
+  .photo-grid-item {
+    min-height: 240px;
+  }
+  
+  .photo-grid-item.landscape {
+    height: 240px;
+  }
+  
+  .photo-grid-item.portrait {
+    height: 484px;
+  }
+  
+  .photo-grid-item.square {
+    height: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3px;
+  }
+  
+  .photo-grid-item {
+    min-height: 180px;
+  }
+  
+  .photo-grid-item.landscape {
+    grid-column: span 2;
+    height: 180px;
+  }
+  
+  .photo-grid-item.portrait {
+    grid-row: span 2;
+    height: 363px;
+  }
+  
+  .photo-grid-item.square {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+  }
+  
+  .photo-grid-item {
+    min-height: 160px;
+  }
+  
+  .photo-grid-item.landscape,
+  .photo-grid-item.portrait,
+  .photo-grid-item.square {
+    grid-column: span 1;
+    grid-row: span 1;
+    height: 160px;
+  }
 }
