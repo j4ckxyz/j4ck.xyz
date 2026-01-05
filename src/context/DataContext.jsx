@@ -125,7 +125,10 @@ export const DataProvider = ({ children }) => {
             hashtags,
             embed: post.embed,
             isReply: !!record.reply,
-            isRepost: !!feedItem.reason
+            isRepost: !!feedItem.reason,
+            likeCount: post.likeCount || 0,
+            repostCount: post.repostCount || 0,
+            replyCount: post.replyCount || 0
         };
     };
 

@@ -20,14 +20,20 @@ const PostCard = React.memo(({ post, index, focusedIndex, postRef }) => {
         const diffMs = now - date;
         const diffMins = Math.floor(diffMs / 60000);
         const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
 
         if (diffMins < 1) return 'now';
         if (diffMins < 60) return `${diffMins}m`;
         if (diffHours < 24) return `${diffHours}h`;
-        if (diffDays < 7) return `${diffDays}d`;
         
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        // After 24 hours, show the real date
+        const year = date.getFullYear();
+        const currentYear = now.getFullYear();
+        
+        if (year === currentYear) {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        } else {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
     }, [post.date_published]);
 
     // Format text with facets
@@ -141,6 +147,34 @@ const PostCard = React.memo(({ post, index, focusedIndex, postRef }) => {
                     {/* Text content */}
                     <div className="post-content-compact text-[#ccc] text-sm leading-relaxed mb-3">
                         {formatPostText(post.text, post.facets)}
+                    </div>
+
+                    {/* Engagement icons */}
+                    <div className="flex gap-4 mb-3 text-xs text-[#555]">
+                        {post.replyCount > 0 && (
+                            <span className="flex items-center gap-1">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                </svg>
+                                <span>{post.replyCount}</span>
+                            </span>
+                        )}
+                        {post.repostCount > 0 && (
+                            <span className="flex items-center gap-1">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                <span>{post.repostCount}</span>
+                            </span>
+                        )}
+                        {post.likeCount > 0 && (
+                            <span className="flex items-center gap-1">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                <span>{post.likeCount}</span>
+                            </span>
+                        )}
                     </div>
 
                     {/* Hashtags */}
@@ -273,6 +307,23 @@ const Posts = () => {
             window.removeEventListener('mousedown', handleMouseDown);
         };
     }, []);
+
+    // Detect scroll to bottom for infinite loading with mouse
+    useEffect(() => {
+        const handleScroll = () => {
+            // Calculate if we're near the bottom (within 500px)
+            const scrollPosition = window.scrollY + window.innerHeight;
+            const pageHeight = document.documentElement.scrollHeight;
+            const distanceFromBottom = pageHeight - scrollPosition;
+
+            if (distanceFromBottom < 500 && hasMorePosts && !loadingPosts) {
+                fetchMorePosts();
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [hasMorePosts, loadingPosts, fetchMorePosts]);
 
     return (
         <div className="w-full max-w-[700px] mx-auto">
