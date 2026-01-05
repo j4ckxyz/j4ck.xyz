@@ -21,18 +21,27 @@ const PostCard = React.memo(({ post, index, focusedIndex, postRef }) => {
         const diffMins = Math.floor(diffMs / 60000);
         const diffHours = Math.floor(diffMs / 3600000);
 
+        // Show relative time for < 24 hours
         if (diffMins < 1) return 'now';
         if (diffMins < 60) return `${diffMins}m`;
         if (diffHours < 24) return `${diffHours}h`;
         
-        // After 24 hours, show the real date
+        // After 24 hours, show the real date with time
         const year = date.getFullYear();
         const currentYear = now.getFullYear();
         
+        const timeString = date.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+        });
+        
         if (year === currentYear) {
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const dateString = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return `${dateString} at ${timeString}`;
         } else {
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const dateString = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            return `${dateString} at ${timeString}`;
         }
     }, [post.date_published]);
 
