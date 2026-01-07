@@ -81,11 +81,18 @@ export const DataProvider = ({ children }) => {
         // Extract images
         const images = [];
         if (post.embed?.$type === 'app.bsky.embed.images#view') {
-            post.embed.images.forEach(img => {
+            post.embed.images.forEach((img, index) => {
+                // Try to get aspect ratio from record if not in view
+                let aspectRatio = img.aspectRatio;
+                if (!aspectRatio && record.embed?.images?.[index]?.aspectRatio) {
+                    aspectRatio = record.embed.images[index].aspectRatio;
+                }
+
                 images.push({
                     thumb: img.thumb,
                     fullsize: img.fullsize,
-                    alt: img.alt || ''
+                    alt: img.alt || '',
+                    aspectRatio
                 });
             });
         }
@@ -93,11 +100,18 @@ export const DataProvider = ({ children }) => {
         // Handle recordWithMedia (images + quote)
         if (post.embed?.$type === 'app.bsky.embed.recordWithMedia#view' && 
             post.embed.media?.$type === 'app.bsky.embed.images#view') {
-            post.embed.media.images.forEach(img => {
+            post.embed.media.images.forEach((img, index) => {
+                // Try to get aspect ratio from record media if not in view
+                let aspectRatio = img.aspectRatio;
+                if (!aspectRatio && record.embed?.media?.images?.[index]?.aspectRatio) {
+                    aspectRatio = record.embed.media.images[index].aspectRatio;
+                }
+
                 images.push({
                     thumb: img.thumb,
                     fullsize: img.fullsize,
-                    alt: img.alt || ''
+                    alt: img.alt || '',
+                    aspectRatio
                 });
             });
         }
@@ -203,6 +217,9 @@ export const DataProvider = ({ children }) => {
                                 did
                                 createdAt
                                 actorHandle
+                                subject {
+                                    uri
+                                }
                             }
                         }
                     }
@@ -232,23 +249,63 @@ export const DataProvider = ({ children }) => {
             }
             
             const flashesPosts = result.data?.blueFlashesFeedPost?.edges || [];
-            
-            // Transform Flashes posts into photo objects
-            // Note: Flashes posts themselves don't contain images directly
-            // They're meant to be displayed via portfolio or linked Bluesky posts
-            // For now, we'll return empty array until backfill completes
-            
             console.log(`[QuickSlices] Found ${flashesPosts.length} Flashes posts`);
-            
-            // When backfill completes, we can fetch the associated Bluesky posts
-            // For now, just log the count
-            return [];
+
+            if (flashesPosts.length === 0) return [];
+
+            // Extract URIs for Bluesky posts
+            const postUris = flashesPosts
+                .map(edge => edge.node.subject?.uri)
+                .filter(uri => uri); // Filter out undefined/null
+
+            // Fetch posts from Bluesky in chunks of 25
+            const chunkSize = 25;
+            let allBlueskyPosts = [];
+
+            for (let i = 0; i < postUris.length; i += chunkSize) {
+                const chunk = postUris.slice(i, i + chunkSize);
+                const queryParams = chunk.map(uri => `uris=${encodeURIComponent(uri)}`).join('&');
+                
+                try {
+                    const bskyResponse = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?${queryParams}`, {
+                        headers: {
+                            'Accept': 'application/json',
+                        }
+                    });
+
+                    if (bskyResponse.ok) {
+                        const bskyData = await bskyResponse.json();
+                        if (bskyData.posts) {
+                            allBlueskyPosts = [...allBlueskyPosts, ...bskyData.posts];
+                        }
+                    } else {
+                        console.warn(`[Bluesky] Failed to fetch chunk ${i/chunkSize + 1}`);
+                    }
+                } catch (err) {
+                    console.error(`[Bluesky] Error fetching chunk ${i/chunkSize + 1}:`, err);
+                }
+            }
+
+            // Transform into photo objects
+            const photos = allBlueskyPosts
+                .map(post => {
+                    // Wrap in expected structure for transformBlueskyPost
+                    return transformBlueskyPost({ post, reason: undefined });
+                })
+                .filter(post => post.images && post.images.length > 0) // Only posts with images
+                .map(post => ({
+                    ...post,
+                    image: post.images[0] // Use first image for main display
+                }));
+
+            console.log(`[Photos] Processed ${photos.length} photos`);
+            return photos;
             
         } catch (e) {
             console.error("Failed to fetch Flashes photos:", e);
             return [];
         }
-    }, []);
+    }, [transformBlueskyPost]);
 
     // Initial load
     useEffect(() => {
