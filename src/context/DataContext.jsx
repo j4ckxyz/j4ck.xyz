@@ -199,66 +199,79 @@ export const DataProvider = ({ children }) => {
         }
     }, [transformBlueskyPost]);
 
-    // Fetch Flashes photos using QuickSlices GraphQL API
+    // Fetch Flashes photos using QuickSlices GraphQL API or PDS Fallback
     const fetchFlashesPhotos = useCallback(async () => {
         try {
-            // Query Flashes posts from QuickSlices
-            const query = `
-                query GetFlashesPosts($did: String!) {
-                    blueFlashesFeedPost(
-                        where: { did: { eq: $did } }
-                        sortBy: [{ field: createdAt, direction: DESC }]
-                        first: 100
-                    ) {
-                        edges {
-                            node {
-                                uri
-                                cid
-                                did
-                                createdAt
-                                actorHandle
-                                subject {
-                                    uri
+            let postUris = [];
+
+            // 1. Try QuickSlices (GraphQL)
+            try {
+                // Query Flashes portfolio from QuickSlices
+                // Note: using blueFlashesActorPortfolio which contains the subject reference
+                const query = `
+                    query GetFlashesPortfolio($did: String!) {
+                        blueFlashesActorPortfolio(
+                            where: { did: { eq: $did } }
+                            sortBy: [{ field: sortOrder, direction: ASC }, { field: createdAt, direction: DESC }]
+                            first: 100
+                        ) {
+                            edges {
+                                node {
+                                    subject {
+                                        uri
+                                    }
                                 }
                             }
                         }
                     }
+                `;
+                
+                const response = await fetch(QUICKSLICES_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, variables: { did: DID } })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const edges = result.data?.blueFlashesActorPortfolio?.edges || [];
+                    if (edges.length > 0) {
+                        console.log(`[QuickSlices] Found ${edges.length} portfolio items`);
+                        postUris = edges.map(e => e.node.subject?.uri).filter(Boolean);
+                    }
                 }
-            `;
-            
-            const response = await fetch(QUICKSLICES_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    query,
-                    variables: { did: DID }
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error('Failed to fetch from QuickSlices');
+            } catch (e) {
+                console.warn('[QuickSlices] Fetch failed, trying fallback:', e);
             }
-            
-            const result = await response.json();
-            
-            if (result.errors) {
-                console.error('[QuickSlices] GraphQL errors:', result.errors);
-                return [];
+
+            // 2. Fallback to PDS if QuickSlices returned nothing
+            if (postUris.length === 0) {
+                console.log('[Flashes] QuickSlices empty, fetching from PDS...');
+                try {
+                    const pdsUrl = `https://pds.j4ck.xyz/xrpc/com.atproto.repo.listRecords?repo=${DID}&collection=blue.flashes.actor.portfolio&limit=100`;
+                    const response = await fetch(pdsUrl);
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Sort by sortOrder (asc) then createdAt (desc)
+                        const records = data.records || [];
+                        records.sort((a, b) => {
+                            const orderA = a.value.sortOrder ?? 0;
+                            const orderB = b.value.sortOrder ?? 0;
+                            if (orderA !== orderB) return orderA - orderB;
+                            return new Date(b.value.createdAt) - new Date(a.value.createdAt);
+                        });
+                        
+                        postUris = records.map(r => r.value.subject?.uri).filter(Boolean);
+                        console.log(`[PDS] Found ${postUris.length} portfolio items`);
+                    }
+                } catch (e) {
+                    console.error('[PDS] Fetch failed:', e);
+                }
             }
-            
-            const flashesPosts = result.data?.blueFlashesFeedPost?.edges || [];
-            console.log(`[QuickSlices] Found ${flashesPosts.length} Flashes posts`);
 
-            if (flashesPosts.length === 0) return [];
+            if (postUris.length === 0) return [];
 
-            // Extract URIs for Bluesky posts
-            const postUris = flashesPosts
-                .map(edge => edge.node.subject?.uri)
-                .filter(uri => uri); // Filter out undefined/null
-
-            // Fetch posts from Bluesky in chunks of 25
+            // 3. Fetch full posts from Bluesky AppView
             const chunkSize = 25;
             let allBlueskyPosts = [];
 
@@ -268,9 +281,7 @@ export const DataProvider = ({ children }) => {
                 
                 try {
                     const bskyResponse = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?${queryParams}`, {
-                        headers: {
-                            'Accept': 'application/json',
-                        }
+                        headers: { 'Accept': 'application/json' }
                     });
 
                     if (bskyResponse.ok) {
@@ -278,20 +289,15 @@ export const DataProvider = ({ children }) => {
                         if (bskyData.posts) {
                             allBlueskyPosts = [...allBlueskyPosts, ...bskyData.posts];
                         }
-                    } else {
-                        console.warn(`[Bluesky] Failed to fetch chunk ${i/chunkSize + 1}`);
                     }
                 } catch (err) {
-                    console.error(`[Bluesky] Error fetching chunk ${i/chunkSize + 1}:`, err);
+                    console.error(`[Bluesky] Error fetching chunk ${i}:`, err);
                 }
             }
 
-            // Transform into photo objects
+            // 4. Transform into photo objects
             const photos = allBlueskyPosts
-                .map(post => {
-                    // Wrap in expected structure for transformBlueskyPost
-                    return transformBlueskyPost({ post, reason: undefined });
-                })
+                .map(post => transformBlueskyPost({ post, reason: undefined }))
                 .filter(post => post.images && post.images.length > 0) // Only posts with images
                 .map(post => ({
                     ...post,

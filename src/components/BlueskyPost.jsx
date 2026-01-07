@@ -386,11 +386,13 @@ const BlueskyPost = () => {
         </a>
       </div>
 
-      <a
-        href={getPostUrl(post)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex-1 block mb-4 group-hover:opacity-90 transition-opacity relative z-10"
+      <div
+        onClick={(e) => {
+          if (!e.target.closest('a') && !e.target.closest('button')) {
+            window.open(getPostUrl(post), '_blank');
+          }
+        }}
+        className="flex-1 block mb-4 group-hover:opacity-90 transition-opacity relative z-10 cursor-pointer"
       >
         <div className="text-[#ccc] text-sm leading-relaxed mb-4 font-mono whitespace-pre-wrap">
           {formatPostText(post.record.text, post.record.facets)}
@@ -398,7 +400,7 @@ const BlueskyPost = () => {
 
         {/* Render Embeds */}
         {post.embed && renderEmbed(post.embed)}
-      </a>
+      </div>
 
       <div className="pt-4 border-t border-[#222] flex justify-between items-center relative z-10 mt-auto">
         <div className="text-xs text-[#444] font-mono">
