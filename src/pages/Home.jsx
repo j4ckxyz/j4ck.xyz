@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBluesky, faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons'
+import { faBluesky, faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons'
 import { faEnvelope, faCloud, faBolt, faLeaf } from '@fortawesome/free-solid-svg-icons'
 import BentoGrid from '../components/BentoGrid'
 import ProfileCard from '../components/ProfileCard'
@@ -42,10 +42,10 @@ function Home() {
 
             <div className="h-64">
                 <SocialCard
-                    name="Twitter"
-                    handle="@jglypt"
-                    url="https://twitter.com/jglypt"
-                    icon={faTwitter}
+                    name="Discord"
+                    handle="j4ck.xyz"
+                    copyValue="j4ck.xyz"
+                    icon={faDiscord}
                     delay={0.2}
                 />
             </div>
