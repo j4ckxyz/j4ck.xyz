@@ -37,7 +37,7 @@ const SocialCard = ({ name, handle, url, icon, color = "#ff3333", delay = 0, cop
     return (
         <CardComponent
             {...(copyValue ? { type: 'button', onClick: handleCopy } : { href: url, target: "_blank", rel: "noopener noreferrer" })}
-            className="block w-full h-full bg-[#111] border border-[#333] hover:border-red-500 p-6 relative overflow-hidden group transition-all duration-300 rounded-lg cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/60 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(255,51,51,0.2)]"
+            className="block w-full h-full bg-[#111] border border-[#333] hover:border-red-500 p-6 relative overflow-hidden group transition-all duration-300 rounded-lg cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/60 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(255,51,51,0.2)] text-left"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay, duration: 0.5 }}
