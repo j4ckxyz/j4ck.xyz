@@ -12,7 +12,7 @@ import useKeyboardNav from '../hooks/useKeyboardNav'
 
 function Home() {
     const gridRef = useRef(null);
-    useKeyboardNav(gridRef, 'a[href]');
+    useKeyboardNav(gridRef, 'a[href], button');
 
     return (
         <BentoGrid ref={gridRef}>
