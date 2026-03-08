@@ -24,7 +24,8 @@ body {
   font-family: 'JetBrains Mono', monospace;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: auto;
   position: relative;
   /* Smooth scrolling optimizations */
   scroll-behavior: smooth;
