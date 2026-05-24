@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBluesky, faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons'
-import { faEnvelope, faCloud, faBolt, faLeaf } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope, faCloud, faBolt, faLeaf, faCamera } from '@fortawesome/free-solid-svg-icons'
 import BentoGrid from '../components/BentoGrid'
 import ProfileCard from '../components/ProfileCard'
 import SocialCard from '../components/SocialCard'
@@ -84,10 +84,10 @@ function Home() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <SocialCard
-                        name="Flashes"
+                        name="grain.social"
                         handle="My photos!"
-                        url="https://app.flashes.blue/profile/j4ck.xyz"
-                        icon={faBolt}
+                        url="https://grain.social/profile/did:plc:4hawmtgzjx3vclfyphbhfn7v"
+                        icon={faCamera}
                         color="#FFD700"
                     />
                     <SocialCard
