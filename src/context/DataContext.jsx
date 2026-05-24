@@ -301,10 +301,11 @@ export const DataProvider = ({ children }) => {
                 .filter(post => post.images && post.images.length > 0) // Only posts with images
                 .map(post => ({
                     ...post,
-                    image: post.images[0] // Use first image for main display
+                    image: post.images[0], // Use first image for main display
+                    source: 'flashes'
                 }));
 
-            console.log(`[Photos] Processed ${photos.length} photos`);
+            console.log(`[Photos] Processed ${photos.length} Flashes photos`);
             return photos;
             
         } catch (e) {
@@ -312,6 +313,56 @@ export const DataProvider = ({ children }) => {
             return [];
         }
     }, [transformBlueskyPost]);
+
+    // Fetch Grain photos using grain.social public feed API
+    const fetchGrainPhotos = useCallback(async () => {
+        try {
+            const url = `https://grain.social/xrpc/dev.hatk.getFeed?feed=actor&actor=${DID}&limit=30`;
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch Grain feed');
+            }
+            const data = await response.json();
+            if (!data.items) return [];
+
+            const photos = data.items.map(gallery => {
+                const images = (gallery.items || []).map(img => ({
+                    thumb: img.thumb,
+                    fullsize: img.fullsize,
+                    alt: img.alt || '',
+                    aspectRatio: img.aspectRatio
+                }));
+                
+                const parts = gallery.uri.split('/');
+                const rkey = parts[parts.length - 1];
+                const galleryUrl = gallery.crossPost?.url || `https://grain.social/post/${gallery.creator.did}/${rkey}`;
+
+                return {
+                    id: gallery.uri,
+                    url: galleryUrl,
+                    text: gallery.description || gallery.title || '',
+                    date_published: gallery.createdAt,
+                    author: {
+                        handle: gallery.creator.handle,
+                        displayName: gallery.creator.displayName,
+                        avatar: gallery.creator.avatar
+                    },
+                    images,
+                    image: images[0] || null,
+                    hashtags: [],
+                    source: 'grain'
+                };
+            }).filter(p => p.image);
+
+            console.log(`[Grain] Processed ${photos.length} Grain photos`);
+            return photos;
+        } catch (e) {
+            console.error("Failed to fetch Grain photos:", e);
+            return [];
+        }
+    }, []);
 
     // Initial load
     useEffect(() => {
@@ -401,19 +452,27 @@ export const DataProvider = ({ children }) => {
                         const age = Date.now() - timestamp;
                         
                         if (age < CACHE_DURATION) {
-                            console.log('[Cache] Using cached Flashes photos:', data.length, 'photos');
+                            console.log('[Cache] Using cached hybrid photos:', data.length, 'photos');
                             setPhotos(data);
                             setLoadingPhotos(false);
                             
                             // Background refresh
                             setTimeout(async () => {
-                                const fresh = await fetchFlashesPhotos(currentPds);
-                                if (fresh.length > 0) {
-                                    setPhotos(fresh);
-                                    localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
-                                        data: fresh,
-                                        timestamp: Date.now()
-                                    }));
+                                try {
+                                    const flashesFresh = await fetchFlashesPhotos(currentPds);
+                                    const grainFresh = await fetchGrainPhotos();
+                                    const fresh = [...grainFresh, ...flashesFresh].sort(
+                                        (a, b) => new Date(b.date_published) - new Date(a.date_published)
+                                    );
+                                    if (fresh.length > 0) {
+                                        setPhotos(fresh);
+                                        localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
+                                            data: fresh,
+                                            timestamp: Date.now()
+                                        }));
+                                    }
+                                } catch (err) {
+                                    console.error('Background refresh error:', err);
                                 }
                             }, 1000);
                             return;
@@ -423,20 +482,31 @@ export const DataProvider = ({ children }) => {
                     console.error('Photos cache load error:', e);
                 }
                 
-                // No cache - fetch
-                console.log('[API] Fetching Flashes photos from QuickSlices...');
-                const flashesPhotos = await fetchFlashesPhotos(currentPds);
-                
-                if (flashesPhotos.length > 0) {
-                    setPhotos(flashesPhotos);
-                    try {
-                        localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
-                            data: flashesPhotos,
-                            timestamp: Date.now()
-                        }));
-                    } catch (e) {
-                        console.error('Photos cache save error:', e);
+                // No cache - fetch both in parallel
+                console.log('[API] Fetching Flashes & Grain photos in parallel...');
+                try {
+                    const [flashesPhotos, grainPhotos] = await Promise.all([
+                        fetchFlashesPhotos(currentPds),
+                        fetchGrainPhotos()
+                    ]);
+
+                    const hybridPhotos = [...grainPhotos, ...flashesPhotos].sort(
+                        (a, b) => new Date(b.date_published) - new Date(a.date_published)
+                    );
+
+                    if (hybridPhotos.length > 0) {
+                        setPhotos(hybridPhotos);
+                        try {
+                            localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
+                                data: hybridPhotos,
+                                timestamp: Date.now()
+                            }));
+                        } catch (e) {
+                            console.error('Photos cache save error:', e);
+                        }
                     }
+                } catch (err) {
+                    console.error('Error fetching hybrid photos:', err);
                 }
                 
                 setLoadingPhotos(false);
@@ -448,7 +518,7 @@ export const DataProvider = ({ children }) => {
         };
 
         resolveDidAndLoad();
-    }, [fetchBlueskyPosts, fetchFlashesPhotos]);
+    }, [fetchBlueskyPosts, fetchFlashesPhotos, fetchGrainPhotos]);
 
     // Fetch more posts (for infinite scroll in /posts page)
     const fetchMorePosts = useCallback(() => {

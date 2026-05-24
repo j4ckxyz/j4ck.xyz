@@ -39,7 +39,9 @@ const PhotoItem = React.memo(({ photo, aspectClass, onLoad }) => {
                     {/* Hover overlay */}
                     {isLoaded && (
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <span className="text-white font-mono font-bold text-xs">VIEW ON FLASHES</span>
+                            <span className="text-white font-mono font-bold text-xs">
+                                {photo.source === 'grain' ? 'VIEW ON GRAIN' : 'VIEW ON FLASHES'}
+                            </span>
                         </div>
                     )}
 
@@ -95,14 +97,14 @@ const Photos = () => {
                 path="/photos"
             />
             <h1 className="text-3xl font-bold mb-8">
-                /photos <span className="text-sm font-normal text-gray-600">via <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Flashes</a></span>
+                /photos <span className="text-sm font-normal text-gray-600">via <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Flashes</a> & <a href="https://grain.social" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Grain</a></span>
             </h1>
 
             {/* Initial loading state */}
             {loadingPhotos && photoData.length === 0 && (
                 <div className="text-center py-12">
                     <div className="animate-pulse text-red-500 font-mono mb-2">Loading photos...</div>
-                    <div className="text-[#555] text-xs font-mono">Fetching from Flashes</div>
+                    <div className="text-[#555] text-xs font-mono">Fetching from Flashes & Grain</div>
                 </div>
             )}
 
