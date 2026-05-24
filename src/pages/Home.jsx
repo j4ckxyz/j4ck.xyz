@@ -50,6 +50,7 @@ function Home() {
                     handle="@j4ck.xyz"
                     url="https://bsky.app/profile/j4ck.xyz"
                     icon={faBluesky}
+                    color="#0085ff"
                     delay={0.1}
                 />
             </div>
@@ -72,6 +73,7 @@ function Home() {
                     handle="j4ckxyz"
                     url="https://github.com/j4ckxyz"
                     icon={faGithub}
+                    color="#a855f7"
                     delay={0.3}
                 />
             </div>
@@ -82,6 +84,7 @@ function Home() {
                     handle="j4ck.xyz"
                     copyValue="j4ck.xyz"
                     icon={faDiscord}
+                    color="#5865F2"
                     delay={0.35}
                 />
             </div>
@@ -93,6 +96,7 @@ function Home() {
                     handle="Contact"
                     url="mailto:jack@jglypt.net"
                     icon={faEnvelope}
+                    color="#ff3333"
                     delay={0.4}
                 />
             </div>

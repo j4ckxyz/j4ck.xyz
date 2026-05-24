@@ -10,15 +10,19 @@ const ProfileCard = () => {
             transition={{ duration: 0.5 }}
         >
             <div className="z-10 relative">
-                <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4">
-                    j4ck<span className="text-red-500">.xyz</span>
+                <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-2 uppercase leading-none select-none">
+                    j4ck<span className="text-transparent font-extrabold" style={{ WebkitTextStroke: '2px var(--accent-red)', textStroke: '2px var(--accent-red)' }}>.xyz</span>
                 </h1>
-                <div className="bg-[#ff3333] h-1 w-20 mb-6"></div>
+                
+                <div className="flex items-center gap-1 mb-6">
+                    <div className="bg-[var(--accent-red)] h-1.5 w-24"></div>
+                    <span className="text-[var(--accent-red)] text-xl font-bold animate-pulse">_</span>
+                </div>
 
-                <div className="inline-block bg-[oklch(22%_0.015_15)] px-4 py-2 rounded-full border border-[var(--border-color)]">
-                    <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2 animate-pulse"></span>
-                    <span className="text-sm font-mono text-[#999]">
-                        System Operational
+                <div className="inline-flex items-center bg-[oklch(11%_0.006_15)] px-4 py-2 rounded-lg border border-[var(--border-color)] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+                    <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-3 animate-pulse shadow-[0_0_8px_#22c55e]"></span>
+                    <span className="text-xs font-mono text-green-500 uppercase tracking-widest font-bold">
+                        SYS_STATUS // OPERATIONAL
                     </span>
                 </div>
             </div>
