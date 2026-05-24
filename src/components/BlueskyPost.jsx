@@ -394,7 +394,7 @@ const BlueskyPost = () => {
         }}
         className="flex-1 block mb-4 group-hover:opacity-90 transition-opacity relative z-10 cursor-pointer"
       >
-        <div className="text-[#ccc] text-sm leading-relaxed mb-4 font-mono whitespace-pre-wrap">
+        <div className="text-[#ccc] mb-4 font-sans prose-text whitespace-pre-wrap">
           {formatPostText(post.record.text, post.record.facets)}
         </div>
 

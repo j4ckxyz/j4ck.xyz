@@ -544,8 +544,9 @@ html[data-theme="light"] .platform {
 }
 
 .bio-content {
-  font-size: 1rem;
-  line-height: 1.5;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.6;
   color: var(--text-secondary);
   max-width: 500px;
   margin: 0 auto;

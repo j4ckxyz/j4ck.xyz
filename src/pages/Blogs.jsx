@@ -40,7 +40,7 @@ const Blogs = () => {
                                 className="block bg-[#111] border border-[#333] p-6 rounded-xl hover:border-red-500 transition-colors group"
                             >
                                 <h2 className="text-2xl font-bold mb-2 group-hover:text-red-500 transition-colors font-mono">{content.title}</h2>
-                                <p className="text-[#888] mb-4 line-clamp-2">{content.description}</p>
+                                <p className="text-[#888] mb-4 line-clamp-2 font-sans">{content.description}</p>
                                 <div className="text-xs text-[#555] uppercase tracking-widest font-mono">
                                     {new Date(content.publishedAt || content.createdAt).toLocaleDateString()}
                                 </div>

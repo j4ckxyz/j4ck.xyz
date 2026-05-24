@@ -9,6 +9,25 @@
   --text-secondary: #999999;
   --accent-red: #ff3333;
   --border-color: #333333;
+  
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+@layer utilities {
+  .font-sans {
+    font-family: var(--font-sans) !important;
+  }
+  .font-mono {
+    font-family: var(--font-mono) !important;
+  }
+  .prose-text {
+    font-family: var(--font-sans) !important;
+    line-height: 1.65 !important;
+    letter-spacing: -0.01em !important;
+    font-size: 1.05rem !important;
+    font-weight: 400 !important;
+  }
 }
 
 * {

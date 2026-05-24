@@ -154,7 +154,7 @@ const PostCard = React.memo(({ post, index, focusedIndex, postRef }) => {
                     </div>
 
                     {/* Text content */}
-                    <div className="post-content-compact text-[#ccc] text-sm leading-relaxed mb-3">
+                    <div className="post-content-compact text-[#ccc] text-sm leading-relaxed mb-3 font-sans">
                         {formatPostText(post.text, post.facets)}
                     </div>
 
