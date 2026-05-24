@@ -14,6 +14,43 @@ const ProfileCard = () => {
         { text: "Type 'help' for available modules.", type: 'system' }
     ]);
 
+    const roles = ['CREATIVE DEVELOPER', 'PHOTOGRAPHER', 'AT PROTOCOL GROWER', 'CREATIVE CODER'];
+    const [roleText, setRoleText] = useState('');
+    const [roleIndex, setRoleIndex] = useState(0);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [typingSpeed, setTypingSpeed] = useState(150);
+
+    useEffect(() => {
+        let timer;
+        const handleType = () => {
+            const fullText = roles[roleIndex];
+            if (!isDeleting) {
+                // Typing
+                setRoleText(fullText.substring(0, roleText.length + 1));
+                setTypingSpeed(100 + Math.random() * 50); // slight variance
+
+                if (roleText.length + 1 === fullText.length) {
+                    // Fully typed, pause
+                    setTypingSpeed(2000);
+                    setIsDeleting(true);
+                }
+            } else {
+                // Deleting
+                setRoleText(fullText.substring(0, roleText.length - 1));
+                setTypingSpeed(50);
+
+                if (roleText.length === 0) {
+                    setIsDeleting(false);
+                    setRoleIndex((prev) => (prev + 1) % roles.length);
+                    setTypingSpeed(500); // pause before starting next
+                }
+            }
+        };
+
+        timer = setTimeout(handleType, typingSpeed);
+        return () => clearTimeout(timer);
+    }, [roleText, isDeleting, roleIndex]);
+
     const terminalEndRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -139,6 +176,12 @@ const ProfileCard = () => {
                         >
                             {displayText}<span className="text-transparent font-extrabold" style={{ WebkitTextStroke: '2px var(--accent-red)', textStroke: '2px var(--accent-red)' }}>.xyz</span>
                         </h1>
+
+                        <div className="font-mono text-[11px] md:text-xs text-[#888] mb-4 h-6 flex items-center select-none uppercase tracking-widest">
+                            <span className="text-[var(--accent-red)] mr-2 font-bold">&gt;</span>
+                            <span>{roleText}</span>
+                            <span className="w-1.5 h-3.5 bg-[var(--accent-red)] ml-0.5 animate-pulse"></span>
+                        </div>
                         
                         <div 
                             className="flex items-center gap-2 mb-6 cursor-pointer group/prompt w-fit"

@@ -21,6 +21,7 @@ export const DataProvider = ({ children }) => {
     const [hasMorePosts, setHasMorePosts] = useState(true);
     const [resolvedHandle, setResolvedHandle] = useState('j4ck.xyz');
     const [resolvedPds, setResolvedPds] = useState('https://eurosky.social');
+    const [hitsCount, setHitsCount] = useState(null);
 
     // Load from cache
     const loadFromCache = () => {
@@ -516,9 +517,29 @@ export const DataProvider = ({ children }) => {
                 setLoadingPhotos(false);
             };
 
+            const fetchHits = async () => {
+                try {
+                    const response = await fetch('/api/hits');
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data && typeof data.hits === 'number') {
+                            setHitsCount(data.hits);
+                        } else {
+                            setHitsCount(1337);
+                        }
+                    } else {
+                        setHitsCount(1337);
+                    }
+                } catch (e) {
+                    console.error('[Hits] Failed to fetch visitor counter:', e);
+                    setHitsCount(1337);
+                }
+            };
+
             fetchBlogs();
             initializePosts();
             fetchPhotos();
+            fetchHits();
         };
 
         resolveDidAndLoad();
@@ -547,7 +568,8 @@ export const DataProvider = ({ children }) => {
             hasMorePosts,
             fetchMorePosts,
             resolvedHandle,
-            resolvedPds
+            resolvedPds,
+            hitsCount
         }}>
             {children}
         </DataContext.Provider>

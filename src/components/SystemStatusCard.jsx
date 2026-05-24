@@ -5,7 +5,7 @@ import { faTerminal, faCopy, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useData } from '../context/DataContext';
 
 const SystemStatusCard = () => {
-    const { resolvedHandle, resolvedPds } = useData();
+    const { resolvedHandle, resolvedPds, hitsCount } = useData();
     const [copied, setCopied] = useState(false);
     const DID = 'did:plc:4hawmtgzjx3vclfyphbhfn7v';
 
@@ -56,7 +56,7 @@ const SystemStatusCard = () => {
                         {resolvedPds.replace('https://', '')}
                     </span>
                 </div>
-                <div className="flex items-center justify-between gap-2 pt-0.5">
+                <div className="flex items-center justify-between gap-2 border-b border-[oklch(20%_0.012_15)] pb-1.5">
                     <span className="text-[#555] uppercase tracking-wider">DID:</span>
                     <div className="flex items-center gap-1.5 max-w-[220px]">
                         <span className="text-[#aaa] truncate font-bold" title={DID}>
@@ -70,6 +70,12 @@ const SystemStatusCard = () => {
                             <FontAwesomeIcon icon={copied ? faCheck : faCopy} className={copied ? "text-green-500" : ""} />
                         </button>
                     </div>
+                </div>
+                <div className="flex items-center justify-between gap-4 pt-1.5">
+                    <span className="text-[#555] uppercase tracking-wider">TOTAL VISITS:</span>
+                    <span className="text-[#85A1FF] font-bold font-mono">
+                        {hitsCount !== null ? hitsCount.toLocaleString() : 'SYNCING...'}
+                    </span>
                 </div>
             </div>
 

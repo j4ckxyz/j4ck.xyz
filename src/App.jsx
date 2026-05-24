@@ -7,6 +7,8 @@ import Posts from './pages/Posts'
 import Photos from './pages/Photos'
 import Repos from './pages/Repos'
 import Navigation from './components/Navigation'
+import CursorTrail from './components/CursorTrail'
+import VinylPlayerOverlay from './components/VinylPlayerOverlay'
 import './App.css'
 
 // Page Transition Wrapper
@@ -24,6 +26,7 @@ const PageWrapper = ({ children }) => (
 
 function App() {
   const location = useLocation();
+  const [vinylOpen, setVinylOpen] = React.useState(false);
 
   const getCommand = (path) => {
     switch (path) {
@@ -70,14 +73,20 @@ function App() {
     // 2. Global Console Functions
     window.jackHelp = () => {
       console.log(
-        `%cAVAILABLE CONSOLE MODULES:\n  %cneofetch()%c - Print system client diagnostics\n  %chire()%c     - Print contact credentials\n  %cmatrix()%c   - Toggle green code rain canvas overlay on the webpage!\n  %cglitch()%c   - Trigger a temporary webpage CRT glitch static shake!`,
+        `%cAVAILABLE CONSOLE MODULES:\n  %cneofetch()%c - Print system client diagnostics\n  %chire()%c     - Print contact credentials\n  %cmatrix()%c   - Toggle green code rain canvas overlay on the webpage!\n  %cglitch()%c   - Trigger a temporary webpage CRT glitch static shake!\n  %cvinyl()%c     - Activate fullscreen retro spinning turntable deck!`,
         'color: #888;',
+        'color: #ff3333; font-weight: bold;', 'color: #888;',
         'color: #ff3333; font-weight: bold;', 'color: #888;',
         'color: #ff3333; font-weight: bold;', 'color: #888;',
         'color: #ff3333; font-weight: bold;', 'color: #888;',
         'color: #ff3333; font-weight: bold;', 'color: #888;'
       );
       return 'SYSTEM_INFO_READY';
+    };
+
+    window.vinyl = () => {
+      setVinylOpen(true);
+      return 'BOOTING RETRO TURNTABLE KERNEL...';
     };
 
     window.neofetch = () => {
@@ -185,7 +194,7 @@ function App() {
       keys.push(e.key);
       keys = keys.slice(-10);
       if (keys.join('') === konami) {
-        window.matrix();
+        setVinylOpen(true);
       }
     };
 
@@ -199,11 +208,13 @@ function App() {
       delete window.hire;
       delete window.glitch;
       delete window.matrix;
+      delete window.vinyl;
     };
   }, []);
 
   return (
     <div className="app bg-[var(--bg-color)] min-h-screen text-white font-mono selection:bg-red-500/30">
+      <CursorTrail />
       <Navigation />
 
       {/* 
@@ -229,6 +240,7 @@ function App() {
           SYSTEM_ID: J4CK-XYZ-V3 // <span className="text-red-900">TERMINAL_ACTIVE</span>
         </footer>
       </main>
+      <VinylPlayerOverlay isOpen={vinylOpen} onClose={() => setVinylOpen(false)} />
     </div>
   )
 }
