@@ -35,7 +35,7 @@ function Home() {
                     handle="My photos!"
                     url="https://grain.social/profile/did:plc:4hawmtgzjx3vclfyphbhfn7v"
                     icon={faCamera}
-                    color="#FFD700"
+                    color="#85A1FF"
                 />
             </div>
 
