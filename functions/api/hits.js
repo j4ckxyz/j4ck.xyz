@@ -24,20 +24,44 @@ export async function onRequest(context) {
     }
 
     try {
+        // Extract client IP and hash it for privacy
+        const ip = context.request.headers.get('cf-connecting-ip') || '127.0.0.1';
+        const encoder = new TextEncoder();
+        const data = encoder.encode(ip);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const ipHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        
+        const rateLimitKey = `rate_limit:${ipHash}`;
+        
+        // Check if this IP has visited in the cooldown window
+        const isCooldown = await env.HITS_KV.get(rateLimitKey);
+        
         // Retrieve current hits count
         const currentCountStr = await env.HITS_KV.get('hits_total');
         let currentCount = parseInt(currentCountStr) || 0;
         
-        // Increment hits
-        currentCount += 1;
-        
-        // Save count back to KV
-        await env.HITS_KV.put('hits_total', currentCount.toString());
-
-        return new Response(JSON.stringify({ 
-            hits: currentCount, 
-            status: 'synchronized' 
-        }), { headers });
+        if (!isCooldown) {
+            // First visit in window -> Increment
+            currentCount += 1;
+            
+            // Save count back to KV
+            await env.HITS_KV.put('hits_total', currentCount.toString());
+            
+            // Set 30-minute cooldown window for this IP hash
+            await env.HITS_KV.put(rateLimitKey, '1', { expirationTtl: 1800 });
+            
+            return new Response(JSON.stringify({ 
+                hits: currentCount, 
+                status: 'synchronized' 
+            }), { headers });
+        } else {
+            // Duplicate refresh -> Return count without incrementing
+            return new Response(JSON.stringify({ 
+                hits: currentCount, 
+                status: 'cooldown_active' 
+            }), { headers });
+        }
     } catch (e) {
         return new Response(JSON.stringify({ 
             error: e.message, 
