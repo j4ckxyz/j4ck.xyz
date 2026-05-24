@@ -10,8 +10,8 @@ const BlueskyPost = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const HANDLE = 'j4ck.xyz'
-  const PROFILE_URL = 'https://bsky.app/profile/j4ck.xyz'
+  const DID = 'did:plc:4hawmtgzjx3vclfyphbhfn7v'
+  const PROFILE_URL = `https://bsky.app/profile/${DID}`
 
   useEffect(() => {
     const fetchLatestPost = async () => {
@@ -19,7 +19,7 @@ const BlueskyPost = () => {
         setLoading(true)
 
         const response = await fetch(
-          `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${HANDLE}&limit=20`,
+          `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${DID}&limit=20`,
           {
             headers: {
               'Accept': 'application/json',
@@ -38,7 +38,7 @@ const BlueskyPost = () => {
         // 2. OR it's a repost (by me)
         const feedItem = data.feed?.find(item => {
           const isRepost = item.reason?.$type === 'app.bsky.feed.defs#reasonRepost'
-          const isMyPost = item.post.author.handle === HANDLE
+          const isMyPost = item.post.author.did === DID
           const isReply = !!item.post.record.reply
 
           if (isRepost) return true; // Always show reposts
@@ -356,7 +356,7 @@ const BlueskyPost = () => {
       {repost && (
         <div className="text-xs text-[#666] mb-3 flex items-center gap-2 font-mono pb-2 border-b border-[#222]">
           <FontAwesomeIcon icon={faRetweet} className="text-green-500" />
-          <span>{repost.by.handle === 'j4ck.xyz' ? 'j4ck.xyz' : repost.by.displayName} reposted</span>
+          <span>{repost.by.did === DID ? (repost.by.displayName || 'j4ck.xyz') : repost.by.displayName} reposted</span>
         </div>
       )}
 

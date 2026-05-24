@@ -8,7 +8,7 @@ const BlueskyBio = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const HANDLE = 'j4ck.xyz'
+  const DID = 'did:plc:4hawmtgzjx3vclfyphbhfn7v'
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -17,7 +17,7 @@ const BlueskyBio = () => {
         
         // Using the public Bluesky API to get profile info
         const response = await fetch(
-          `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${HANDLE}`,
+          `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${DID}`,
           {
             headers: {
               'Accept': 'application/json',

@@ -147,7 +147,7 @@ export const DataProvider = ({ children }) => {
     }, []);
 
     // Fetch posts from Bluesky with pagination to get enough original posts
-    const fetchBlueskyPosts = useCallback(async (targetCount = 100) => {
+    const fetchBlueskyPosts = useCallback(async (targetCount = 100, actorId = DID) => {
         try {
             let allPosts = [];
             let cursor = undefined;
@@ -157,8 +157,8 @@ export const DataProvider = ({ children }) => {
             // Keep fetching until we have targetCount original posts (non-replies, non-reposts)
             while (allPosts.length < targetCount && iterations < maxIterations) {
                 const url = cursor 
-                    ? `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${HANDLE}&limit=100&cursor=${cursor}`
-                    : `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${HANDLE}&limit=100`;
+                    ? `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${actorId}&limit=100&cursor=${cursor}`
+                    : `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${actorId}&limit=100`;
                 
                 const response = await fetch(url, {
                     headers: {
@@ -200,7 +200,7 @@ export const DataProvider = ({ children }) => {
     }, [transformBlueskyPost]);
 
     // Fetch Flashes photos using QuickSlices GraphQL API or PDS Fallback
-    const fetchFlashesPhotos = useCallback(async () => {
+    const fetchFlashesPhotos = useCallback(async (resolvedPdsUrl = 'https://eurosky.social') => {
         try {
             let postUris = [];
 
@@ -248,7 +248,7 @@ export const DataProvider = ({ children }) => {
             if (postUris.length === 0) {
                 console.log('[Flashes] QuickSlices empty, fetching from PDS...');
                 try {
-                    const pdsUrl = `https://pds.j4ck.xyz/xrpc/com.atproto.repo.listRecords?repo=${DID}&collection=blue.flashes.actor.portfolio&limit=100`;
+                    const pdsUrl = `${resolvedPdsUrl}/xrpc/com.atproto.repo.listRecords?repo=${DID}&collection=blue.flashes.actor.portfolio&limit=100`;
                     const response = await fetch(pdsUrl);
                     if (response.ok) {
                         const data = await response.json();
@@ -315,113 +315,139 @@ export const DataProvider = ({ children }) => {
 
     // Initial load
     useEffect(() => {
-        const initializePosts = async () => {
-            setLoadingPosts(true);
-
-            // Try cache first
-            const cached = loadFromCache();
-            if (cached && cached.length > 0) {
-                setAllPosts(cached);
-                setPosts(cached.slice(0, 10));
-                setHasMorePosts(true);
-                setLoadingPosts(false);
-                
-                // Background refresh
-                setTimeout(async () => {
-                    const fresh = await fetchBlueskyPosts(100);
-                    if (fresh.length > 0) {
-                        setAllPosts(fresh);
-                        saveToCache(fresh);
+        const resolveDidAndLoad = async () => {
+            let currentPds = 'https://eurosky.social';
+            let currentHandle = 'j4ck.xyz';
+            try {
+                const response = await fetch(`https://plc.directory/${DID}`);
+                if (response.ok) {
+                    const doc = await response.json();
+                    const pdsService = doc.service?.find(
+                        s => s.id === '#atproto_pds' || s.type === 'AtprotoPersonalDataServer'
+                    );
+                    if (pdsService?.serviceEndpoint) {
+                        currentPds = pdsService.serviceEndpoint;
                     }
-                }, 1000);
-                return;
-            }
-
-            // No cache - fetch
-            console.log('[API] Fetching Bluesky posts...');
-            const blueskyPosts = await fetchBlueskyPosts(100);
-            
-            if (blueskyPosts.length > 0) {
-                setAllPosts(blueskyPosts);
-                setPosts(blueskyPosts.slice(0, 10));
-                setHasMorePosts(true);
-                saveToCache(blueskyPosts);
-            }
-            
-            setLoadingPosts(false);
-        };
-
-        const fetchBlogs = async () => {
-            const agent = new BskyAgent({ service: 'https://pds.j4ck.xyz' });
-            try {
-                const records = await agent.api.com.atproto.repo.listRecords({
-                    repo: 'j4ck.xyz',
-                    collection: 'pub.leaflet.document',
-                    limit: 20,
-                });
-                setBlogs(records.data.records);
+                    const alias = doc.alsoKnownAs?.find(a => a.startsWith('at://'));
+                    if (alias) {
+                        currentHandle = alias.substring(5);
+                    }
+                    console.log(`[DID Resolved] PDS: ${currentPds}, Handle: ${currentHandle}`);
+                }
             } catch (e) {
-                console.error("Failed to fetch blogs:", e);
-            } finally {
-                setLoadingBlogs(false);
+                console.error('[DID] Failed to resolve from PLC directory, using fallbacks:', e);
             }
-        };
 
-        const fetchPhotos = async () => {
-            setLoadingPhotos(true);
-            
-            // Try cache first
-            try {
-                const cached = localStorage.getItem(PHOTOS_CACHE_KEY);
-                if (cached) {
-                    const { data, timestamp } = JSON.parse(cached);
-                    const age = Date.now() - timestamp;
+            const initializePosts = async () => {
+                setLoadingPosts(true);
+
+                // Try cache first
+                const cached = loadFromCache();
+                if (cached && cached.length > 0) {
+                    setAllPosts(cached);
+                    setPosts(cached.slice(0, 10));
+                    setHasMorePosts(true);
+                    setLoadingPosts(false);
                     
-                    if (age < CACHE_DURATION) {
-                        console.log('[Cache] Using cached Flashes photos:', data.length, 'photos');
-                        setPhotos(data);
-                        setLoadingPhotos(false);
+                    // Background refresh
+                    setTimeout(async () => {
+                        const fresh = await fetchBlueskyPosts(100, DID);
+                        if (fresh.length > 0) {
+                            setAllPosts(fresh);
+                            saveToCache(fresh);
+                        }
+                    }, 1000);
+                    return;
+                }
+
+                // No cache - fetch
+                console.log('[API] Fetching Bluesky posts...');
+                const blueskyPosts = await fetchBlueskyPosts(100, DID);
+                
+                if (blueskyPosts.length > 0) {
+                    setAllPosts(blueskyPosts);
+                    setPosts(blueskyPosts.slice(0, 10));
+                    setHasMorePosts(true);
+                    saveToCache(blueskyPosts);
+                }
+                
+                setLoadingPosts(false);
+            };
+
+            const fetchBlogs = async () => {
+                const agent = new BskyAgent({ service: currentPds });
+                try {
+                    const records = await agent.api.com.atproto.repo.listRecords({
+                        repo: currentHandle,
+                        collection: 'pub.leaflet.document',
+                        limit: 20,
+                    });
+                    setBlogs(records.data.records);
+                } catch (e) {
+                    console.error("Failed to fetch blogs:", e);
+                } finally {
+                    setLoadingBlogs(false);
+                }
+            };
+
+            const fetchPhotos = async () => {
+                setLoadingPhotos(true);
+                
+                // Try cache first
+                try {
+                    const cached = localStorage.getItem(PHOTOS_CACHE_KEY);
+                    if (cached) {
+                        const { data, timestamp } = JSON.parse(cached);
+                        const age = Date.now() - timestamp;
                         
-                        // Background refresh
-                        setTimeout(async () => {
-                            const fresh = await fetchFlashesPhotos();
-                            if (fresh.length > 0) {
-                                setPhotos(fresh);
-                                localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
-                                    data: fresh,
-                                    timestamp: Date.now()
-                                }));
-                            }
-                        }, 1000);
-                        return;
+                        if (age < CACHE_DURATION) {
+                            console.log('[Cache] Using cached Flashes photos:', data.length, 'photos');
+                            setPhotos(data);
+                            setLoadingPhotos(false);
+                            
+                            // Background refresh
+                            setTimeout(async () => {
+                                const fresh = await fetchFlashesPhotos(currentPds);
+                                if (fresh.length > 0) {
+                                    setPhotos(fresh);
+                                    localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
+                                        data: fresh,
+                                        timestamp: Date.now()
+                                    }));
+                                }
+                            }, 1000);
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Photos cache load error:', e);
+                }
+                
+                // No cache - fetch
+                console.log('[API] Fetching Flashes photos from QuickSlices...');
+                const flashesPhotos = await fetchFlashesPhotos(currentPds);
+                
+                if (flashesPhotos.length > 0) {
+                    setPhotos(flashesPhotos);
+                    try {
+                        localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
+                            data: flashesPhotos,
+                            timestamp: Date.now()
+                        }));
+                    } catch (e) {
+                        console.error('Photos cache save error:', e);
                     }
                 }
-            } catch (e) {
-                console.error('Photos cache load error:', e);
-            }
-            
-            // No cache - fetch
-            console.log('[API] Fetching Flashes photos from QuickSlices...');
-            const flashesPhotos = await fetchFlashesPhotos();
-            
-            if (flashesPhotos.length > 0) {
-                setPhotos(flashesPhotos);
-                try {
-                    localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
-                        data: flashesPhotos,
-                        timestamp: Date.now()
-                    }));
-                } catch (e) {
-                    console.error('Photos cache save error:', e);
-                }
-            }
-            
-            setLoadingPhotos(false);
+                
+                setLoadingPhotos(false);
+            };
+
+            fetchBlogs();
+            initializePosts();
+            fetchPhotos();
         };
 
-        fetchBlogs();
-        initializePosts();
-        fetchPhotos();
+        resolveDidAndLoad();
     }, [fetchBlueskyPosts, fetchFlashesPhotos]);
 
     // Fetch more posts (for infinite scroll in /posts page)
