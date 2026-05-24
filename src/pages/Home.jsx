@@ -5,6 +5,7 @@ import BentoGrid from '../components/BentoGrid'
 import ProfileCard from '../components/ProfileCard'
 import SocialCard from '../components/SocialCard'
 import BlueskyPost from '../components/BlueskyPost'
+import SystemStatusCard from '../components/SystemStatusCard'
 import SEO from '../components/SEO'
 
 import { useRef } from 'react'
@@ -23,14 +24,27 @@ function Home() {
                 path="/"
             />
 
-
-
             {/* Row 1 */}
-            <div className="md:col-span-1 h-64">
+            <div className="col-span-1 md:col-span-2 h-64">
                 <ProfileCard />
             </div>
 
-            <div className="h-64">
+            <div className="col-span-1 h-64">
+                <SocialCard
+                    name="grain.social"
+                    handle="My photos!"
+                    url="https://grain.social/profile/did:plc:4hawmtgzjx3vclfyphbhfn7v"
+                    icon={faCamera}
+                    color="#FFD700"
+                />
+            </div>
+
+            {/* Row 2 */}
+            <div className="col-span-1 md:row-span-2 h-full min-h-[500px]">
+                <BlueskyPost />
+            </div>
+
+            <div className="col-span-1 h-64">
                 <SocialCard
                     name="Bluesky"
                     handle="@j4ck.xyz"
@@ -40,64 +54,51 @@ function Home() {
                 />
             </div>
 
-            <div className="h-64">
+            <div className="col-span-1 h-64">
                 <SocialCard
-                    name="Discord"
-                    handle="j4ck.xyz"
-                    copyValue="j4ck.xyz"
-                    icon={faDiscord}
+                    name="Leaflet"
+                    handle="Blog & Articles"
+                    url="https://blog.j4ck.xyz"
+                    icon={faLeaf}
+                    color="#4CAF50"
                     delay={0.2}
                 />
             </div>
 
-            {/* Row 2 */}
-            <div className="col-span-1 row-span-2 h-auto min-h-[500px]">
-                <BlueskyPost />
-            </div>
-
-            <div className="h-64">
-                <SocialCard
-                    name="Email"
-                    handle="Contact"
-                    url="mailto:jack@jglypt.net"
-                    icon={faEnvelope}
-                    delay={0.3}
-                />
-            </div>
-
-            <div className="h-64">
+            {/* Row 3 */}
+            <div className="col-span-1 h-64">
                 <SocialCard
                     name="GitHub"
                     handle="j4ckxyz"
                     url="https://github.com/j4ckxyz"
                     icon={faGithub}
+                    delay={0.3}
+                />
+            </div>
+
+            <div className="col-span-1 h-64">
+                <SocialCard
+                    name="Discord"
+                    handle="j4ck.xyz"
+                    copyValue="j4ck.xyz"
+                    icon={faDiscord}
                     delay={0.35}
                 />
             </div>
 
-            {/* Row 3 - Atmosphere Spans 2 */}
-            <div className="col-span-1 md:col-span-2 bg-[var(--card-bg)] border border-[var(--border-color)] p-6 flex flex-col justify-center cut-corners">
-                <div className="flex items-center gap-2 mb-4 text-[#999] font-mono uppercase text-xs tracking-widest">
-                    <FontAwesomeIcon icon={faCloud} />
-                    <span>ATmosphere Network</span>
-                </div>
+            {/* Row 4 */}
+            <div className="col-span-1 h-64">
+                <SocialCard
+                    name="Email"
+                    handle="Contact"
+                    url="mailto:jack@jglypt.net"
+                    icon={faEnvelope}
+                    delay={0.4}
+                />
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <SocialCard
-                        name="grain.social"
-                        handle="My photos!"
-                        url="https://grain.social/profile/did:plc:4hawmtgzjx3vclfyphbhfn7v"
-                        icon={faCamera}
-                        color="#FFD700"
-                    />
-                    <SocialCard
-                        name="Leaflet"
-                        handle="Blog & Articles"
-                        url="https://blog.j4ck.xyz"
-                        icon={faLeaf}
-                        color="#4CAF50"
-                    />
-                </div>
+            <div className="col-span-1 md:col-span-2 h-64">
+                <SystemStatusCard />
             </div>
 
         </BentoGrid>

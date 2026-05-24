@@ -8,9 +8,6 @@ const ProfileCard = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            style={{
-                gridColumn: 'span 2', // default span for grid
-            }}
         >
             <div className="z-10 relative">
                 <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4">

@@ -19,6 +19,8 @@ export const DataProvider = ({ children }) => {
     const [loadingPosts, setLoadingPosts] = useState(true);
     const [loadingPhotos, setLoadingPhotos] = useState(true);
     const [hasMorePosts, setHasMorePosts] = useState(true);
+    const [resolvedHandle, setResolvedHandle] = useState('j4ck.xyz');
+    const [resolvedPds, setResolvedPds] = useState('https://eurosky.social');
 
     // Load from cache
     const loadFromCache = () => {
@@ -388,6 +390,9 @@ export const DataProvider = ({ children }) => {
                 console.error('[DID] Failed to resolve from PLC directory, using fallbacks:', e);
             }
 
+            setResolvedPds(currentPds);
+            setResolvedHandle(currentHandle);
+
             const initializePosts = async () => {
                 setLoadingPosts(true);
 
@@ -540,7 +545,9 @@ export const DataProvider = ({ children }) => {
             loadingPosts,
             loadingPhotos,
             hasMorePosts,
-            fetchMorePosts
+            fetchMorePosts,
+            resolvedHandle,
+            resolvedPds
         }}>
             {children}
         </DataContext.Provider>

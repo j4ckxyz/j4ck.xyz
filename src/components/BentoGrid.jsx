@@ -4,15 +4,8 @@ const BentoGrid = forwardRef(({ children }, ref) => {
     return (
         <div
             ref={ref}
-            style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                gap: '24px',
-                maxWidth: '1200px',
-                margin: '0 auto',
-                padding: '24px',
-                width: '100%'
-            }}>
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1200px] mx-auto p-6"
+        >
             {children}
         </div>
     );
