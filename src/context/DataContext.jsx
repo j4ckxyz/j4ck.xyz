@@ -450,8 +450,8 @@ export const DataProvider = ({ children }) => {
                     if (cached) {
                         const { data, timestamp } = JSON.parse(cached);
                         const age = Date.now() - timestamp;
-                        
-                        if (age < CACHE_DURATION) {
+                        const hasGrain = data && data.some(p => p.source === 'grain');
+                        if (age < CACHE_DURATION && hasGrain) {
                             console.log('[Cache] Using cached hybrid photos:', data.length, 'photos');
                             setPhotos(data);
                             setLoadingPhotos(false);
