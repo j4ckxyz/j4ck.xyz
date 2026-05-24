@@ -131,8 +131,8 @@ const PostCard = React.memo(({ post, index, focusedIndex, postRef }) => {
     return (
         <div
             ref={postRef}
-            className={`post-card bg-[#111] border ${
-                focusedIndex === index ? 'border-red-500' : 'border-[#333]'
+            className={`post-card bg-[var(--card-bg)] border ${
+                focusedIndex === index ? 'border-red-500' : 'border-[var(--border-color)]'
             } rounded-lg hover:border-red-500 transition-colors group overflow-hidden`}
         >
             <a
@@ -212,7 +212,7 @@ const PostCard = React.memo(({ post, index, focusedIndex, postRef }) => {
                         {post.images.slice(0, 4).map((image, idx) => (
                             <div
                                 key={idx}
-                                className="relative overflow-hidden bg-[#0a0a0a]"
+                                className="relative overflow-hidden bg-[var(--bg-color)]"
                                 style={{
                                     height: post.images.length === 1 ? '320px' : '200px'
                                 }}
@@ -225,7 +225,7 @@ const PostCard = React.memo(({ post, index, focusedIndex, postRef }) => {
                                     decoding="async"
                                 />
                                 {idx === 3 && post.images.length > 4 && (
-                                    <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                                    <div className="absolute inset-0 bg-[oklch(14%_0.008_15_/_70%)] flex items-center justify-center">
                                         <span className="text-white font-bold text-2xl">
                                             +{post.images.length - 4}
                                         </span>

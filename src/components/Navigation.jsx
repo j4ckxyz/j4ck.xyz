@@ -52,7 +52,7 @@ const Navigation = () => {
     return (
         <>
             {/* --- DESKTOP TOP BAR (md:flex, hidden on mobile) --- */}
-            <nav className="fixed top-0 left-0 w-full z-50 bg-[#0a0a0a]/90 backdrop-blur-sm border-b border-[#333] py-3 px-6 font-mono text-sm uppercase tracking-widest hidden md:block">
+            <nav className="fixed top-0 left-0 w-full z-50 bg-[oklch(14%_0.008_15_/_90%)] backdrop-blur-sm border-b border-[var(--border-color)] py-3 px-6 font-mono text-sm uppercase tracking-widest hidden md:block">
                 <div className="max-w-[1200px] mx-auto flex items-center justify-start gap-8">
                     {navItems.map((item) => (
                         <NavLink
@@ -74,14 +74,14 @@ const Navigation = () => {
 
             {/* --- MOBILE BOTTOM BAR (flex, hidden on desktop) --- */}
             {/* Terminal Status Line Style */}
-            <nav className="fixed bottom-0 left-0 w-full z-50 bg-[#111] border-t border-[#333] pb-safe font-mono text-xs uppercase tracking-widest md:hidden shadow-2xl">
+            <nav className="fixed bottom-0 left-0 w-full z-50 bg-[var(--card-bg)] border-t border-[var(--border-color)] pb-safe font-mono text-xs uppercase tracking-widest md:hidden shadow-2xl">
                 <div className="flex items-center justify-around h-14">
                     {navItems.map((item) => (
                         <NavLink
                             key={item.path}
                             to={item.path}
                             className={({ isActive }) =>
-                                `flex flex-col items-center justify-center w-full h-full transition-colors duration-200 ${isActive ? 'bg-[#222] text-white border-t-2 border-red-500' : 'text-[#555] hover:text-[#999]'
+                                `flex flex-col items-center justify-center w-full h-full transition-colors duration-200 ${isActive ? 'bg-[oklch(22%_0.015_15)] text-white border-t-2 border-red-500' : 'text-[#555] hover:text-[#999]'
                                 }`
                             }
                         >
@@ -93,7 +93,7 @@ const Navigation = () => {
                     ))}
                 </div>
                 {/* Decorative status indicators */}
-                <div className="bg-[#000] text-[#333] text-[10px] py-1 px-4 flex justify-between border-t border-[#222]">
+                <div className="bg-[oklch(11%_0.006_15)] text-[#555] text-[10px] py-1 px-4 flex justify-between border-t border-[var(--border-color)]">
                     <span> -- INSERT -- </span>
                     <span>J4CK.XYZ V3</span>
                 </div>

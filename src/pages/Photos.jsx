@@ -19,10 +19,10 @@ const PhotoItem = React.memo(({ photo, aspectClass, onLoad }) => {
                 rel="noopener noreferrer"
                 className="block relative group h-full"
             >
-                <div className="relative h-full overflow-hidden rounded-lg border border-[#333] hover:border-red-500 transition-colors bg-[#111]">
+                <div className="relative h-full overflow-hidden rounded-lg border border-[var(--border-color)] hover:border-red-500 transition-colors bg-[var(--card-bg)]">
                     {/* Loading skeleton */}
                     {!isLoaded && (
-                        <div className="absolute inset-0 bg-[#1a1a1a] animate-pulse" />
+                        <div className="absolute inset-0 bg-[oklch(20%_0.012_15)] animate-pulse" />
                     )}
                     
                     <img
@@ -38,7 +38,7 @@ const PhotoItem = React.memo(({ photo, aspectClass, onLoad }) => {
                     
                     {/* Hover overlay */}
                     {isLoaded && (
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="absolute inset-0 bg-[oklch(14%_0.008_15_/_60%)] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <span className="text-white font-mono font-bold text-xs">
                                 {photo.source === 'grain' ? 'VIEW ON GRAIN' : 'VIEW ON FLASHES'}
                             </span>
@@ -48,7 +48,7 @@ const PhotoItem = React.memo(({ photo, aspectClass, onLoad }) => {
                     {/* Alt text indicator */}
                     {photo.image.alt && (
                         <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="bg-black/80 px-2 py-1 rounded text-xs font-mono text-[#999] max-w-[200px] truncate">
+                            <div className="bg-[oklch(18%_0.012_15_/_90%)] px-2 py-1 rounded text-xs font-mono text-[#999] max-w-[200px] truncate">
                                 {photo.image.alt}
                             </div>
                         </div>

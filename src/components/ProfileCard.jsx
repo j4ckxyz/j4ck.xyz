@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const ProfileCard = () => {
     return (
         <motion.div
-            className="bg-[#111] border border-[#333] p-8 md:p-12 h-full flex flex-col justify-center relative overflow-hidden rounded-lg"
+            className="bg-[var(--card-bg)] border border-[var(--border-color)] p-8 md:p-12 h-full flex flex-col justify-center relative overflow-hidden rounded-lg"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
@@ -18,7 +18,7 @@ const ProfileCard = () => {
                 </h1>
                 <div className="bg-[#ff3333] h-1 w-20 mb-6"></div>
 
-                <div className="inline-block bg-[#222] px-4 py-2 rounded-full border border-[#333]">
+                <div className="inline-block bg-[oklch(22%_0.015_15)] px-4 py-2 rounded-full border border-[var(--border-color)]">
                     <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2 animate-pulse"></span>
                     <span className="text-sm font-mono text-[#999]">
                         System Operational

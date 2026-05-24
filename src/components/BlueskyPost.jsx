@@ -298,7 +298,7 @@ const BlueskyPost = () => {
     // 5. Video (Thumbnail only)
     if (embed.$type === 'app.bsky.embed.video#view') {
       return (
-        <div className="mt-3 rounded-lg overflow-hidden border border-[#333] bg-black relative aspect-video group/video">
+        <div className="mt-3 rounded-lg overflow-hidden border border-[var(--border-color)] bg-[var(--bg-color)] relative aspect-video group/video">
            <img 
              src={embed.thumbnail} 
              alt={embed.alt || "Video thumbnail"} 
@@ -318,7 +318,7 @@ const BlueskyPost = () => {
 
   if (loading) {
     return (
-      <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex items-center justify-center min-h-[300px]">
+      <div className="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl p-6 h-full flex items-center justify-center min-h-[300px]">
         <div className="flex flex-col items-center gap-4 text-[#666]">
           <FontAwesomeIcon icon={faSpinner} spin className="text-2xl text-red-500" />
           <span className="font-mono text-sm">Initializing feed...</span>
@@ -329,7 +329,7 @@ const BlueskyPost = () => {
 
   if (error || !post) {
     return (
-      <div className="bg-[#111] border border-[#333] rounded-2xl p-6 h-full flex flex-col justify-between min-h-[300px]">
+      <div className="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl p-6 h-full flex flex-col justify-between min-h-[300px]">
         <div className="text-[#666] font-mono mb-4">
            // ERROR: Feed Connection Failed
         </div>
@@ -340,7 +340,7 @@ const BlueskyPost = () => {
           href={PROFILE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-[#222] hover:bg-[#333] text-white py-2 px-4 rounded-lg text-center transition-colors border border-[#333] hover:border-red-500 font-mono text-sm flex items-center justify-center gap-2"
+          className="bg-[oklch(22%_0.015_15)] hover:bg-[oklch(26%_0.018_15)] text-white py-2 px-4 rounded-lg text-center transition-colors border border-[var(--border-color)] hover:border-red-500 font-mono text-sm flex items-center justify-center gap-2"
         >
           <FontAwesomeIcon icon={faBluesky} />
           Manual Override
@@ -350,11 +350,11 @@ const BlueskyPost = () => {
   }
 
   return (
-    <div className="bg-[#111] border border-[#333] p-6 h-full flex flex-col hover:border-red-500 transition-colors duration-300 group relative overflow-hidden rounded-lg">
+    <div className="bg-[var(--card-bg)] border border-[var(--border-color)] p-6 h-full flex flex-col hover:border-red-500 transition-colors duration-300 group relative overflow-hidden rounded-lg">
 
       {/* Repost Header */}
       {repost && (
-        <div className="text-xs text-[#666] mb-3 flex items-center gap-2 font-mono pb-2 border-b border-[#222]">
+        <div className="text-xs text-[#666] mb-3 flex items-center gap-2 font-mono pb-2 border-b border-[var(--border-color)]">
           <FontAwesomeIcon icon={faRetweet} className="text-green-500" />
           <span>{repost.by.did === DID ? (repost.by.displayName || 'j4ck.xyz') : repost.by.displayName} reposted</span>
         </div>
@@ -366,10 +366,10 @@ const BlueskyPost = () => {
             <img
               src={post.author.avatar}
               alt="avatar"
-              className="w-10 h-10 rounded-full border border-[#333]"
+              className="w-10 h-10 rounded-full border border-[var(--border-color)]"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-[#222] border border-[#333]"></div>
+            <div className="w-10 h-10 rounded-full bg-[oklch(22%_0.015_15)] border border-[var(--border-color)]"></div>
           )}
           <div>
             <div className="font-bold text-white leading-tight">
@@ -402,11 +402,11 @@ const BlueskyPost = () => {
         {post.embed && renderEmbed(post.embed)}
       </div>
 
-      <div className="pt-4 border-t border-[#222] flex justify-between items-center relative z-10 mt-auto">
+      <div className="pt-4 border-t border-[var(--border-color)] flex justify-between items-center relative z-10 mt-auto">
         <div className="text-xs text-[#444] font-mono">
             // LATEST TRANSMISSION
         </div>
-        <FontAwesomeIcon icon={faBluesky} className="text-[#222] group-hover:text-[#0085ff] transition-colors" />
+        <FontAwesomeIcon icon={faBluesky} className="text-[oklch(22%_0.015_15)] group-hover:text-[#0085ff] transition-colors" />
       </div>
 
       {/* Decorative */}

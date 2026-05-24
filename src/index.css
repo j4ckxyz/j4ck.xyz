@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --bg-color: #0a0a0a;
-  --card-bg: #111111;
+  --bg-color: oklch(14% 0.008 15);
+  --card-bg: oklch(18% 0.012 15);
   --text-primary: #ffffff;
   --text-secondary: #999999;
   --accent-red: #ff3333;
-  --border-color: #333333;
+  --border-color: oklch(26% 0.018 15);
   
   --font-mono: 'JetBrains Mono', monospace;
   --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -37,7 +37,7 @@
 }
 
 body {
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, var(--bg-color) 0%, oklch(11% 0.006 15) 100%);
   background-attachment: fixed;
   color: var(--text-primary);
   font-family: 'JetBrains Mono', monospace;

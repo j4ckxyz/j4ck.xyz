@@ -76,7 +76,7 @@ function Home() {
             </div>
 
             {/* Row 3 - Atmosphere Spans 2 */}
-            <div className="col-span-1 md:col-span-2 bg-[#111] border border-[#333] p-6 flex flex-col justify-center cut-corners">
+            <div className="col-span-1 md:col-span-2 bg-[var(--card-bg)] border border-[var(--border-color)] p-6 flex flex-col justify-center cut-corners">
                 <div className="flex items-center gap-2 mb-4 text-[#999] font-mono uppercase text-xs tracking-widest">
                     <FontAwesomeIcon icon={faCloud} />
                     <span>ATmosphere Network</span>

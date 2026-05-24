@@ -31,7 +31,7 @@ const Repos = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white p-8 font-mono">
+        <div className="min-h-screen bg-[var(--bg-color)] text-white p-8 font-mono">
             <SEO
                 title="Repos"
                 description="Public code repositories."
@@ -55,7 +55,7 @@ const Repos = () => {
                                 href={repo.html_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="bg-[#111] border border-[#333] p-6 rounded-xl hover:border-red-500 transition-all hover:transform hover:-translate-y-1 group flex flex-col justify-between h-40"
+                                className="bg-[var(--card-bg)] border border-[var(--border-color)] p-6 rounded-xl hover:border-red-500 transition-all hover:transform hover:-translate-y-1 group flex flex-col justify-between h-40"
                             >
                                 <div>
                                     <h3 className="text-xl font-bold text-white group-hover:text-red-500 transition-colors mb-2">
