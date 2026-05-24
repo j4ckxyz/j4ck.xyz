@@ -334,10 +334,9 @@ export const DataProvider = ({ children }) => {
                     alt: img.alt || '',
                     aspectRatio: img.aspectRatio
                 }));
-                
                 const parts = gallery.uri.split('/');
                 const rkey = parts[parts.length - 1];
-                const galleryUrl = gallery.crossPost?.url || `https://grain.social/post/${gallery.creator.did}/${rkey}`;
+                const galleryUrl = `https://grain.social/profile/${gallery.creator.did}/gallery/${rkey}`;
 
                 return {
                     id: gallery.uri,
