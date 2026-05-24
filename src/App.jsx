@@ -57,7 +57,7 @@ function App() {
   React.useEffect(() => {
     // 1. Welcome console printout
     console.log(
-      `%c   _  _   ___ _  __ \n  | || | / __| |/ / \n  | || || (__| ' <  \n  |_||_| \\___|_|\\_\\ \n`,
+      `%c   _   _  _    ___ _  __ \n  | | | || |  / __| |/ / \n _| | |_  _| | (__| ' <  \n\\___/   |_|   \\___|_|\\_\\ \n`,
       'color: #ff3333; font-weight: bold;'
     );
     console.log(

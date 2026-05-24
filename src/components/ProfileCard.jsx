@@ -70,7 +70,7 @@ const ProfileCard = () => {
                 break;
             case 'neofetch':
                 newHistory.push({
-                    text: '   _  _   ___ _  __ \n  | || | / __| |/ / \n  | || || (__| \' <  \n  |_||_| \\___|_|\\_\\ \n--------------------\nOS: JackOS V3.0\nSHELL: Zsh (Tactile Mode)\nHOST: j4ck.xyz\nSTATUS: 100% OPERATIONAL\nACCENT: Crimson OKLCH\nFONT: Geist Sans & JetBrains Mono',
+                    text: '   _   _  _    ___ _  __ \n  | | | || |  / __| |/ / \n _| | |_  _| | (__| \' <  \n\\___/   |_|   \\___|_|\\_\\ \n--------------------\nOS: JackOS V3.0\nSHELL: Zsh (Tactile Mode)\nHOST: j4ck.xyz\nSTATUS: 100% OPERATIONAL\nACCENT: Crimson OKLCH\nFONT: Geist Sans & JetBrains Mono',
                     type: 'output'
                 });
                 break;
