@@ -96,6 +96,7 @@ body.keyboard-nav button:focus,
 body.keyboard-nav [tabindex="0"]:focus {
   outline: 2px solid var(--accent-red);
   outline-offset: 4px;
+  box-shadow: 0 0 12px oklch(58% 0.18 15 / 40%);
   position: relative;
   z-index: 50;
 }

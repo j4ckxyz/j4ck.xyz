@@ -24,7 +24,13 @@ const SystemStatusCard = () => {
             className="bg-[var(--card-bg)] border border-[var(--border-color)] p-6 h-full flex flex-col justify-between relative overflow-hidden rounded-lg group"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45, duration: 0.5 }}
+            whileHover={{ y: -6, scale: 1.008 }}
+            transition={{ 
+                type: "spring", 
+                stiffness: 350, 
+                damping: 18,
+                opacity: { duration: 0.5, delay: 0.45 }
+            }}
         >
             {/* Header info bar */}
             <div className="flex justify-between items-center relative z-10">
