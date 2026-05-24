@@ -53,6 +53,155 @@ function App() {
     };
   }, []);
 
+  // Developer Console CLI Easter Eggs & Konami Code Delight
+  React.useEffect(() => {
+    // 1. Welcome console printout
+    console.log(
+      `%c   _  _   ___ _  __ \n  | || | / __| |/ / \n  | || || (__| ' <  \n  |_||_| \\___|_|\\_\\ \n`,
+      'color: #ff3333; font-weight: bold;'
+    );
+    console.log(
+      `%c》 Welcome fellow hacker! Curious how this digital garden is built?\nExplore console diagnostics: type %cjackHelp()%c in this console to initialize!`,
+      'color: #85A1FF;',
+      'color: #ff3333; font-weight: bold; background: #151515; padding: 2px 5px; border-radius: 4px; border: 1px solid #333;',
+      'color: #85A1FF;'
+    );
+
+    // 2. Global Console Functions
+    window.jackHelp = () => {
+      console.log(
+        `%cAVAILABLE CONSOLE MODULES:\n  %cneofetch()%c - Print system client diagnostics\n  %chire()%c     - Print contact credentials\n  %cmatrix()%c   - Toggle green code rain canvas overlay on the webpage!\n  %cglitch()%c   - Trigger a temporary webpage CRT glitch static shake!`,
+        'color: #888;',
+        'color: #ff3333; font-weight: bold;', 'color: #888;',
+        'color: #ff3333; font-weight: bold;', 'color: #888;',
+        'color: #ff3333; font-weight: bold;', 'color: #888;',
+        'color: #ff3333; font-weight: bold;', 'color: #888;'
+      );
+      return 'SYSTEM_INFO_READY';
+    };
+
+    window.neofetch = () => {
+      console.log(
+        `%cOS: %cJackOS V3.0\n%cSHELL: %cZsh (Console Tactile Edition)\n%cRESOLUTION: %c${window.screen.width}x${window.screen.height}\n%cSTATUS: %c100% OPERATIONAL\n%cDID: %cdid:plc:4hawmtgzjx3vclfyphbhfn7v`,
+        'color: #555;', 'color: #fff; font-weight: bold;',
+        'color: #555;', 'color: #85A1FF; font-weight: bold;',
+        'color: #555;', 'color: #fff;',
+        'color: #555;', 'color: #22c55e; font-weight: bold;',
+        'color: #555;', 'color: #ff3333; font-weight: bold;'
+      );
+      return 'DIAGNOSTICS_PRINTED';
+    };
+
+    window.hire = () => {
+      console.log(
+        `%c┌────────────────────────────────────────────────────────┐\n│ %cJACK // CREATIVE CODING PORTFOLIO                      %c│\n│ %cEMAIL:   jack@jglypt.net                              %c│\n│ %cBLUESKY: @j4ck.xyz                                    %c│\n│ %cWEBSITE: https://j4ck.xyz                              %c│\n└────────────────────────────────────────────────────────┘`,
+        'color: #ff3333;',
+        'color: #fff; font-weight: bold;', 'color: #ff3333;',
+        'color: #aaa;', 'color: #ff3333;',
+        'color: #aaa;', 'color: #ff3333;',
+        'color: #aaa;', 'color: #ff3333;'
+      );
+      return 'BUSINESS_CARD_OPENED';
+    };
+
+    window.glitch = () => {
+      const app = document.querySelector('.app');
+      if (!app) return 'App wrapper not found!';
+      app.classList.add('animate-glitch-1');
+      setTimeout(() => {
+        app.classList.remove('animate-glitch-1');
+      }, 1000);
+      return 'GLITCH OVERRIDE SECURED.';
+    };
+
+    window.matrix = () => {
+      if (document.getElementById('matrix-overlay')) return 'Matrix cascade already active!';
+      const canvas = document.createElement('canvas');
+      canvas.id = 'matrix-overlay';
+      canvas.style.position = 'fixed';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+      canvas.style.width = '100vw';
+      canvas.style.height = '100vh';
+      canvas.style.zIndex = '99999';
+      canvas.style.pointerEvents = 'none';
+      document.body.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const matrixChars = "0101100101010101010101011100101010101010101".split("");
+      const fontSize = 14;
+      const columns = canvas.width / fontSize;
+      const drops = Array(Math.floor(columns)).fill(1);
+
+      let animationFrameId;
+      let opacity = 1;
+      let fading = false;
+
+      const draw = () => {
+        ctx.fillStyle = `rgba(0, 0, 0, ${fading ? 0.25 : 0.05})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = fading ? `rgba(34, 197, 94, ${opacity})` : "#22c55e";
+        ctx.font = fontSize + "px monospace";
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+
+        if (fading) {
+          opacity -= 0.02;
+          if (opacity <= 0) {
+            cancelAnimationFrame(animationFrameId);
+            canvas.remove();
+            return;
+          }
+        }
+        animationFrameId = requestAnimationFrame(draw);
+      };
+
+      draw();
+
+      setTimeout(() => {
+        fading = true;
+      }, 5000);
+
+      return 'INITIALIZING DATA CASCADE MATRIX OVERLAY...';
+    };
+
+    // 3. Konami Code Listener
+    let keys = [];
+    const konami = 'ArrowUpArrowUpArrowDownArrowDownArrowLeftArrowRightArrowLeftArrowRightba';
+
+    const handleKey = (e) => {
+      keys.push(e.key);
+      keys = keys.slice(-10);
+      if (keys.join('') === konami) {
+        window.matrix();
+      }
+    };
+
+    window.addEventListener('keydown', handleKey);
+
+    return () => {
+      window.removeEventListener('keydown', handleKey);
+      // Clean up globals on unmount
+      delete window.jackHelp;
+      delete window.neofetch;
+      delete window.hire;
+      delete window.glitch;
+      delete window.matrix;
+    };
+  }, []);
+
   return (
     <div className="app bg-[var(--bg-color)] min-h-screen text-white font-mono selection:bg-red-500/30">
       <Navigation />
