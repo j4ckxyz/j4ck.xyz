@@ -61,7 +61,7 @@ function App() {
     // 1. Welcome console printout
     console.log(
       `%c   _   _  _    ___ _  __ \n  | | | || |  / __| |/ / \n _| | |_  _| | (__| ' <  \n\\___/   |_|   \\___|_|\\_\\ \n`,
-      'color: #ff3333; font-weight: bold;'
+      'color: #ff3333; font-weight: bold; line-height: 1.3; font-family: monospace;'
     );
     console.log(
       `%c》 Welcome, fellow hacker! Curious how this digital garden is built?\nExplore console diagnostics: type %cjackHelp()%c in this console to initialize!`,
