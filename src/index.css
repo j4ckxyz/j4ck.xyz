@@ -2,19 +2,87 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   Theme tokens. Default (:root) is DARK; [data-theme="light"] overrides below.
+   An inline script in index.html sets data-theme from localStorage or the OS
+   setting before first paint, so there's no flash. The footer toggle persists
+   a choice; with no saved choice the OS preference is followed live.
+
+   Contrast is measured against bg + card in BOTH themes: every tier down to
+   --text-muted clears WCAG AA 4.5:1 (info text must use muted or brighter);
+   --text-faint (~3.4:1) is decorative ornament only.
+--------------------------------------------------------------------------- */
 :root {
-  --bg-color: oklch(14% 0.008 15);
-  --card-bg: oklch(18% 0.012 15);
-  --text-primary: #ffffff;
-  --text-secondary: #999999;
-  --accent-red: #ff3333;
-  --border-color: oklch(26% 0.018 15);
-  
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color-scheme: dark;
+  /* DARK — softened: the base is lifted off pure black and the white is eased
+     down so the high-contrast glare is gone while text still clears AA. */
+  --bg-color: oklch(16.5% 0.008 30);
+  --bg-gradient-end: oklch(14% 0.007 30);
+  --card-bg: oklch(20.5% 0.012 30);
+
+  --text-primary: oklch(94% 0.005 30);   /* headings, key values     — 16:1  */
+  --text-bright: oklch(84% 0.008 30);    /* emphasized values        — 12:1  */
+  --text-secondary: oklch(72% 0.012 30); /* body, labels             — 7.7:1 */
+  --text-muted: oklch(63% 0.014 30);     /* AA floor: metadata, nav  — 5.1:1 */
+  --text-faint: oklch(52% 0.014 30);     /* ornament only            — 3.5:1 */
+
+  --accent-red: oklch(60% 0.195 26);
+  --accent-red-bright: oklch(67% 0.205 26); /* hover / emphasis */
+  --border-color: oklch(29% 0.016 30);
+  --nav-bg: oklch(16% 0.008 30 / 72%);   /* translucent nav backdrop */
+
+  /* Type — editorial sans leads; monospace is a small accent only. */
+  --font-display: 'Bricolage Grotesque', 'Hanken Grotesk', -apple-system, sans-serif;
+  --font-sans: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Type scale — fluid display sizes (clamp) for headings, fixed rem for UI.
+     Few steps, ≥1.25 ratio, so hierarchy reads at a glance. */
+  --text-display: clamp(2.75rem, 8vw, 5.5rem);
+  --text-h1: clamp(2rem, 4vw, 3rem);
+  --text-h2: clamp(1.5rem, 2.5vw, 2rem);
+  --text-body: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+
+  /* Spacing — 4pt scale, semantic names. Use `gap` for sibling spacing. */
+  --space-2xs: 0.25rem;  /* 4  */
+  --space-xs: 0.5rem;    /* 8  */
+  --space-sm: 0.75rem;   /* 12 */
+  --space-md: 1rem;      /* 16 */
+  --space-lg: 1.5rem;    /* 24 */
+  --space-xl: 2rem;      /* 32 */
+  --space-2xl: 3rem;     /* 48 */
+  --space-3xl: 4rem;     /* 64 */
+  --space-4xl: 6rem;     /* 96 */
+
+  /* Prose measure — cap line length for readability */
+  --measure: 70ch;
+}
+
+/* LIGHT — warm paper, warm near-black ink, a deeper red for contrast on white. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg-color: oklch(97% 0.006 50);
+  --bg-gradient-end: oklch(95.5% 0.008 45);
+  --card-bg: oklch(93% 0.008 45);
+
+  --text-primary: oklch(22% 0.02 30);    /* near-black ink           — 16:1  */
+  --text-bright: oklch(30% 0.02 30);     /* emphasized               — 12.6:1 */
+  --text-secondary: oklch(40% 0.02 30);  /* body, labels             — 8.5:1 */
+  --text-muted: oklch(45% 0.025 30);     /* AA floor: metadata, nav  — 6.9:1 */
+  --text-faint: oklch(62% 0.02 30);      /* ornament only            — 3.4:1 */
+
+  --accent-red: oklch(52% 0.215 27);     /* deeper so it clears AA on white — 5.6:1 */
+  --accent-red-bright: oklch(46% 0.21 27);
+  --border-color: oklch(88% 0.01 45);
+  --nav-bg: oklch(97% 0.006 50 / 80%);
 }
 
 @layer utilities {
+  .font-display {
+    font-family: var(--font-display) !important;
+  }
   .font-sans {
     font-family: var(--font-sans) !important;
   }
@@ -37,11 +105,13 @@
 }
 
 body {
-  background: linear-gradient(135deg, var(--bg-color) 0%, oklch(11% 0.006 15) 100%);
+  background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-gradient-end) 100%);
   background-attachment: fixed;
   color: var(--text-primary);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
   overflow-x: clip;
   overflow-y: auto;
@@ -51,49 +121,22 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: repeating-linear-gradient(0deg,
-      rgba(0, 0, 0, 0.15),
-      rgba(0, 0, 0, 0.15) 1px,
-      transparent 1px,
-      transparent 2px);
-  pointer-events: none;
-  z-index: 9999;
-}
+/* Reduced motion: honour the OS/browser setting. Neutralises CSS transitions,
+   keyframe animations and smooth scrolling. Framer Motion is handled separately
+   via <MotionConfig reducedMotion="user"> in main.jsx. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.022;
-  pointer-events: none;
-  z-index: 9998;
-}
-
-.cut-corners {
-  clip-path: polygon(0 0,
-      100% 0,
-      100% calc(100% - 24px),
-      calc(100% - 24px) 100%,
-      0 100%);
-}
-
-.cut-corners-t {
-  clip-path: polygon(24px 0,
-      100% 0,
-      100% 100%,
-      0 100%,
-      0 24px);
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 a {
@@ -101,6 +144,10 @@ a {
   color: inherit;
   outline: none;
   /* Remove default outline */
+}
+
+::selection {
+  background: color-mix(in oklch, var(--accent-red) 30%, transparent);
 }
 
 /* Keyboard Navigation Focus styles */
@@ -130,21 +177,6 @@ body.keyboard-nav [tabindex="0"]:focus {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-red);
-}
-
-/* Utilities */
-.text-red {
-  color: var(--accent-red);
-}
-
-.hover-red:hover {
-  color: var(--accent-red);
-  transition: color 0.2s ease;
-}
-
-.border-red-hover:hover {
-  border-color: var(--accent-red);
-  transition: border-color 0.2s ease;
 }
 
 /* Twemoji global fix */
@@ -218,7 +250,8 @@ body.keyboard-nav [tabindex="0"]:focus {
 /* Post Content Styles */
 .post-content {
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.7;
+  max-width: var(--measure);
 }
 
 .post-content p {

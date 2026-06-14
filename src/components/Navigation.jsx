@@ -1,7 +1,15 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faCamera, faNewspaper, faCode, faRss } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faCamera, faNewspaper, faCode, faComment } from '@fortawesome/free-solid-svg-icons';
+
+const navItems = [
+    { key: '1', path: '/', label: 'home', icon: faHouse },
+    { key: '2', path: '/posts', label: 'posts', icon: faComment },
+    { key: '3', path: '/photos', label: 'photos', icon: faCamera },
+    { key: '4', path: '/blogs', label: 'writing', icon: faNewspaper },
+    { key: '5', path: '/repos', label: 'code', icon: faCode },
+];
 
 const Navigation = () => {
     const navigate = useNavigate();
@@ -11,7 +19,6 @@ const Navigation = () => {
         const handleKeyPress = (e) => {
             if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
-            // Tab Navigation
             if (e.key === 'Tab') {
                 e.preventDefault();
                 const currentIndex = navItems.findIndex(item => item.path === location.pathname);
@@ -19,13 +26,6 @@ const Navigation = () => {
                 navigate(navItems[nextIndex].path);
                 return;
             }
-
-            // Number Navigation (Disable on Home if using 1-4 for links)
-            // But actually Home links will use 1-9. 
-            // If we are on Home, we should probably disable these navigation shortcuts to avoid conflict?
-            // Or maybe only 1-4 map to nav? 
-            // Let's disable Navigation 1-4 IF we are on Home, so Home can handle them.
-            // if (location.pathname === '/') return;
 
             switch (e.key) {
                 case '1': navigate('/'); break;
@@ -41,61 +41,65 @@ const Navigation = () => {
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, [navigate, location.pathname]);
 
-    const navItems = [
-        { key: '1', path: '/', label: 'home', icon: faHome },
-        { key: '2', path: '/posts', label: 'posts', icon: faRss },
-        { key: '3', path: '/photos', label: 'photos', icon: faCamera },
-        { key: '4', path: '/blogs', label: 'blogs', icon: faNewspaper },
-        { key: '5', path: '/repos', label: 'repos', icon: faCode },
-    ];
-
     return (
         <>
-            {/* --- DESKTOP TOP BAR (md:flex, hidden on mobile) --- */}
-            <nav className="fixed top-0 left-0 w-full z-50 bg-[oklch(14%_0.008_15_/_90%)] backdrop-blur-sm border-b border-[var(--border-color)] py-3 px-6 font-mono text-sm uppercase tracking-widest hidden md:block">
-                <div className="max-w-[1200px] mx-auto flex items-center justify-start gap-8">
-                    {navItems.map((item) => (
-                        <NavLink
-                            key={item.path}
-                            to={item.path}
-                            className={({ isActive }) =>
-                                `transition-colors duration-200 hover:text-white ${isActive ? 'text-white' : 'text-[#555]'
-                                }`
-                            }
-                        >
-                            <span className="text-[#333] mr-2">[{item.key}]</span>
-                            <span className={location.pathname === item.path ? "text-red-500 font-bold" : ""}>
-                                {item.label}
-                            </span>
-                        </NavLink>
-                    ))}
+            {/* Desktop top bar */}
+            <nav className="fixed top-0 left-0 w-full z-50 bg-[var(--nav-bg)] backdrop-blur-md border-b border-[var(--border-color)] hidden md:block">
+                <div className="max-w-[1100px] mx-auto flex items-center justify-between h-16 px-6">
+                    <NavLink to="/" className="font-display text-lg font-extrabold tracking-tight text-[var(--text-primary)]">
+                        j4ck<span className="text-[var(--accent-red)]">.xyz</span>
+                    </NavLink>
+                    <div className="flex items-center gap-8 text-[15px]">
+                        {navItems.map((item) => (
+                            <NavLink
+                                key={item.path}
+                                to={item.path}
+                                className={({ isActive }) =>
+                                    `relative py-1 transition-colors duration-200 ${
+                                        isActive
+                                            ? 'text-[var(--text-primary)]'
+                                            : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                                    }`
+                                }
+                            >
+                                {({ isActive }) => (
+                                    <>
+                                        {item.label}
+                                        {isActive && (
+                                            <span className="absolute -bottom-0.5 left-0 h-px w-full bg-[var(--accent-red)]" />
+                                        )}
+                                    </>
+                                )}
+                            </NavLink>
+                        ))}
+                    </div>
                 </div>
             </nav>
 
-            {/* --- MOBILE BOTTOM BAR (flex, hidden on desktop) --- */}
-            {/* Terminal Status Line Style */}
-            <nav className="fixed bottom-0 left-0 w-full z-50 bg-[var(--card-bg)] border-t border-[var(--border-color)] pb-safe font-mono text-xs uppercase tracking-widest md:hidden shadow-2xl">
-                <div className="flex items-center justify-around h-14">
+            {/* Mobile bottom bar */}
+            <nav className="fixed bottom-0 left-0 w-full z-50 bg-[var(--nav-bg)] backdrop-blur-md border-t border-[var(--border-color)] pb-[env(safe-area-inset-bottom)] md:hidden">
+                <div className="flex items-stretch justify-around h-16">
                     {navItems.map((item) => (
                         <NavLink
                             key={item.path}
                             to={item.path}
                             className={({ isActive }) =>
-                                `flex flex-col items-center justify-center w-full h-full transition-colors duration-200 ${isActive ? 'bg-[oklch(22%_0.015_15)] text-white border-t-2 border-red-500' : 'text-[#555] hover:text-[#999]'
+                                `flex flex-col items-center justify-center gap-1 w-full transition-colors duration-200 ${
+                                    isActive ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'
                                 }`
                             }
                         >
-                            <span className={`mb-1 ${location.pathname === item.path ? "text-red-500" : ""}`}>
-                                <FontAwesomeIcon icon={item.icon} />
-                            </span>
-                            <span>{item.label}</span>
+                            {({ isActive }) => (
+                                <>
+                                    <FontAwesomeIcon
+                                        icon={item.icon}
+                                        className={`text-base ${isActive ? 'text-[var(--accent-red)]' : ''}`}
+                                    />
+                                    <span className="text-[11px]">{item.label}</span>
+                                </>
+                            )}
                         </NavLink>
                     ))}
-                </div>
-                {/* Decorative status indicators */}
-                <div className="bg-[oklch(11%_0.006_15)] text-[#555] text-[10px] py-1 px-4 flex justify-between border-t border-[var(--border-color)]">
-                    <span> -- INSERT -- </span>
-                    <span>J4CK.XYZ V3</span>
                 </div>
             </nav>
         </>

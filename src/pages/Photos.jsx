@@ -48,7 +48,7 @@ const PhotoItem = React.memo(({ photo, aspectClass, onLoad }) => {
                     {/* Alt text indicator */}
                     {photo.image.alt && (
                         <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="bg-[oklch(18%_0.012_15_/_90%)] px-2 py-1 rounded text-xs font-mono text-[#999] max-w-[200px] truncate">
+                            <div className="bg-[oklch(18%_0.012_15_/_90%)] px-2 py-1 rounded text-xs font-mono text-[var(--text-secondary)] max-w-[200px] truncate">
                                 {photo.image.alt}
                             </div>
                         </div>
@@ -96,15 +96,15 @@ const Photos = () => {
                 image="photos.png"
                 path="/photos"
             />
-            <h1 className="text-3xl font-bold mb-8">
-                /photos <span className="text-sm font-normal text-gray-600">via <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Flashes</a> & <a href="https://grain.social" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Grain</a></span>
+            <h1 className="text-4xl font-bold mb-10">
+                /photos <span className="text-sm font-normal text-[var(--text-muted)]">via <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Flashes</a> & <a href="https://grain.social" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Grain</a></span>
             </h1>
 
             {/* Initial loading state */}
             {loadingPhotos && photoData.length === 0 && (
                 <div className="text-center py-12">
                     <div className="animate-pulse text-red-500 font-mono mb-2">Loading photos...</div>
-                    <div className="text-[#555] text-xs font-mono">Fetching from Flashes & Grain</div>
+                    <div className="text-[var(--text-muted)] text-xs font-mono">Fetching from Flashes & Grain</div>
                 </div>
             )}
 
@@ -123,10 +123,10 @@ const Photos = () => {
                     </div>
 
                     {/* Stats footer */}
-                    <div className="text-[#555] font-mono mt-8 text-center text-xs space-y-1">
+                    <div className="text-[var(--text-muted)] font-mono mt-8 text-center text-xs space-y-1">
                         <div>{photoData.length} photos {loadingPhotos && '(loading more...)'}</div>
                         {loadedCount < photoData.length && photoData.length > 0 && (
-                            <div className="text-[#333]">
+                            <div className="text-[var(--text-muted)]">
                                 {loadedCount} / {photoData.length} loaded
                             </div>
                         )}
@@ -137,13 +137,13 @@ const Photos = () => {
             {/* No photos fallback - QuickSlices still backfilling */}
             {!loadingPhotos && photoData.length === 0 && (
                 <div className="text-center py-12">
-                    <div className="text-[#555] font-mono mb-4">
+                    <div className="text-[var(--text-muted)] font-mono mb-4">
                         ⏳ QuickSlices is still backfilling Flashes posts...
                     </div>
-                    <div className="text-[#333] font-mono text-xs mb-2">
+                    <div className="text-[var(--text-muted)] font-mono text-xs mb-2">
                         Photos will appear here once the backfill completes.
                     </div>
-                    <div className="text-[#333] font-mono text-xs">
+                    <div className="text-[var(--text-muted)] font-mono text-xs">
                         Share photos at <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:underline">flashes.blue</a>
                     </div>
                 </div>

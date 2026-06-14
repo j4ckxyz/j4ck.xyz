@@ -21,8 +21,8 @@ const Blogs = () => {
                 image="blogs.png"
                 path="/blogs"
             />
-            <h1 className="text-4xl font-bold mb-12">
-                /blogs <span className="text-sm font-normal text-gray-600">via <a href="https://leaflet.pub" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Leaflet</a></span>
+            <h1 className="text-4xl font-bold mb-10">
+                /blogs <span className="text-sm font-normal text-[var(--text-muted)]">via <a href="https://leaflet.pub" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Leaflet</a></span>
             </h1>
 
             {loadingBlogs ? (
@@ -40,8 +40,8 @@ const Blogs = () => {
                                 className="block bg-[var(--card-bg)] border border-[var(--border-color)] p-6 rounded-xl hover:border-red-500 transition-colors group"
                             >
                                 <h2 className="text-2xl font-bold mb-2 group-hover:text-red-500 transition-colors font-mono">{content.title}</h2>
-                                <p className="text-[#888] mb-4 line-clamp-2 font-sans">{content.description}</p>
-                                <div className="text-xs text-[#555] uppercase tracking-widest font-mono">
+                                <p className="text-[var(--text-secondary)] mb-4 line-clamp-2 font-sans">{content.description}</p>
+                                <div className="text-xs text-[var(--text-muted)] uppercase tracking-widest font-mono">
                                     {new Date(content.publishedAt || content.createdAt).toLocaleDateString()}
                                 </div>
                             </a>

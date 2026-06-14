@@ -145,16 +145,16 @@ const PostCard = React.memo(({ post, index, focusedIndex, postRef }) => {
                 <div className="p-4">
                     {/* Header with timestamp */}
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-[#555] font-mono">
+                        <span className="text-xs text-[var(--text-muted)] font-mono">
                             {relativeTime}
                         </span>
                         {post.images && post.images.length > 0 && (
-                            <span className="text-xs text-[#555] font-mono">📷</span>
+                            <span className="text-xs text-[var(--text-muted)] font-mono">📷</span>
                         )}
                     </div>
 
                     {/* Text content */}
-                    <div className="post-content-compact text-[#ccc] text-sm leading-relaxed mb-3 font-sans">
+                    <div className="post-content-compact text-[var(--text-bright)] text-sm leading-relaxed mb-3 font-sans">
                         {formatPostText(post.text, post.facets)}
                     </div>
 
@@ -192,7 +192,7 @@ const PostCard = React.memo(({ post, index, focusedIndex, postRef }) => {
                             {post.hashtags.slice(0, 5).map((tag) => (
                                 <span
                                     key={tag}
-                                    className="text-xs px-2 py-0.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-[#777] font-mono"
+                                    className="text-xs px-2 py-0.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-[var(--text-muted)] font-mono"
                                 >
                                     #{tag}
                                 </span>
@@ -342,8 +342,8 @@ const Posts = () => {
                 image="posts.png"
                 path="/posts"
             />
-            <h1 className="text-3xl font-bold mb-8">
-                /posts <span className="text-sm font-normal text-gray-600">via <a href="https://bsky.app/profile/j4ck.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Bluesky</a></span>
+            <h1 className="text-4xl font-bold mb-10">
+                /posts <span className="text-sm font-normal text-[var(--text-muted)]">via <a href="https://bsky.app/profile/j4ck.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Bluesky</a></span>
             </h1>
 
             {loadingPosts && posts.length === 0 ? (
@@ -371,14 +371,14 @@ const Posts = () => {
 
                     {/* End of posts message */}
                     {!hasMorePosts && posts.length > 0 && (
-                        <div className="text-[#555] font-mono mt-6 text-center text-xs">
+                        <div className="text-[var(--text-muted)] font-mono mt-6 text-center text-xs">
                             — End of feed —
                         </div>
                     )}
 
                     {/* Keyboard hints */}
-                    <div className="text-[#333] font-mono mt-8 text-center text-xs">
-                        <span className="text-[#555]">[j/k]</span> navigate · <span className="text-[#555]">[enter]</span> open
+                    <div className="text-[var(--text-muted)] font-mono mt-8 text-center text-xs">
+                        <span className="text-[var(--text-secondary)]">[j/k]</span> navigate · <span className="text-[var(--text-secondary)]">[enter]</span> open
                     </div>
                 </>
             )}

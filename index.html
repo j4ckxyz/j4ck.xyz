@@ -3,6 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Set theme before paint to avoid a flash: saved choice, else OS preference.
+         Also drives the browser-chrome theme-color so it matches the toggled theme. -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          }
+          document.documentElement.setAttribute('data-theme', t);
+          var m = document.createElement('meta');
+          m.setAttribute('name', 'theme-color');
+          m.setAttribute('content', t === 'light' ? '#f9f4f2' : '#120d0c');
+          document.head.appendChild(m);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -40,14 +59,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#2c3e50">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1a1a">
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAFAFF">
-    
-    <!-- Google Fonts - JetBrains Mono & Geist -->
+    <!-- Fonts — Bricolage Grotesque (display), Hanken Grotesk (body), JetBrains Mono (accent) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400..600&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="root"></div>

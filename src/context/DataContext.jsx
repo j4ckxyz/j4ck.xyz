@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { BskyAgent } from '@atproto/api';
 
 const DataContext = createContext();
 
@@ -32,7 +31,6 @@ export const DataProvider = ({ children }) => {
                 const age = Date.now() - timestamp;
                 
                 if (age < CACHE_DURATION) {
-                    console.log('[Cache] Using cached Bluesky posts:', data.length, 'posts');
                     return data;
                 }
             }
@@ -184,17 +182,14 @@ export const DataProvider = ({ children }) => {
                 
                 // Check if there's more data
                 if (!data.cursor) {
-                    console.log(`[Bluesky] Reached end of feed after ${iterations + 1} iterations`);
                     break;
                 }
                 
                 cursor = data.cursor;
                 iterations++;
                 
-                console.log(`[Bluesky] Iteration ${iterations}: Fetched ${transformed.length} original posts (total: ${allPosts.length})`);
             }
             
-            console.log(`[Bluesky] Final count: ${allPosts.length} original posts`);
             return allPosts;
         } catch (e) {
             console.error("Failed to fetch Bluesky posts:", e);
@@ -239,7 +234,6 @@ export const DataProvider = ({ children }) => {
                     const result = await response.json();
                     const edges = result.data?.blueFlashesActorPortfolio?.edges || [];
                     if (edges.length > 0) {
-                        console.log(`[QuickSlices] Found ${edges.length} portfolio items`);
                         postUris = edges.map(e => e.node.subject?.uri).filter(Boolean);
                     }
                 }
@@ -249,7 +243,6 @@ export const DataProvider = ({ children }) => {
 
             // 2. Fallback to PDS if QuickSlices returned nothing
             if (postUris.length === 0) {
-                console.log('[Flashes] QuickSlices empty, fetching from PDS...');
                 try {
                     const pdsUrl = `${resolvedPdsUrl}/xrpc/com.atproto.repo.listRecords?repo=${DID}&collection=blue.flashes.actor.portfolio&limit=100`;
                     const response = await fetch(pdsUrl);
@@ -265,7 +258,6 @@ export const DataProvider = ({ children }) => {
                         });
                         
                         postUris = records.map(r => r.value.subject?.uri).filter(Boolean);
-                        console.log(`[PDS] Found ${postUris.length} portfolio items`);
                     }
                 } catch (e) {
                     console.error('[PDS] Fetch failed:', e);
@@ -308,7 +300,6 @@ export const DataProvider = ({ children }) => {
                     source: 'flashes'
                 }));
 
-            console.log(`[Photos] Processed ${photos.length} Flashes photos`);
             return photos;
             
         } catch (e) {
@@ -358,7 +349,6 @@ export const DataProvider = ({ children }) => {
                 };
             }).filter(p => p.image);
 
-            console.log(`[Grain] Processed ${photos.length} Grain photos`);
             return photos;
         } catch (e) {
             console.error("Failed to fetch Grain photos:", e);
@@ -385,7 +375,6 @@ export const DataProvider = ({ children }) => {
                     if (alias) {
                         currentHandle = alias.substring(5);
                     }
-                    console.log(`[DID Resolved] PDS: ${currentPds}, Handle: ${currentHandle}`);
                 }
             } catch (e) {
                 console.error('[DID] Failed to resolve from PLC directory, using fallbacks:', e);
@@ -417,7 +406,6 @@ export const DataProvider = ({ children }) => {
                 }
 
                 // No cache - fetch
-                console.log('[API] Fetching Bluesky posts...');
                 const blueskyPosts = await fetchBlueskyPosts(100, DID);
                 
                 if (blueskyPosts.length > 0) {
@@ -431,6 +419,8 @@ export const DataProvider = ({ children }) => {
             };
 
             const fetchBlogs = async () => {
+                // Loaded on demand so @atproto/api stays out of the initial bundle.
+                const { BskyAgent } = await import('@atproto/api');
                 const agent = new BskyAgent({ service: currentPds });
                 try {
                     const records = await agent.api.com.atproto.repo.listRecords({
@@ -457,7 +447,6 @@ export const DataProvider = ({ children }) => {
                         const age = Date.now() - timestamp;
                         const hasGrain = data && data.some(p => p.source === 'grain');
                         if (age < CACHE_DURATION && hasGrain) {
-                            console.log('[Cache] Using cached hybrid photos:', data.length, 'photos');
                             setPhotos(data);
                             setLoadingPhotos(false);
                             
@@ -488,7 +477,6 @@ export const DataProvider = ({ children }) => {
                 }
                 
                 // No cache - fetch both in parallel
-                console.log('[API] Fetching Flashes & Grain photos in parallel...');
                 try {
                     const [flashesPhotos, grainPhotos] = await Promise.all([
                         fetchFlashesPhotos(currentPds),
