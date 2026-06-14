@@ -60,8 +60,9 @@ function App() {
   React.useEffect(() => {
     // 1. Welcome console printout
     console.log(
-      `%c   _   _  _    ___ _  __ \n  | | | || |  / __| |/ / \n _| | |_  _| | (__| ' <  \n\\___/   |_|   \\___|_|\\_\\ \n`,
-      'color: #ff3333; font-weight: bold; line-height: 1.3; font-family: monospace;'
+      `%c■ j4ck.xyz %c// devtools console active\n`,
+      'color: #ff3333; font-weight: bold; font-size: 14px; font-family: monospace;',
+      'color: #85A1FF; font-weight: normal; font-size: 12px; font-family: monospace;'
     );
     console.log(
       `%c》 Welcome, fellow hacker! Curious how this digital garden is built?\nExplore console diagnostics: type %cjackHelp()%c in this console to initialize!`,
