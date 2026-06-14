@@ -64,7 +64,7 @@ function App() {
       'color: #ff3333; font-weight: bold;'
     );
     console.log(
-      `%c》 Welcome fellow hacker! Curious how this digital garden is built?\nExplore console diagnostics: type %cjackHelp()%c in this console to initialize!`,
+      `%c》 Welcome, fellow hacker! Curious how this digital garden is built?\nExplore console diagnostics: type %cjackHelp()%c in this console to initialize!`,
       'color: #85A1FF;',
       'color: #ff3333; font-weight: bold; background: #151515; padding: 2px 5px; border-radius: 4px; border: 1px solid #333;',
       'color: #85A1FF;'
