@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faCamera, faNewspaper, faCode, faComment } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faCamera, faNewspaper, faCode } from '@fortawesome/free-solid-svg-icons';
 
 const navItems = [
     { key: '1', path: '/', label: 'home', icon: faHouse },
-    { key: '2', path: '/posts', label: 'posts', icon: faComment },
-    { key: '3', path: '/photos', label: 'photos', icon: faCamera },
-    { key: '4', path: '/blogs', label: 'writing', icon: faNewspaper },
-    { key: '5', path: '/repos', label: 'code', icon: faCode },
+    { key: '2', path: '/photos', label: 'photos', icon: faCamera },
+    { key: '3', path: '/blogs', label: 'writing', icon: faNewspaper },
+    { key: '4', path: '/repos', label: 'code', icon: faCode },
 ];
 
 const Navigation = () => {
@@ -27,14 +26,8 @@ const Navigation = () => {
                 return;
             }
 
-            switch (e.key) {
-                case '1': navigate('/'); break;
-                case '2': navigate('/posts'); break;
-                case '3': navigate('/photos'); break;
-                case '4': navigate('/blogs'); break;
-                case '5': navigate('/repos'); break;
-                default: break;
-            }
+            const item = navItems.find((item) => item.key === e.key);
+            if (item) navigate(item.path);
         };
 
         window.addEventListener('keydown', handleKeyPress);

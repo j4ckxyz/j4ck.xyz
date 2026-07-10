@@ -2,55 +2,19 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 
 const DataContext = createContext();
 
-const CACHE_KEY = 'bluesky_posts_cache';
 const PHOTOS_CACHE_KEY = 'flashes_photos_cache';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-const HANDLE = 'j4ck.xyz';
 const DID = 'did:plc:4hawmtgzjx3vclfyphbhfn7v';
 const QUICKSLICES_URL = 'https://quickslices.atproto.uk/graphql';
 
 export const DataProvider = ({ children }) => {
     const [blogs, setBlogs] = useState([]);
-    const [posts, setPosts] = useState([]);
-    const [allPosts, setAllPosts] = useState([]);
     const [photos, setPhotos] = useState([]);
     const [loadingBlogs, setLoadingBlogs] = useState(true);
-    const [loadingPosts, setLoadingPosts] = useState(true);
     const [loadingPhotos, setLoadingPhotos] = useState(true);
-    const [hasMorePosts, setHasMorePosts] = useState(true);
     const [resolvedHandle, setResolvedHandle] = useState('j4ck.xyz');
     const [resolvedPds, setResolvedPds] = useState('https://eurosky.social');
     const [hitsCount, setHitsCount] = useState(null);
-
-    // Load from cache
-    const loadFromCache = () => {
-        try {
-            const cached = localStorage.getItem(CACHE_KEY);
-            if (cached) {
-                const { data, timestamp } = JSON.parse(cached);
-                const age = Date.now() - timestamp;
-                
-                if (age < CACHE_DURATION) {
-                    return data;
-                }
-            }
-        } catch (e) {
-            console.error('Cache load error:', e);
-        }
-        return null;
-    };
-
-    // Save to cache
-    const saveToCache = (data) => {
-        try {
-            localStorage.setItem(CACHE_KEY, JSON.stringify({
-                data,
-                timestamp: Date.now()
-            }));
-        } catch (e) {
-            console.error('Cache save error:', e);
-        }
-    };
 
     // Extract hashtags from post text and facets
     const extractHashtags = (text, facets = []) => {
@@ -146,56 +110,6 @@ export const DataProvider = ({ children }) => {
             replyCount: post.replyCount || 0
         };
     }, []);
-
-    // Fetch posts from Bluesky with pagination to get enough original posts
-    const fetchBlueskyPosts = useCallback(async (targetCount = 100, actorId = DID) => {
-        try {
-            let allPosts = [];
-            let cursor = undefined;
-            const maxIterations = 10; // Safety limit to prevent infinite loops
-            let iterations = 0;
-            
-            // Keep fetching until we have targetCount original posts (non-replies, non-reposts)
-            while (allPosts.length < targetCount && iterations < maxIterations) {
-                const url = cursor 
-                    ? `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${actorId}&limit=100&cursor=${cursor}`
-                    : `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${actorId}&limit=100`;
-                
-                const response = await fetch(url, {
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch Bluesky posts');
-                }
-
-                const data = await response.json();
-                
-                // Transform and filter posts
-                const transformed = data.feed
-                    .map(transformBlueskyPost)
-                    .filter(post => !post.isReply && !post.isRepost); // Exclude replies and reposts
-                
-                allPosts = [...allPosts, ...transformed];
-                
-                // Check if there's more data
-                if (!data.cursor) {
-                    break;
-                }
-                
-                cursor = data.cursor;
-                iterations++;
-                
-            }
-            
-            return allPosts;
-        } catch (e) {
-            console.error("Failed to fetch Bluesky posts:", e);
-            return [];
-        }
-    }, [transformBlueskyPost]);
 
     // Fetch Flashes photos using QuickSlices GraphQL API or PDS Fallback
     const fetchFlashesPhotos = useCallback(async (resolvedPdsUrl = 'https://eurosky.social') => {
@@ -383,41 +297,6 @@ export const DataProvider = ({ children }) => {
             setResolvedPds(currentPds);
             setResolvedHandle(currentHandle);
 
-            const initializePosts = async () => {
-                setLoadingPosts(true);
-
-                // Try cache first
-                const cached = loadFromCache();
-                if (cached && cached.length > 0) {
-                    setAllPosts(cached);
-                    setPosts(cached.slice(0, 10));
-                    setHasMorePosts(true);
-                    setLoadingPosts(false);
-                    
-                    // Background refresh
-                    setTimeout(async () => {
-                        const fresh = await fetchBlueskyPosts(100, DID);
-                        if (fresh.length > 0) {
-                            setAllPosts(fresh);
-                            saveToCache(fresh);
-                        }
-                    }, 1000);
-                    return;
-                }
-
-                // No cache - fetch
-                const blueskyPosts = await fetchBlueskyPosts(100, DID);
-                
-                if (blueskyPosts.length > 0) {
-                    setAllPosts(blueskyPosts);
-                    setPosts(blueskyPosts.slice(0, 10));
-                    setHasMorePosts(true);
-                    saveToCache(blueskyPosts);
-                }
-                
-                setLoadingPosts(false);
-            };
-
             const fetchBlogs = async () => {
                 // Loaded on demand so @atproto/api stays out of the initial bundle.
                 const { BskyAgent } = await import('@atproto/api');
@@ -525,36 +404,19 @@ export const DataProvider = ({ children }) => {
             };
 
             fetchBlogs();
-            initializePosts();
             fetchPhotos();
             fetchHits();
         };
 
         resolveDidAndLoad();
-    }, [fetchBlueskyPosts, fetchFlashesPhotos, fetchGrainPhotos]);
-
-    // Fetch more posts (for infinite scroll in /posts page)
-    const fetchMorePosts = useCallback(() => {
-        if (!loadingPosts && hasMorePosts) {
-            const itemsPerPage = 10;
-            const newOffset = posts.length;
-            const newPosts = allPosts.slice(0, newOffset + itemsPerPage);
-            setPosts(newPosts);
-            setHasMorePosts(newPosts.length < allPosts.length);
-        }
-    }, [loadingPosts, hasMorePosts, posts.length, allPosts]);
+    }, [fetchFlashesPhotos, fetchGrainPhotos]);
 
     return (
-        <DataContext.Provider value={{ 
-            blogs, 
-            posts, 
-            allPosts,
+        <DataContext.Provider value={{
+            blogs,
             photos,
-            loadingBlogs, 
-            loadingPosts,
+            loadingBlogs,
             loadingPhotos,
-            hasMorePosts,
-            fetchMorePosts,
             resolvedHandle,
             resolvedPds,
             hitsCount
