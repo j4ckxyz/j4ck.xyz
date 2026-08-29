@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub, faBluesky } from '@fortawesome/free-brands-svg-icons'
@@ -43,32 +42,13 @@ const Section = ({ label, cta, to, children }) => (
     </section>
 )
 
-// Light-touch GitHub preview for the home strip only — Repos.jsx owns the
-// full listing (stars, forks, language dot). This just needs 3 names.
-const useRepoPreview = () => {
-    const [repos, setRepos] = useState([])
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        let cancelled = false
-        fetch('https://api.github.com/users/j4ckxyz/repos?sort=updated&per_page=3')
-            .then((r) => (r.ok ? r.json() : []))
-            .then((data) => !cancelled && setRepos(Array.isArray(data) ? data : []))
-            .catch(() => {})
-            .finally(() => !cancelled && setLoading(false))
-        return () => {
-            cancelled = true
-        }
-    }, [])
-
-    return { repos, loading }
-}
-
 function Home() {
-    const { photos, loadingPhotos, blogs, loadingBlogs } = useData()
-    const { repos, loading: loadingRepos } = useRepoPreview()
+    // repos/loadingRepos come from DataContext — shared with Repos.jsx so the
+    // page doesn't spend a second, uncached GitHub API call on every visit.
+    const { photos, loadingPhotos, blogs, loadingBlogs, repos, loadingRepos } = useData()
     const photoStrip = (photos || []).slice(0, 6)
     const latestPosts = (blogs || []).slice(0, 3)
+    const repoPreview = (repos || []).slice(0, 3)
 
     return (
         <div className="w-full max-w-[1100px] mx-auto px-1 pb-8">
@@ -135,7 +115,7 @@ function Home() {
                                     <span className="max-w-[46ch] text-[var(--text-secondary)] transition-colors group-hover:text-[var(--text-primary)]">
                                         {post.title}
                                     </span>
-                                    <span className="font-mono text-xs text-[var(--text-faint)]">
+                                    <span className="font-mono text-xs text-[var(--text-muted)]">
                                         {new Date(post.publishedAt).toLocaleDateString(undefined, {
                                             year: 'numeric',
                                             month: 'short',
@@ -154,9 +134,9 @@ function Home() {
 
             {/* Code */}
             <Section label="code" cta="all repos" to="/repos">
-                {repos.length > 0 ? (
+                {repoPreview.length > 0 ? (
                     <ul className="divide-y divide-[var(--border-color)] border-t border-[var(--border-color)]">
-                        {repos.map((repo) => (
+                        {repoPreview.map((repo) => (
                             <li key={repo.id}>
                                 <a
                                     href={repo.html_url}
@@ -167,7 +147,7 @@ function Home() {
                                     <span className="max-w-[46ch] font-mono text-[var(--text-secondary)] transition-colors group-hover:text-[var(--text-primary)]">
                                         {repo.name}
                                     </span>
-                                    <span className="flex items-center gap-3 font-mono text-xs text-[var(--text-faint)]">
+                                    <span className="flex items-center gap-3 font-mono text-xs text-[var(--text-muted)]">
                                         {repo.language && <span>{repo.language}</span>}
                                         {repo.stargazers_count > 0 && (
                                             <span className="inline-flex items-center gap-1">

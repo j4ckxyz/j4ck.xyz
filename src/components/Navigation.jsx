@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouse, faCamera, faNewspaper, faCode } from '@fortawesome/free-solid-svg-icons';
 
+// Global Tab/digit-key route hijack lived here before — it intercepted Tab
+// on every page (no text input on this site ever satisfied the "don't hijack
+// while typing" guard), replacing native focus movement with page navigation
+// site-wide. Removed: Tab and the digit keys now do what a keyboard user
+// expects; NavLink already makes every nav item reachable by Tab.
 const navItems = [
     { key: '1', path: '/', label: 'home', icon: faHouse },
     { key: '2', path: '/photos', label: 'photos', icon: faCamera },
@@ -11,29 +16,6 @@ const navItems = [
 ];
 
 const Navigation = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    useEffect(() => {
-        const handleKeyPress = (e) => {
-            if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
-
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                const currentIndex = navItems.findIndex(item => item.path === location.pathname);
-                const nextIndex = (currentIndex + 1) % navItems.length;
-                navigate(navItems[nextIndex].path);
-                return;
-            }
-
-            const item = navItems.find((item) => item.key === e.key);
-            if (item) navigate(item.path);
-        };
-
-        window.addEventListener('keydown', handleKeyPress);
-        return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [navigate, location.pathname]);
-
     return (
         <>
             {/* Desktop top bar */}

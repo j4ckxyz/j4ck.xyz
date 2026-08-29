@@ -1,10 +1,5 @@
-// Minimal "Thock" sound (short mechanical click)
-// Base64 encoded WAV or MP3 is best for immediate playback without external fetching.
-const CLICK_SOUND = "data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YRAAAACAgICAgICAgICAgICAgICAf39/gYGBg4ODhISEhYWFhoaGh4eHiIiIiYmJiYmJiYiIiIeHh4aGhoWFhYSEhIODg4KCgoGBgYCAgH9/f35+fn19fXx8fHt7e3p6enl5eXh4eHd3d3V1dXR0dHNzc3JycHFxcXBwcG9vb25ubm1tbWxsbGtraw==";
-
-// Actually, let's use a slightly more real synthesized "thock" or simply a filtered short noise burst.
-// For simplicity in a file, we can use the Web Audio API to synthesize a pleasant thock without a large base64 string.
-
+// Short mechanical "thock" click, synthesized via Web Audio on each call —
+// no asset to load, no base64 blob to ship.
 let audioContext = null;
 
 export const playKeySound = () => {
