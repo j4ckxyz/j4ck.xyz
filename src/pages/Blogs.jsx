@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import SEO from '../components/SEO';
 import useKeyboardNav from '../hooks/useKeyboardNav';
@@ -8,45 +9,68 @@ const Blogs = () => {
     const containerRef = useRef(null);
     useKeyboardNav(containerRef, 'a[href]');
 
-    const getPostUrl = (uri) => {
-        const rkey = uri.split('/').pop();
-        return `https://blog.j4ck.xyz/${rkey}`;
-    };
-
     return (
         <div className="w-full">
             <SEO
-                title="Blogs"
-                description="Thoughts and articles via Leaflet."
+                title="Writing"
+                description="Longer-form posts, published to the ATmosphere with standard.site."
                 image="blogs.png"
                 path="/blogs"
             />
-            <h1 className="text-4xl font-bold mb-10">
-                /blogs <span className="text-sm font-normal text-[var(--text-muted)]">via <a href="https://leaflet.pub" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Leaflet</a></span>
-            </h1>
 
-            {loadingBlogs ? (
-                <div className="animate-pulse text-red-500 font-mono">Loading data stream...</div>
+            <h1 className="text-4xl font-bold mb-3">
+                /writing{' '}
+                <span className="text-sm font-normal text-[var(--text-muted)]">
+                    via{' '}
+                    <a
+                        href="https://standard.site"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline decoration-dotted transition-colors hover:text-[var(--accent-red)]"
+                    >
+                        standard.site
+                    </a>
+                </span>
+            </h1>
+            <p className="mb-10 max-w-[60ch] text-sm text-[var(--text-muted)]">
+                Read here, or open a post on{' '}
+                <a
+                    href="https://blog.j4ck.xyz"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[var(--accent-red)] underline decoration-dotted underline-offset-4"
+                >
+                    blog.j4ck.xyz
+                </a>{' '}
+                to comment and subscribe.
+            </p>
+
+            {loadingBlogs && blogs.length === 0 ? (
+                <div className="animate-pulse font-mono text-[var(--accent-red)]">Loading data stream...</div>
             ) : (
                 <div ref={containerRef} className="grid gap-6">
-                    {blogs.map((post) => {
-                        const content = post.value;
-                        return (
-                            <a
-                                key={post.uri}
-                                href={getPostUrl(post.uri)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block bg-[var(--card-bg)] border border-[var(--border-color)] p-6 rounded-xl hover:border-red-500 transition-colors group"
-                            >
-                                <h2 className="text-2xl font-bold mb-2 group-hover:text-red-500 transition-colors font-mono">{content.title}</h2>
-                                <p className="text-[var(--text-secondary)] mb-4 line-clamp-2 font-sans">{content.description}</p>
-                                <div className="text-xs text-[var(--text-muted)] uppercase tracking-widest font-mono">
-                                    {new Date(content.publishedAt || content.createdAt).toLocaleDateString()}
-                                </div>
-                            </a>
-                        )
-                    })}
+                    {blogs.map((post) => (
+                        <Link
+                            key={post.uri}
+                            to={`/blogs/${post.rkey}`}
+                            className="group block rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] p-6 transition-colors hover:border-[var(--accent-red)]"
+                        >
+                            <h2 className="mb-2 font-mono text-2xl font-bold transition-colors group-hover:text-[var(--accent-red)]">
+                                {post.title}
+                            </h2>
+                            {post.description && (
+                                <p className="mb-4 line-clamp-2 font-sans text-[var(--text-secondary)]">{post.description}</p>
+                            )}
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">
+                                <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
+                                {post.tags.slice(0, 3).map((tag) => (
+                                    <span key={tag} className="rounded-full border border-[var(--border-color)] px-2 py-0.5 normal-case tracking-normal">
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        </Link>
+                    ))}
                 </div>
             )}
         </div>

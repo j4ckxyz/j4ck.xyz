@@ -59,6 +59,15 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
+    <!-- Photo/content origins. The TLS + DNS handshakes for these start before
+         the JS bundle has parsed, which is most of the first-load latency on
+         the photo grid. -->
+    <link rel="preconnect" href="https://eurosky.social" crossorigin>
+    <link rel="preconnect" href="https://cdn.grain.social" crossorigin>
+    <link rel="preconnect" href="https://cdn.bsky.app" crossorigin>
+    <link rel="dns-prefetch" href="https://grain.social">
+    <link rel="dns-prefetch" href="https://public.api.bsky.app">
+
     <!-- Fonts — Bricolage Grotesque (display), Hanken Grotesk (body), JetBrains Mono (accent) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

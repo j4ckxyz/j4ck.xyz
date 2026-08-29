@@ -12,6 +12,7 @@ import './App.css'
 // are code-split so their code and data libraries load only on navigation.
 const Photos = lazy(() => import('./pages/Photos'))
 const Blogs = lazy(() => import('./pages/Blogs'))
+const BlogPost = lazy(() => import('./pages/BlogPost'))
 const Repos = lazy(() => import('./pages/Repos'))
 
 const RouteFallback = () => (
@@ -71,6 +72,7 @@ function App() {
               <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
               <Route path="/photos" element={<PageWrapper><Photos /></PageWrapper>} />
               <Route path="/blogs" element={<PageWrapper><Blogs /></PageWrapper>} />
+              <Route path="/blogs/:rkey" element={<PageWrapper><BlogPost /></PageWrapper>} />
               <Route path="/repos" element={<PageWrapper><Repos /></PageWrapper>} />
             </Routes>
           </Suspense>

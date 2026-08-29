@@ -1,426 +1,308 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import { DID, DEFAULT_PDS, DEFAULT_HANDLE, fetchJson, listRecordsUrl, rkeyOf } from '../utils/atproto';
 
 const DataContext = createContext();
 
-const PHOTOS_CACHE_KEY = 'flashes_photos_cache';
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-const DID = 'did:plc:4hawmtgzjx3vclfyphbhfn7v';
-const QUICKSLICES_URL = 'https://quickslices.atproto.uk/graphql';
+const PHOTOS_CACHE_KEY = 'photos_cache_v2';
+const DOCS_CACHE_KEY = 'standard_docs_cache_v1';
+// Cache is served immediately on load regardless of age; this only decides
+// whether to kick off a background refresh behind it.
+const CACHE_FRESH_FOR = 5 * 60 * 1000;
+
+const GRAIN_FEED = 'https://grain.social/xrpc/dev.hatk.getFeed';
+
+const readCache = (key) => {
+    try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed?.data) return null;
+        return parsed;
+    } catch {
+        return null;
+    }
+};
+
+const writeCache = (key, data) => {
+    try {
+        localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
+    } catch {
+        /* quota or private mode — cache is an optimisation, not a requirement */
+    }
+};
+
+const byNewest = (a, b) => new Date(b.date_published) - new Date(a.date_published);
 
 export const DataProvider = ({ children }) => {
-    const [blogs, setBlogs] = useState([]);
-    const [photos, setPhotos] = useState([]);
-    const [loadingBlogs, setLoadingBlogs] = useState(true);
-    const [loadingPhotos, setLoadingPhotos] = useState(true);
-    const [resolvedHandle, setResolvedHandle] = useState('j4ck.xyz');
-    const [resolvedPds, setResolvedPds] = useState('https://eurosky.social');
+    const [blogs, setBlogs] = useState(() => readCache(DOCS_CACHE_KEY)?.data ?? []);
+    const [publications, setPublications] = useState([]);
+    const [photos, setPhotos] = useState(() => readCache(PHOTOS_CACHE_KEY)?.data ?? []);
+    const [loadingBlogs, setLoadingBlogs] = useState(() => !readCache(DOCS_CACHE_KEY));
+    const [loadingPhotos, setLoadingPhotos] = useState(() => !readCache(PHOTOS_CACHE_KEY));
+    const [resolvedHandle, setResolvedHandle] = useState(DEFAULT_HANDLE);
+    const [resolvedPds, setResolvedPds] = useState(DEFAULT_PDS);
     const [hitsCount, setHitsCount] = useState(null);
 
-    // Extract hashtags from post text and facets
-    const extractHashtags = (text, facets = []) => {
-        const tags = [];
-        
-        // Extract from facets (most reliable)
-        if (facets) {
-            facets.forEach(facet => {
-                if (facet.features?.[0]?.['$type'] === 'app.bsky.richtext.facet#tag') {
-                    tags.push(facet.features[0].tag.toLowerCase());
-                }
-            });
-        }
-        
-        // Also extract from text as fallback
-        const hashtagMatches = text.match(/#[\w]+/g) || [];
-        hashtagMatches.forEach(tag => {
-            tags.push(tag.substring(1).toLowerCase());
-        });
-        
-        return [...new Set(tags)]; // Remove duplicates
-    };
+    // Photos stream in from two independent sources. Merging through a ref keeps
+    // whichever arrives first on screen without the other overwriting it.
+    const photoSources = useRef({ flashes: null, grain: null });
 
-    // Transform Bluesky post to our format
-    const transformBlueskyPost = useCallback((feedItem) => {
-        const post = feedItem.post;
-        const record = post.record;
-        
-        // Extract images
-        const images = [];
-        if (post.embed?.$type === 'app.bsky.embed.images#view') {
-            post.embed.images.forEach((img, index) => {
-                // Try to get aspect ratio from record if not in view
-                let aspectRatio = img.aspectRatio;
-                if (!aspectRatio && record.embed?.images?.[index]?.aspectRatio) {
-                    aspectRatio = record.embed.images[index].aspectRatio;
-                }
-
-                images.push({
-                    thumb: img.thumb,
-                    fullsize: img.fullsize,
-                    alt: img.alt || '',
-                    aspectRatio
-                });
-            });
+    const mergePhotos = useCallback((source, items) => {
+        photoSources.current[source] = items;
+        const { flashes, grain } = photoSources.current;
+        const merged = [...(grain || []), ...(flashes || [])].sort(byNewest);
+        if (merged.length > 0) setPhotos(merged);
+        if (flashes !== null && grain !== null) {
+            setLoadingPhotos(false);
+            if (merged.length > 0) writeCache(PHOTOS_CACHE_KEY, merged);
         }
-        
-        // Handle recordWithMedia (images + quote)
-        if (post.embed?.$type === 'app.bsky.embed.recordWithMedia#view' && 
-            post.embed.media?.$type === 'app.bsky.embed.images#view') {
-            post.embed.media.images.forEach((img, index) => {
-                // Try to get aspect ratio from record media if not in view
-                let aspectRatio = img.aspectRatio;
-                if (!aspectRatio && record.embed?.media?.images?.[index]?.aspectRatio) {
-                    aspectRatio = record.embed.media.images[index].aspectRatio;
-                }
-
-                images.push({
-                    thumb: img.thumb,
-                    fullsize: img.fullsize,
-                    alt: img.alt || '',
-                    aspectRatio
-                });
-            });
-        }
-        
-        // Extract hashtags
-        const hashtags = extractHashtags(record.text, record.facets);
-        
-        // Get post URL
-        const parts = post.uri.split('/');
-        const postId = parts[parts.length - 1];
-        const url = `https://bsky.app/profile/${post.author.handle}/post/${postId}`;
-        
-        return {
-            id: post.uri,
-            url,
-            text: record.text,
-            facets: record.facets,
-            date_published: post.indexedAt,
-            author: {
-                handle: post.author.handle,
-                displayName: post.author.displayName,
-                avatar: post.author.avatar
-            },
-            images,
-            hashtags,
-            embed: post.embed,
-            isReply: !!record.reply,
-            isRepost: !!feedItem.reason,
-            likeCount: post.likeCount || 0,
-            repostCount: post.repostCount || 0,
-            replyCount: post.replyCount || 0
-        };
     }, []);
 
-    // Fetch Flashes photos using QuickSlices GraphQL API or PDS Fallback
-    const fetchFlashesPhotos = useCallback(async (resolvedPdsUrl = 'https://eurosky.social') => {
+    /* --- Flashes -------------------------------------------------------------
+       The portfolio record lists post URIs; the Bluesky appview hydrates them.
+       Read the portfolio straight from the PDS — it's the source of truth and
+       answers in ~250ms, where the third-party index in front of it has been
+       unreliable enough to hang the page for a minute.
+    ------------------------------------------------------------------------- */
+    const fetchFlashesPhotos = useCallback(async (pds) => {
+        let postUris = [];
         try {
-            let postUris = [];
-
-            // 1. Try QuickSlices (GraphQL)
-            try {
-                // Query Flashes portfolio from QuickSlices
-                // Note: using blueFlashesActorPortfolio which contains the subject reference
-                const query = `
-                    query GetFlashesPortfolio($did: String!) {
-                        blueFlashesActorPortfolio(
-                            where: { did: { eq: $did } }
-                            sortBy: [{ field: sortOrder, direction: ASC }, { field: createdAt, direction: DESC }]
-                            first: 100
-                        ) {
-                            edges {
-                                node {
-                                    subject {
-                                        uri
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `;
-                
-                const response = await fetch(QUICKSLICES_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query, variables: { did: DID } })
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    const edges = result.data?.blueFlashesActorPortfolio?.edges || [];
-                    if (edges.length > 0) {
-                        postUris = edges.map(e => e.node.subject?.uri).filter(Boolean);
-                    }
-                }
-            } catch (e) {
-                console.warn('[QuickSlices] Fetch failed, trying fallback:', e);
-            }
-
-            // 2. Fallback to PDS if QuickSlices returned nothing
-            if (postUris.length === 0) {
-                try {
-                    const pdsUrl = `${resolvedPdsUrl}/xrpc/com.atproto.repo.listRecords?repo=${DID}&collection=blue.flashes.actor.portfolio&limit=100`;
-                    const response = await fetch(pdsUrl);
-                    if (response.ok) {
-                        const data = await response.json();
-                        // Sort by sortOrder (asc) then createdAt (desc)
-                        const records = data.records || [];
-                        records.sort((a, b) => {
-                            const orderA = a.value.sortOrder ?? 0;
-                            const orderB = b.value.sortOrder ?? 0;
-                            if (orderA !== orderB) return orderA - orderB;
-                            return new Date(b.value.createdAt) - new Date(a.value.createdAt);
-                        });
-                        
-                        postUris = records.map(r => r.value.subject?.uri).filter(Boolean);
-                    }
-                } catch (e) {
-                    console.error('[PDS] Fetch failed:', e);
-                }
-            }
-
-            if (postUris.length === 0) return [];
-
-            // 3. Fetch full posts from Bluesky AppView
-            const chunkSize = 25;
-            let allBlueskyPosts = [];
-
-            for (let i = 0; i < postUris.length; i += chunkSize) {
-                const chunk = postUris.slice(i, i + chunkSize);
-                const queryParams = chunk.map(uri => `uris=${encodeURIComponent(uri)}`).join('&');
-                
-                try {
-                    const bskyResponse = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?${queryParams}`, {
-                        headers: { 'Accept': 'application/json' }
-                    });
-
-                    if (bskyResponse.ok) {
-                        const bskyData = await bskyResponse.json();
-                        if (bskyData.posts) {
-                            allBlueskyPosts = [...allBlueskyPosts, ...bskyData.posts];
-                        }
-                    }
-                } catch (err) {
-                    console.error(`[Bluesky] Error fetching chunk ${i}:`, err);
-                }
-            }
-
-            // 4. Transform into photo objects
-            const photos = allBlueskyPosts
-                .map(post => transformBlueskyPost({ post, reason: undefined }))
-                .filter(post => post.images && post.images.length > 0) // Only posts with images
-                .map(post => ({
-                    ...post,
-                    image: post.images[0], // Use first image for main display
-                    source: 'flashes'
-                }));
-
-            return photos;
-            
+            const data = await fetchJson(
+                listRecordsUrl({ pds, collection: 'blue.flashes.actor.portfolio', limit: 100 }),
+                { timeout: 6000 }
+            );
+            const records = data.records || [];
+            records.sort((a, b) => {
+                const orderA = a.value.sortOrder ?? 0;
+                const orderB = b.value.sortOrder ?? 0;
+                if (orderA !== orderB) return orderA - orderB;
+                return new Date(b.value.createdAt) - new Date(a.value.createdAt);
+            });
+            postUris = records.map((r) => r.value.subject?.uri).filter(Boolean);
         } catch (e) {
-            console.error("Failed to fetch Flashes photos:", e);
+            console.error('[Flashes] portfolio fetch failed:', e);
             return [];
         }
-    }, [transformBlueskyPost]);
 
-    // Fetch Grain photos using grain.social public feed API
-    const fetchGrainPhotos = useCallback(async () => {
-        try {
-            const url = `https://grain.social/xrpc/dev.hatk.getFeed?feed=actor&actor=${DID}&limit=30`;
-            const response = await fetch(url, {
-                headers: { 'Accept': 'application/json' }
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch Grain feed');
-            }
-            const data = await response.json();
-            if (!data.items) return [];
+        if (postUris.length === 0) return [];
 
-            const photos = data.items.map(gallery => {
-                const images = (gallery.items || []).map(img => ({
+        // All chunks in flight at once — serially awaiting them multiplied the
+        // wait by the number of chunks for no reason.
+        const chunks = [];
+        for (let i = 0; i < postUris.length; i += 25) chunks.push(postUris.slice(i, i + 25));
+
+        const results = await Promise.allSettled(
+            chunks.map((chunk) => {
+                const params = chunk.map((uri) => `uris=${encodeURIComponent(uri)}`).join('&');
+                return fetchJson(`https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?${params}`, { timeout: 8000 });
+            })
+        );
+
+        const bskyPosts = results.flatMap((r) => (r.status === 'fulfilled' ? r.value.posts || [] : []));
+
+        return bskyPosts
+            .map((post) => {
+                const record = post.record || {};
+                const view =
+                    post.embed?.$type === 'app.bsky.embed.images#view'
+                        ? post.embed
+                        : post.embed?.media?.$type === 'app.bsky.embed.images#view'
+                          ? post.embed.media
+                          : null;
+                if (!view) return null;
+
+                const recordImages = record.embed?.images || record.embed?.media?.images || [];
+                const images = view.images.map((img, i) => ({
                     thumb: img.thumb,
                     fullsize: img.fullsize,
                     alt: img.alt || '',
-                    aspectRatio: img.aspectRatio
+                    aspectRatio: img.aspectRatio || recordImages[i]?.aspectRatio,
                 }));
-                const parts = gallery.uri.split('/');
-                const rkey = parts[parts.length - 1];
-                const galleryUrl = `https://grain.social/profile/${gallery.creator.did}/gallery/${rkey}`;
 
                 return {
-                    id: gallery.uri,
-                    url: galleryUrl,
-                    text: gallery.description || gallery.title || '',
-                    date_published: gallery.createdAt,
+                    id: post.uri,
+                    url: `https://bsky.app/profile/${post.author.handle}/post/${rkeyOf(post.uri)}`,
+                    text: record.text || '',
+                    date_published: post.indexedAt,
                     author: {
-                        handle: gallery.creator.handle,
-                        displayName: gallery.creator.displayName,
-                        avatar: gallery.creator.avatar
+                        handle: post.author.handle,
+                        displayName: post.author.displayName,
+                        avatar: post.author.avatar,
                     },
                     images,
-                    image: images[0] || null,
-                    hashtags: [],
-                    source: 'grain'
+                    image: images[0],
+                    source: 'flashes',
                 };
-            }).filter(p => p.image);
+            })
+            .filter(Boolean);
+    }, []);
 
-            return photos;
+    /* --- Grain ---------------------------------------------------------------
+       `dev.hatk.getFeed` is Grain's own published API (declared in the lexicons
+       of grainsocial/grain); `feed=actor` is the galleries feed for one DID.
+    ------------------------------------------------------------------------- */
+    const fetchGrainPhotos = useCallback(async () => {
+        try {
+            const params = new URLSearchParams({ feed: 'actor', actor: DID, limit: '30' });
+            const data = await fetchJson(`${GRAIN_FEED}?${params}`, { timeout: 8000 });
+
+            return (data.items || [])
+                .map((gallery) => {
+                    const images = (gallery.items || []).map((img) => ({
+                        thumb: img.thumb,
+                        fullsize: img.fullsize,
+                        alt: img.alt || '',
+                        aspectRatio: img.aspectRatio,
+                    }));
+                    if (images.length === 0) return null;
+
+                    return {
+                        id: gallery.uri,
+                        url: `https://grain.social/profile/${gallery.creator.did}/gallery/${rkeyOf(gallery.uri)}`,
+                        text: gallery.description || gallery.title || '',
+                        date_published: gallery.createdAt,
+                        author: {
+                            handle: gallery.creator.handle,
+                            displayName: gallery.creator.displayName,
+                            avatar: gallery.creator.avatar,
+                        },
+                        images,
+                        image: images[0],
+                        source: 'grain',
+                    };
+                })
+                .filter(Boolean);
         } catch (e) {
-            console.error("Failed to fetch Grain photos:", e);
+            console.error('[Grain] feed fetch failed:', e);
             return [];
         }
     }, []);
 
-    // Initial load
+    /* --- standard.site -------------------------------------------------------
+       `site.standard.document` carries the full post body, so posts render
+       inline here; `site.standard.publication` gives the canonical web home of
+       each one (publication.url + document.path).
+    ------------------------------------------------------------------------- */
+    const fetchDocuments = useCallback(async (pds) => {
+        const [pubResult, docResult] = await Promise.allSettled([
+            fetchJson(listRecordsUrl({ pds, collection: 'site.standard.publication', limit: 100 }), { timeout: 6000 }),
+            fetchJson(listRecordsUrl({ pds, collection: 'site.standard.document', limit: 100 }), { timeout: 6000 }),
+        ]);
+
+        const pubs = (pubResult.status === 'fulfilled' ? pubResult.value.records || [] : []).map((r) => ({
+            uri: r.uri,
+            url: r.value.url,
+            name: r.value.name,
+            description: r.value.description,
+            showComments: r.value.preferences?.showComments !== false,
+        }));
+        setPublications(pubs);
+
+        if (docResult.status !== 'fulfilled') {
+            console.error('[standard.site] document fetch failed:', docResult.reason);
+            return null;
+        }
+
+        const pubByUri = Object.fromEntries(pubs.map((p) => [p.uri, p]));
+
+        const docs = (docResult.value.records || [])
+            .map((record) => {
+                const value = record.value;
+                const publication = pubByUri[value.site];
+                const base = publication?.url?.replace(/\/$/, '');
+                const path = value.path?.startsWith('/') ? value.path : value.path ? `/${value.path}` : '';
+
+                return {
+                    uri: record.uri,
+                    rkey: rkeyOf(record.uri),
+                    title: value.title,
+                    description: value.description,
+                    publishedAt: value.publishedAt,
+                    tags: value.tags || [],
+                    content: value.content,
+                    textContent: value.textContent,
+                    bskyPostRef: value.bskyPostRef,
+                    canonicalUrl: base ? `${base}${path}` : null,
+                    publicationName: publication?.name || null,
+                    showComments: publication?.showComments ?? true,
+                };
+            })
+            .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+
+        return docs;
+    }, []);
+
     useEffect(() => {
-        const resolveDidAndLoad = async () => {
-            let currentPds = 'https://eurosky.social';
-            let currentHandle = 'j4ck.xyz';
-            try {
-                const response = await fetch(`https://plc.directory/${DID}`);
-                if (response.ok) {
-                    const doc = await response.json();
-                    const pdsService = doc.service?.find(
-                        s => s.id === '#atproto_pds' || s.type === 'AtprotoPersonalDataServer'
+        let cancelled = false;
+
+        const load = async () => {
+            // Start the data fetches against the known PDS immediately and let the
+            // DID resolution run alongside them. Blocking every request behind a
+            // plc.directory round trip added ~400ms to first paint for a value
+            // that has not changed.
+            const pds = DEFAULT_PDS;
+
+            fetchJson(`https://plc.directory/${DID}`, { timeout: 6000 })
+                .then((doc) => {
+                    if (cancelled) return;
+                    const service = doc.service?.find(
+                        (s) => s.id === '#atproto_pds' || s.type === 'AtprotoPersonalDataServer'
                     );
-                    if (pdsService?.serviceEndpoint) {
-                        currentPds = pdsService.serviceEndpoint;
-                    }
-                    const alias = doc.alsoKnownAs?.find(a => a.startsWith('at://'));
-                    if (alias) {
-                        currentHandle = alias.substring(5);
-                    }
+                    if (service?.serviceEndpoint) setResolvedPds(service.serviceEndpoint);
+                    const alias = doc.alsoKnownAs?.find((a) => a.startsWith('at://'));
+                    if (alias) setResolvedHandle(alias.substring(5));
+                })
+                .catch((e) => console.error('[DID] PLC resolution failed, using defaults:', e));
+
+            fetchDocuments(pds).then((docs) => {
+                if (cancelled) return;
+                if (docs) {
+                    setBlogs(docs);
+                    writeCache(DOCS_CACHE_KEY, docs);
                 }
-            } catch (e) {
-                console.error('[DID] Failed to resolve from PLC directory, using fallbacks:', e);
+                setLoadingBlogs(false);
+            });
+
+            const cachedPhotos = readCache(PHOTOS_CACHE_KEY);
+            const photosAreFresh = cachedPhotos && Date.now() - cachedPhotos.timestamp < CACHE_FRESH_FOR;
+            if (cachedPhotos) setLoadingPhotos(false);
+
+            const refreshPhotos = () => {
+                fetchFlashesPhotos(pds).then((items) => !cancelled && mergePhotos('flashes', items));
+                fetchGrainPhotos().then((items) => !cancelled && mergePhotos('grain', items));
+            };
+
+            if (photosAreFresh) {
+                // Let the cached grid paint and settle before spending bandwidth.
+                setTimeout(() => !cancelled && refreshPhotos(), 1200);
+            } else {
+                refreshPhotos();
             }
 
-            setResolvedPds(currentPds);
-            setResolvedHandle(currentHandle);
-
-            const fetchBlogs = async () => {
-                // Loaded on demand so @atproto/api stays out of the initial bundle.
-                const { BskyAgent } = await import('@atproto/api');
-                const agent = new BskyAgent({ service: currentPds });
-                try {
-                    const records = await agent.api.com.atproto.repo.listRecords({
-                        repo: currentHandle,
-                        collection: 'pub.leaflet.document',
-                        limit: 20,
-                    });
-                    setBlogs(records.data.records);
-                } catch (e) {
-                    console.error("Failed to fetch blogs:", e);
-                } finally {
-                    setLoadingBlogs(false);
-                }
-            };
-
-            const fetchPhotos = async () => {
-                setLoadingPhotos(true);
-                
-                // Try cache first
-                try {
-                    const cached = localStorage.getItem(PHOTOS_CACHE_KEY);
-                    if (cached) {
-                        const { data, timestamp } = JSON.parse(cached);
-                        const age = Date.now() - timestamp;
-                        const hasGrain = data && data.some(p => p.source === 'grain');
-                        if (age < CACHE_DURATION && hasGrain) {
-                            setPhotos(data);
-                            setLoadingPhotos(false);
-                            
-                            // Background refresh
-                            setTimeout(async () => {
-                                try {
-                                    const flashesFresh = await fetchFlashesPhotos(currentPds);
-                                    const grainFresh = await fetchGrainPhotos();
-                                    const fresh = [...grainFresh, ...flashesFresh].sort(
-                                        (a, b) => new Date(b.date_published) - new Date(a.date_published)
-                                    );
-                                    if (fresh.length > 0) {
-                                        setPhotos(fresh);
-                                        localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
-                                            data: fresh,
-                                            timestamp: Date.now()
-                                        }));
-                                    }
-                                } catch (err) {
-                                    console.error('Background refresh error:', err);
-                                }
-                            }, 1000);
-                            return;
-                        }
-                    }
-                } catch (e) {
-                    console.error('Photos cache load error:', e);
-                }
-                
-                // No cache - fetch both in parallel
-                try {
-                    const [flashesPhotos, grainPhotos] = await Promise.all([
-                        fetchFlashesPhotos(currentPds),
-                        fetchGrainPhotos()
-                    ]);
-
-                    const hybridPhotos = [...grainPhotos, ...flashesPhotos].sort(
-                        (a, b) => new Date(b.date_published) - new Date(a.date_published)
-                    );
-
-                    if (hybridPhotos.length > 0) {
-                        setPhotos(hybridPhotos);
-                        try {
-                            localStorage.setItem(PHOTOS_CACHE_KEY, JSON.stringify({
-                                data: hybridPhotos,
-                                timestamp: Date.now()
-                            }));
-                        } catch (e) {
-                            console.error('Photos cache save error:', e);
-                        }
-                    }
-                } catch (err) {
-                    console.error('Error fetching hybrid photos:', err);
-                }
-                
-                setLoadingPhotos(false);
-            };
-
-            const fetchHits = async () => {
-                try {
-                    const response = await fetch('/api/hits');
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data && typeof data.hits === 'number') {
-                            setHitsCount(data.hits);
-                        } else {
-                            setHitsCount(1337);
-                        }
-                    } else {
-                        setHitsCount(1337);
-                    }
-                } catch (e) {
-                    console.error('[Hits] Failed to fetch visitor counter:', e);
-                    setHitsCount(1337);
-                }
-            };
-
-            fetchBlogs();
-            fetchPhotos();
-            fetchHits();
+            fetchJson('/api/hits', { timeout: 5000 })
+                .then((data) => !cancelled && setHitsCount(typeof data?.hits === 'number' ? data.hits : 1337))
+                .catch(() => !cancelled && setHitsCount(1337));
         };
 
-        resolveDidAndLoad();
-    }, [fetchFlashesPhotos, fetchGrainPhotos]);
+        load();
+        return () => {
+            cancelled = true;
+        };
+    }, [fetchFlashesPhotos, fetchGrainPhotos, fetchDocuments, mergePhotos]);
 
     return (
-        <DataContext.Provider value={{
-            blogs,
-            photos,
-            loadingBlogs,
-            loadingPhotos,
-            resolvedHandle,
-            resolvedPds,
-            hitsCount
-        }}>
+        <DataContext.Provider
+            value={{
+                blogs,
+                publications,
+                photos,
+                loadingBlogs,
+                loadingPhotos,
+                resolvedHandle,
+                resolvedPds,
+                hitsCount,
+            }}
+        >
             {children}
         </DataContext.Provider>
     );

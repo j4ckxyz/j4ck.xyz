@@ -3,7 +3,12 @@ import { useData } from '../context/DataContext';
 import SEO from '../components/SEO';
 import useKeyboardNav from '../hooks/useKeyboardNav';
 
-const PhotoItem = React.memo(({ photo, aspectClass, onLoad }) => {
+// The first row or two are above the fold on every viewport; letting the
+// browser lazy-load them means it doesn't start those requests until after
+// layout, which is the bulk of the perceived wait on a cold load.
+const EAGER_COUNT = 8;
+
+const PhotoItem = React.memo(({ photo, aspectClass, onLoad, priority }) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     const handleImageLoad = useCallback(() => {
@@ -31,7 +36,8 @@ const PhotoItem = React.memo(({ photo, aspectClass, onLoad }) => {
                         className={`w-full h-full object-cover group-hover:opacity-80 transition-opacity duration-300 ${
                             isLoaded ? 'opacity-100' : 'opacity-0'
                         }`}
-                        loading="lazy"
+                        loading={priority ? 'eager' : 'lazy'}
+                        fetchpriority={priority ? 'high' : 'auto'}
                         decoding="async"
                         onLoad={handleImageLoad}
                     />
@@ -112,12 +118,13 @@ const Photos = () => {
             {photoData.length > 0 && (
                 <>
                     <div ref={containerRef} className="photo-grid">
-                        {photoData.map((photo) => (
+                        {photoData.map((photo, i) => (
                             <PhotoItem
                                 key={photo.id}
                                 photo={photo}
                                 aspectClass={photo.aspectClass}
                                 onLoad={handleImageLoad}
+                                priority={i < EAGER_COUNT}
                             />
                         ))}
                     </div>
@@ -134,17 +141,17 @@ const Photos = () => {
                 </>
             )}
 
-            {/* No photos fallback - QuickSlices still backfilling */}
+            {/* Both sources came back empty or unreachable */}
             {!loadingPhotos && photoData.length === 0 && (
                 <div className="text-center py-12">
                     <div className="text-[var(--text-muted)] font-mono mb-4">
-                        ⏳ QuickSlices is still backfilling Flashes posts...
-                    </div>
-                    <div className="text-[var(--text-muted)] font-mono text-xs mb-2">
-                        Photos will appear here once the backfill completes.
+                        Couldn’t reach Flashes or Grain right now.
                     </div>
                     <div className="text-[var(--text-muted)] font-mono text-xs">
-                        Share photos at <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:underline">flashes.blue</a>
+                        Photos live at{' '}
+                        <a href="https://grain.social/profile/j4ck.xyz" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:underline">grain.social</a>
+                        {' '}and{' '}
+                        <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:underline">flashes.blue</a>
                     </div>
                 </div>
             )}
