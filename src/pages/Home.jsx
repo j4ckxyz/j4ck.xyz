@@ -1,4 +1,8 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faGithub, faBluesky } from '@fortawesome/free-brands-svg-icons'
+import { faCamera, faEnvelope, faStar } from '@fortawesome/free-solid-svg-icons'
 import { useData } from '../context/DataContext'
 import SEO from '../components/SEO'
 
@@ -7,16 +11,20 @@ const GITHUB = 'https://github.com/j4ckxyz'
 const GRAIN = 'https://grain.social/profile/did:plc:4hawmtgzjx3vclfyphbhfn7v'
 const EMAIL = 'mailto:jack@jglypt.net'
 
-// External link with an understated arrow that warms to red on hover
-const Out = ({ href, children }) => (
+// Circular icon button — used only for the hero's *external* profile links.
+// Internal destinations (photos, writing, code) live in the top nav and in
+// each section's own CTA below; keeping them out of here is what stops the
+// hero from just repeating the page around it.
+const IconLink = ({ href, label, icon }) => (
     <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="group inline-flex items-center gap-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+        aria-label={label}
+        title={label}
+        className="group inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border-color)] text-[var(--text-secondary)] transition-colors hover:border-[var(--accent-red)] hover:text-[var(--accent-red)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent-red)]"
     >
-        {children}
-        <span className="text-[var(--text-faint)] transition-colors group-hover:text-[var(--accent-red)]" aria-hidden="true">↗</span>
+        <FontAwesomeIcon icon={icon} className="text-[17px]" />
     </a>
 )
 
@@ -35,9 +43,32 @@ const Section = ({ label, cta, to, children }) => (
     </section>
 )
 
+// Light-touch GitHub preview for the home strip only — Repos.jsx owns the
+// full listing (stars, forks, language dot). This just needs 3 names.
+const useRepoPreview = () => {
+    const [repos, setRepos] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        let cancelled = false
+        fetch('https://api.github.com/users/j4ckxyz/repos?sort=updated&per_page=3')
+            .then((r) => (r.ok ? r.json() : []))
+            .then((data) => !cancelled && setRepos(Array.isArray(data) ? data : []))
+            .catch(() => {})
+            .finally(() => !cancelled && setLoading(false))
+        return () => {
+            cancelled = true
+        }
+    }, [])
+
+    return { repos, loading }
+}
+
 function Home() {
-    const { photos, loadingPhotos } = useData()
+    const { photos, loadingPhotos, blogs, loadingBlogs } = useData()
+    const { repos, loading: loadingRepos } = useRepoPreview()
     const photoStrip = (photos || []).slice(0, 6)
+    const latestPosts = (blogs || []).slice(0, 3)
 
     return (
         <div className="w-full max-w-[1100px] mx-auto px-1 pb-8">
@@ -56,12 +87,11 @@ function Home() {
                 <p className="mt-6 max-w-[46ch] text-lg md:text-xl leading-relaxed text-[var(--text-secondary)]">
                     creative developer &amp; photographer, building on the open social web.
                 </p>
-                <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 text-[15px]">
-                    <Out href={BLUESKY}>bluesky</Out>
-                    <Out href={GITHUB}>github</Out>
-                    <Out href={GRAIN}>photos</Out>
-                    <Link to="/blogs" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">writing</Link>
-                    <Out href={EMAIL}>email</Out>
+                <div className="mt-8 flex items-center gap-3">
+                    <IconLink href={BLUESKY} label="Bluesky" icon={faBluesky} />
+                    <IconLink href={GITHUB} label="GitHub" icon={faGithub} />
+                    <IconLink href={GRAIN} label="Grain (photos)" icon={faCamera} />
+                    <IconLink href={EMAIL} label="Email" icon={faEnvelope} />
                 </div>
             </section>
 
@@ -94,19 +124,67 @@ function Home() {
 
             {/* Writing */}
             <Section label="writing" cta="all writing" to="/blogs">
-                <p className="max-w-[55ch] text-[var(--text-secondary)]">
-                    Notes and essays, published on the open web via Leaflet.
-                </p>
+                {latestPosts.length > 0 ? (
+                    <ul className="divide-y divide-[var(--border-color)] border-t border-[var(--border-color)]">
+                        {latestPosts.map((post) => (
+                            <li key={post.uri}>
+                                <Link
+                                    to={`/blogs/${post.rkey}`}
+                                    className="group flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4"
+                                >
+                                    <span className="max-w-[46ch] text-[var(--text-secondary)] transition-colors group-hover:text-[var(--text-primary)]">
+                                        {post.title}
+                                    </span>
+                                    <span className="font-mono text-xs text-[var(--text-faint)]">
+                                        {new Date(post.publishedAt).toLocaleDateString(undefined, {
+                                            year: 'numeric',
+                                            month: 'short',
+                                        })}
+                                    </span>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="max-w-[55ch] text-[var(--text-secondary)]">
+                        {loadingBlogs ? 'Loading posts…' : 'Notes and essays, published to the open web.'}
+                    </p>
+                )}
             </Section>
 
             {/* Code */}
             <Section label="code" cta="all repos" to="/repos">
-                <p className="max-w-[55ch] text-[var(--text-secondary)]">
-                    Open-source experiments and small tools, mostly built around the AT Protocol.
-                </p>
-                <div className="mt-5">
-                    <Out href={GITHUB}>github.com/j4ckxyz</Out>
-                </div>
+                {repos.length > 0 ? (
+                    <ul className="divide-y divide-[var(--border-color)] border-t border-[var(--border-color)]">
+                        {repos.map((repo) => (
+                            <li key={repo.id}>
+                                <a
+                                    href={repo.html_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4"
+                                >
+                                    <span className="max-w-[46ch] font-mono text-[var(--text-secondary)] transition-colors group-hover:text-[var(--text-primary)]">
+                                        {repo.name}
+                                    </span>
+                                    <span className="flex items-center gap-3 font-mono text-xs text-[var(--text-faint)]">
+                                        {repo.language && <span>{repo.language}</span>}
+                                        {repo.stargazers_count > 0 && (
+                                            <span className="inline-flex items-center gap-1">
+                                                <FontAwesomeIcon icon={faStar} className="text-[10px]" />
+                                                {repo.stargazers_count}
+                                            </span>
+                                        )}
+                                    </span>
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="max-w-[55ch] text-[var(--text-secondary)]">
+                        {loadingRepos ? 'Loading repos…' : 'Open-source experiments, mostly built around the AT Protocol.'}
+                    </p>
+                )}
             </Section>
         </div>
     )
