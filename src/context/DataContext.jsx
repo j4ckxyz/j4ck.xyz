@@ -5,11 +5,13 @@ const DataContext = createContext();
 
 const PHOTOS_CACHE_KEY = 'photos_cache_v2';
 const DOCS_CACHE_KEY = 'standard_docs_cache_v1';
+const REPOS_CACHE_KEY = 'repos_cache_v1';
 // Cache is served immediately on load regardless of age; this only decides
 // whether to kick off a background refresh behind it.
 const CACHE_FRESH_FOR = 5 * 60 * 1000;
 
 const GRAIN_FEED = 'https://grain.social/xrpc/dev.hatk.getFeed';
+const GITHUB_USER = 'j4ckxyz';
 
 const readCache = (key) => {
     try {
@@ -42,6 +44,12 @@ export const DataProvider = ({ children }) => {
     const [resolvedHandle, setResolvedHandle] = useState(DEFAULT_HANDLE);
     const [resolvedPds, setResolvedPds] = useState(DEFAULT_PDS);
     const [hitsCount, setHitsCount] = useState(null);
+    const [repos, setRepos] = useState(() => readCache(REPOS_CACHE_KEY)?.data ?? []);
+    const [loadingRepos, setLoadingRepos] = useState(() => !readCache(REPOS_CACHE_KEY));
+    // Distinguishes "GitHub said no repos" from "GitHub wouldn't answer" (most
+    // often its unauthenticated 60/hr rate limit) — Home/Repos shouldn't show
+    // the same empty state for both.
+    const [reposError, setReposError] = useState(null);
 
     // Photos stream in from two independent sources. Merging through a ref keeps
     // whichever arrives first on screen without the other overwriting it.
@@ -232,6 +240,25 @@ export const DataProvider = ({ children }) => {
         return docs;
     }, []);
 
+    /* --- GitHub ----------------------------------------------------------
+       Shared by Home's preview strip and the /repos listing, so it's fetched
+       and cached exactly once instead of each page re-hitting GitHub's
+       unauthenticated (60/hr) rate limit independently.
+    ----------------------------------------------------------------------- */
+    const fetchRepos = useCallback(async () => {
+        try {
+            const data = await fetchJson(
+                `https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=10`,
+                { timeout: 6000 }
+            );
+            return { repos: Array.isArray(data) ? data : [], error: null };
+        } catch (e) {
+            console.error('[GitHub] repos fetch failed:', e);
+            const rateLimited = /\b403\b/.test(e.message || '');
+            return { repos: null, error: rateLimited ? 'rate_limited' : 'error' };
+        }
+    }, []);
+
     useEffect(() => {
         let cancelled = false;
 
@@ -282,13 +309,25 @@ export const DataProvider = ({ children }) => {
             fetchJson('/api/hits', { timeout: 5000 })
                 .then((data) => !cancelled && setHitsCount(typeof data?.hits === 'number' ? data.hits : 1337))
                 .catch(() => !cancelled && setHitsCount(1337));
+
+            fetchRepos().then(({ repos: fresh, error }) => {
+                if (cancelled) return;
+                if (fresh) {
+                    setRepos(fresh);
+                    writeCache(REPOS_CACHE_KEY, fresh);
+                    setReposError(null);
+                } else {
+                    setReposError(error);
+                }
+                setLoadingRepos(false);
+            });
         };
 
         load();
         return () => {
             cancelled = true;
         };
-    }, [fetchFlashesPhotos, fetchGrainPhotos, fetchDocuments, mergePhotos]);
+    }, [fetchFlashesPhotos, fetchGrainPhotos, fetchDocuments, fetchRepos, mergePhotos]);
 
     return (
         <DataContext.Provider
@@ -301,6 +340,9 @@ export const DataProvider = ({ children }) => {
                 resolvedHandle,
                 resolvedPds,
                 hitsCount,
+                repos,
+                loadingRepos,
+                reposError,
             }}
         >
             {children}

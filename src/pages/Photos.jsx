@@ -24,7 +24,7 @@ const PhotoItem = React.memo(({ photo, aspectClass, onLoad, priority }) => {
                 rel="noopener noreferrer"
                 className="block relative group h-full"
             >
-                <div className="relative h-full overflow-hidden rounded-lg border border-[var(--border-color)] hover:border-red-500 transition-colors bg-[var(--card-bg)]">
+                <div className="relative h-full overflow-hidden rounded-lg border border-[var(--border-color)] hover:border-[var(--accent-red)] transition-colors bg-[var(--card-bg)]">
                     {/* Loading skeleton */}
                     {!isLoaded && (
                         <div className="absolute inset-0 bg-[oklch(20%_0.012_15)] animate-pulse" />
@@ -103,13 +103,13 @@ const Photos = () => {
                 path="/photos"
             />
             <h1 className="text-4xl font-bold mb-10">
-                /photos <span className="text-sm font-normal text-[var(--text-muted)]">via <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Flashes</a> & <a href="https://grain.social" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 transition-colors underline decoration-dotted">Grain</a></span>
+                /photos <span className="text-sm font-normal text-[var(--text-muted)]">via <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--accent-red)] transition-colors underline decoration-dotted">Flashes</a> & <a href="https://grain.social" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--accent-red)] transition-colors underline decoration-dotted">Grain</a></span>
             </h1>
 
             {/* Initial loading state */}
             {loadingPhotos && photoData.length === 0 && (
                 <div className="text-center py-12">
-                    <div className="animate-pulse text-red-500 font-mono mb-2">Loading photos...</div>
+                    <div className="animate-pulse text-[var(--accent-red)] font-mono mb-2">Loading photos...</div>
                     <div className="text-[var(--text-muted)] text-xs font-mono">Fetching from Flashes & Grain</div>
                 </div>
             )}
@@ -149,9 +149,9 @@ const Photos = () => {
                     </div>
                     <div className="text-[var(--text-muted)] font-mono text-xs">
                         Photos live at{' '}
-                        <a href="https://grain.social/profile/j4ck.xyz" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:underline">grain.social</a>
+                        <a href="https://grain.social/profile/j4ck.xyz" target="_blank" rel="noopener noreferrer" className="text-[var(--accent-red)] hover:underline">grain.social</a>
                         {' '}and{' '}
-                        <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:underline">flashes.blue</a>
+                        <a href="https://flashes.blue" target="_blank" rel="noopener noreferrer" className="text-[var(--accent-red)] hover:underline">flashes.blue</a>
                     </div>
                 </div>
             )}

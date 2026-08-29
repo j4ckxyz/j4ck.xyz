@@ -55,7 +55,7 @@ const Blogs = () => {
                             to={`/blogs/${post.rkey}`}
                             className="group block rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] p-6 transition-colors hover:border-[var(--accent-red)]"
                         >
-                            <h2 className="mb-2 font-mono text-2xl font-bold transition-colors group-hover:text-[var(--accent-red)]">
+                            <h2 className="mb-2 font-display text-2xl font-bold transition-colors group-hover:text-[var(--accent-red)]">
                                 {post.title}
                             </h2>
                             {post.description && (

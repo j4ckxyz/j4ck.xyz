@@ -179,13 +179,6 @@ body.keyboard-nav [tabindex="0"]:focus {
   background: var(--accent-red);
 }
 
-/* Twemoji global fix */
-.twemoji {
-  height: 1.2em;
-  width: 1.2em;
-  vertical-align: -0.2em;
-}
-
 /* Instagram-style Photo Grid */
 .photo-grid {
   display: grid;
