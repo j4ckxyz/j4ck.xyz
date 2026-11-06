@@ -1,3 +1,31 @@
 {
-  "entries": []
+  "entries": [
+    {
+      "week": "2026-10-30",
+      "generatedAt": "2026-11-06T09:41:52.400Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Rebuilding a personal site as a one-page static site.",
+          "url": "https://github.com/j4ckxyz/j4ck.xyz"
+        },
+        {
+          "text": "Listening to a new Queen live album.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzmv3x2g3k2q"
+        },
+        {
+          "text": "Fixing a feed bot that kept reposting the same links.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzin3wk5nc2z"
+        },
+        {
+          "text": "Making promo videos for code projects with AI.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzif7kvdt22q"
+        },
+        {
+          "text": "Porting a social media recommendation algorithm to Bluesky.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzggvft4ss2s"
+        }
+      ]
+    }
+  ]
 }
