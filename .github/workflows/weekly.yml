@@ -39,6 +39,10 @@ jobs:
 
       - name: Generate this week's Now statuses
         if: env.OPENROUTER_API_KEY != ''
+        # A failed model call shouldn't stop the age and image updates below;
+        # the job still shows as failed via the final check.
+        id: now
+        continue-on-error: true
         run: node scripts/update-now.mjs
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -63,3 +67,9 @@ jobs:
             git commit -m "chore: weekly site update"
             git push
           fi
+
+      - name: Report Now failure
+        if: steps.now.outcome == 'failure'
+        run: |
+          echo "::error::Now statuses were not generated this week (see the step above). Age and images were still updated."
+          exit 1

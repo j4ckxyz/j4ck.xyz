@@ -33,8 +33,8 @@ const ghHeaders = {
   ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
 }
 
-async function getJson(url, init = {}) {
-  const res = await fetch(url, { ...init, signal: AbortSignal.timeout(30_000) })
+async function getJson(url, init = {}, timeoutMs = 30_000) {
+  const res = await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) })
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}: ${(await res.text()).slice(0, 300)}`)
   return res.json()
 }
@@ -54,10 +54,15 @@ async function githubActivity() {
   }
 
   // Commit messages (the events feed no longer carries them reliably).
+  // Searched without the token: the repo-scoped token Actions provides only
+  // sees this repo's commits, and one unauthenticated search a week is well
+  // inside the anonymous rate limit.
   try {
     const q = encodeURIComponent(`author:${GITHUB_USER} author-date:>=${sinceDate}`)
-    const data = await getJson(`https://api.github.com/search/commits?q=${q}&sort=author-date&order=desc&per_page=100`, { headers: ghHeaders })
+    const { Authorization: _token, ...anonHeaders } = ghHeaders
+    const data = await getJson(`https://api.github.com/search/commits?q=${q}&sort=author-date&order=desc&per_page=100`, { headers: anonHeaders })
     for (const item of data.items || []) {
+      if (item.repository?.private) continue // never put private work on a public page
       const msg = firstLine(item.commit?.message)
       if (!msg || /^merge (pull request|branch)/i.test(msg)) continue
       repo(item.repository.full_name, { description: item.repository.description }).commits.push(msg)
@@ -74,6 +79,7 @@ async function githubActivity() {
       let reachedOld = false
       for (const ev of events) {
         if (new Date(ev.created_at) < since) { reachedOld = true; continue }
+        if (ev.public === false) continue
         const r = () => repo(ev.repo.name)
         const p = ev.payload || {}
         if (ev.type === 'PullRequestEvent' && ['opened', 'closed'].includes(p.action)) {
@@ -224,13 +230,16 @@ async function generate(sources) {
         body: JSON.stringify({
           model: MODEL,
           temperature: 0.6,
+          max_tokens: 2000,
+          // Short task: little reasoning needed, and it keeps the reply fast.
+          reasoning: { effort: 'low' },
           response_format: { type: 'json_schema', json_schema: SCHEMA },
           messages: [
             { role: 'system', content: SYSTEM },
             { role: 'user', content: user },
           ],
         }),
-      })
+      }, 120_000)
       const raw = data.choices?.[0]?.message?.content || ''
       const parsed = JSON.parse(raw.replace(/^```(?:json)?\s*|\s*```$/g, ''))
       const items = validate(parsed.updates, byId)
