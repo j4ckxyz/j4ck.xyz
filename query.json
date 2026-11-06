@@ -1,3 +1,0 @@
-{
-    "query": "query { socialGrainPhoto(first: 1) { edges { node { uri aspectRatio { width height } } } } }"
-}

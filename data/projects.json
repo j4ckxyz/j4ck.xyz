@@ -1,0 +1,32 @@
+{
+  "projects": [
+    {
+      "name": "tweets-2-bsky",
+      "url": "https://github.com/j4ckxyz/tweets-2-bsky",
+      "body": "Cross-post from X to Bluesky — threads, media and a web dashboard.",
+      "tag": "Bluesky · Docker",
+      "style": "ink"
+    },
+    {
+      "name": "recall",
+      "url": "https://github.com/j4ckxyz/recall",
+      "body": "One shared memory for all your AI assistants, so each one knows you. Self-hosted: a single small app on your own machine.",
+      "tag": "Rust · MCP",
+      "style": "red"
+    },
+    {
+      "name": "Aurelia",
+      "url": "https://github.com/j4ckxyz/Aurelia",
+      "body": "A fast, native music player for your own Jellyfin music library, on macOS, Windows and Linux.",
+      "tag": "Go · Music",
+      "style": "coral"
+    },
+    {
+      "name": "Meclipse",
+      "url": "https://github.com/j4ckxyz/meclipse",
+      "body": "A privacy-conscious solar eclipse checker for wherever you are.",
+      "tag": "TypeScript · Web",
+      "style": "surface"
+    }
+  ]
+}

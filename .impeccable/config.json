@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-06T08:55:22.479Z",
+        "reason": "Claude: real scale is h1 clamp(44-84px) / h2 36px / h3 24px / body 18px, each step >=1.33x; copied from the user's supplied reference design; detector appears not to read clamp() and arbitrary Tailwind sizes"
+      }
+    ]
+  }
+}
