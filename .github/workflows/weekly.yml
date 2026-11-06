@@ -1,0 +1,65 @@
+name: Weekly site update
+
+# 1. Now: summarise the last 7 days of GitHub + Bluesky activity (needs the
+#    OPENROUTER_API_KEY secret; skipped without it).
+#    Age: recompute from the BIRTHDATE secret (YYYY-MM-DD); only the number
+#    is committed. Skipped without it.
+# 2. Images: pull the current Bluesky avatar and regenerate the avatar,
+#    favicons and Open Graph cards (the Now card shows the new statuses).
+# 3. Commit whatever changed; the push triggers the Cloudflare Pages build.
+
+on:
+  schedule:
+    # Mondays 08:00 UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      HAS_BIRTHDATE: ${{ secrets.BIRTHDATE != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generate this week's Now statuses
+        if: env.OPENROUTER_API_KEY != ''
+        run: node scripts/update-now.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Update age
+        if: env.HAS_BIRTHDATE == 'true'
+        run: node scripts/update-age.mjs
+        env:
+          BIRTHDATE: ${{ secrets.BIRTHDATE }}
+
+      - name: Refresh avatar, favicons and OG cards
+        run: node scripts/update-assets.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/now.json data/site.json public scripts/og/avatar-source.png
+          if git diff --cached --quiet; then
+            echo "No change."
+          else
+            git commit -m "chore: weekly site update"
+            git push
+          fi

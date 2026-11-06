@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Self-hosted fonts (OFL, licences in public/fonts/). Latin subset only;
+   Figtree is one variable file covering every weight we use. */
+@font-face {
+  font-family: 'Caprasimo';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/caprasimo-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('/fonts/figtree-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---------------------------------------------------------------------------
+   Palette. Each token holds bare OKLCH channels ("L C H") so Tailwind can add
+   alpha: bg-ink/70 etc. Light and dark share hue angles so they read as one
+   family: warm paper + warm ink, and two reds: a strong red and a lighter coral red
+   on the same hue, so the pair reads as one tonal palette.
+
+   paper / surface / ink / divider  swap between themes.
+   inverse-*                         the "flipped" panel (black in light, cream in dark).
+   red / coral                       brand fills (cards, blobs, dots). Same in both
+                                     themes so cards keep their identity.
+   red-text                          red at text sizes, tuned per ground for contrast.
+   coral-soft                        hover tint.
+   dot-coral                         coral dot on the inverse panel (deep wine on cream).
+--------------------------------------------------------------------------- */
+:root {
+  color-scheme: light;
+  --paper: 0.99 0.003 60;
+  --surface: 0.955 0.004 40;
+  --ink: 0.16 0.006 30;
+  --divider: 0.88 0.006 30;
+  --inverse: 0.16 0.006 30;
+  --on-inverse: 0.99 0.003 60;
+
+  --red: 0.58 0.22 27;
+  --red-text: 0.5 0.2 27;
+  --coral: 0.7 0.17 25;
+  --coral-soft: 0.93 0.04 25;
+  --on-red: 0.99 0.003 60;
+  --on-coral: 0.16 0.006 30;
+  --tag-on-ink: 0.7 0.17 25;
+  --tag-on-surface: 0.47 0.19 27;
+  --dot-coral: 0.7 0.17 25;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --paper: 0.17 0.006 30;
+  --surface: 0.235 0.008 30;
+  --ink: 0.95 0.006 60;
+  --divider: 0.32 0.008 30;
+  --inverse: 0.95 0.006 60;
+  --on-inverse: 0.17 0.006 30;
+
+  --red: 0.58 0.22 27;
+  --red-text: 0.7 0.17 27;
+  --coral: 0.7 0.17 25;
+  --coral-soft: 0.32 0.06 25;
+  --on-red: 0.99 0.003 60;
+  --on-coral: 0.16 0.006 30;
+  --tag-on-ink: 0.45 0.17 25;
+  --tag-on-surface: 0.74 0.14 25;
+  --dot-coral: 0.45 0.17 25;
+}
+
+@layer base {
+  html,
+  body {
+    /* No rubber-band bounce past the page edges: it revealed blank space
+       above the red circle and below the footer. */
+    overscroll-behavior-y: none;
+  }
+  html {
+    background: oklch(var(--paper));
+    scrollbar-color: oklch(var(--ink) / 0.3) oklch(var(--paper));
+  }
+  body {
+    font-family: 'Figtree', system-ui, sans-serif;
+    text-wrap: pretty;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  ::selection {
+    background: oklch(var(--coral) / 0.35);
+  }
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid oklch(var(--red));
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+    }
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: 'Caprasimo', Georgia, serif;
+    font-weight: 400;
+  }
+  .text-link {
+    color: oklch(var(--red-text));
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+  .text-link:hover {
+    text-decoration-color: oklch(var(--coral));
+  }
+
+  /* Social pills: outlined, coral tint on hover. No motion: hover is colour only.
+     Icons are single-colour (currentColor): inline SVG marks, or a PNG shape
+     used as a mask via --icon. */
+  .pill {
+    @apply inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-full border-2 border-ink bg-paper px-3 py-2 text-sm font-semibold sm:min-h-0 hover:bg-coral-soft active:bg-coral sm:gap-2 sm:px-[18px] sm:py-2.5 sm:text-[15px];
+  }
+  .pill-icon {
+    @apply inline-block h-4 w-4 shrink-0 sm:h-[18px] sm:w-[18px];
+  }
+  .pill-mask {
+    background-color: currentColor;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+  }
+  .pill-handle {
+    @apply font-normal text-ink/65;
+  }
+
+  /* Project cards. */
+  .card {
+    @apply grid h-full content-start gap-3 rounded-card p-7 hover:brightness-[0.93];
+  }
+  .card p {
+    @apply text-base leading-[1.55];
+  }
+  .card-head {
+    @apply flex items-center justify-between gap-3;
+  }
+  .card-tag {
+    @apply text-[13px] font-semibold uppercase tracking-[0.06em];
+  }
+  .arrow {
+    @apply h-5 w-5 shrink-0 fill-none stroke-current;
+    stroke-width: 2.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}

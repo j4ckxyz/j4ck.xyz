@@ -2,79 +2,55 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <!-- Set theme before paint to avoid a flash: saved choice, else OS preference.
-         Also drives the browser-chrome theme-color so it matches the toggled theme. -->
-    <script>
-      (function () {
-        try {
-          var t = localStorage.getItem('theme');
-          if (t !== 'light' && t !== 'dark') {
-            t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-          }
-          document.documentElement.setAttribute('data-theme', t);
-          var m = document.createElement('meta');
-          m.setAttribute('name', 'theme-color');
-          m.setAttribute('content', t === 'light' ? '#f9f4f2' : '#120d0c');
-          document.head.appendChild(m);
-        } catch (e) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        }
-      })();
-    </script>
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>j4ck.xyz</title>
-    <meta name="description" content="Jack's personal landing page with social media links" />
-    
-    <!-- Open Graph / Social Media Cards -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="j4ck.xyz" />
-    <meta property="og:description" content="Jack's personal landing page with social media links" />
-    <meta property="og:url" content="https://j4ck.xyz" />
-    <meta property="og:image" content="https://j4ck.xyz/android-chrome-512x512.png" />
-    <meta property="og:image:secure_url" content="https://j4ck.xyz/android-chrome-512x512.png" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
-    <meta property="og:image:alt" content="j4ck.xyz profile picture" />
-    <meta property="og:site_name" content="j4ck.xyz" />
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="j4ck.xyz" />
-    <meta name="twitter:description" content="Jack's personal landing page with social media links" />
-    <meta name="twitter:image" content="https://j4ck.xyz/android-chrome-512x512.png" />
-    <meta name="twitter:image:alt" content="j4ck.xyz profile picture" />
-    <meta name="twitter:creator" content="@jglypt" />
-    
-    <!-- Additional meta for better compatibility -->
-    <link rel="image_src" href="https://j4ck.xyz/android-chrome-512x512.png" />
-    <link rel="me" href="https://sifa.id/p/j4ck.xyz" />
-    
-    <!-- Favicon and App Icons -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <!-- Photo/content origins. The TLS + DNS handshakes for these start before
-         the JS bundle has parsed, which is most of the first-load latency on
-         the photo grid. -->
-    <link rel="preconnect" href="https://eurosky.social" crossorigin>
-    <link rel="preconnect" href="https://cdn.grain.social" crossorigin>
-    <link rel="preconnect" href="https://cdn.bsky.app" crossorigin>
-    <link rel="dns-prefetch" href="https://grain.social">
-    <link rel="dns-prefetch" href="https://public.api.bsky.app">
-
-    <!-- Fonts — Bricolage Grotesque (display), Hanken Grotesk (body), JetBrains Mono (accent) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400..600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--meta:home-->
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+  <body class="bg-paper text-ink">
+    <div class="relative min-h-screen overflow-clip">
+      <!-- Decorative circles -->
+      <div aria-hidden="true" class="pointer-events-none absolute -right-[130px] -top-[150px] h-[300px] w-[300px] rounded-full bg-red md:-right-[160px] md:-top-[200px] md:h-[460px] md:w-[460px]"></div>
+      <div aria-hidden="true" class="pointer-events-none absolute right-[120px] top-[110px] h-[72px] w-[72px] rounded-full bg-coral md:right-[200px] md:top-[150px] md:h-[120px] md:w-[120px]"></div>
+      <div aria-hidden="true" class="pointer-events-none absolute -left-[110px] top-[46%] hidden h-[240px] w-[240px] rounded-full bg-coral-soft md:block"></div>
+
+      <!--nav:home-->
+
+      <main class="relative mx-auto max-w-[1100px] px-[clamp(20px,5vw,72px)]">
+        <section class="grid gap-7 pb-16 pt-[clamp(56px,10vw,112px)]">
+          <img src="%v:/avatar.png%" alt="Jack's avatar" width="104" height="104" class="h-[104px] w-[104px] rounded-full object-cover shadow-[0_3px_10px_rgb(46_43_37/0.16)]" />
+          <h1 class="font-display -ml-[0.03em] max-w-[760px] text-[clamp(44px,7vw,84px)] leading-[1.04]">
+            <span class="block">Jack.</span>
+            <span class="block text-red">%AGE%, building on the open web.</span>
+          </h1>
+          <p class="max-w-[52ch] text-lg leading-[1.65] text-ink/80">I play with AI and the decentralised web. Off-screen: guitar, and a lot of music.</p>
+          <ul class="flex flex-wrap gap-2 sm:gap-2.5">
+            <li><a href="https://bsky.app/profile/j4ck.xyz" class="pill"><svg class="pill-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.206-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8Z"/></svg><span>Bluesky</span><span class="pill-handle">@j4ck.xyz</span></a></li>
+            <li><a href="https://x.com/jglypt" class="pill"><svg class="pill-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.543 7.104c.015.211.015.423.015.636 0 6.507-4.954 14.01-14.01 14.01v-.003A13.94 13.94 0 0 1 0 19.539a9.88 9.88 0 0 0 7.287-2.041 4.93 4.93 0 0 1-4.6-3.42 4.916 4.916 0 0 0 2.223-.084A4.926 4.926 0 0 1 .96 9.167v-.062a4.887 4.887 0 0 0 2.235.616A4.928 4.928 0 0 1 1.67 3.148 13.98 13.98 0 0 0 11.82 8.292a4.929 4.929 0 0 1 8.39-4.49 9.868 9.868 0 0 0 3.128-1.196 4.941 4.941 0 0 1-2.165 2.724A9.828 9.828 0 0 0 24 4.555a10.019 10.019 0 0 1-2.457 2.549z"/></svg><span>Twitter</span><span class="pill-handle">@jglypt</span></a></li>
+            <li><a href="https://surf.social/feed/surf%2Fprofile%2F01jfjy6t4647v5r6v2fx203c2r" class="pill"><span class="pill-icon pill-mask" style="--icon: url('%v:/icons/surf-mark.png%')" aria-hidden="true"></span><span>Surf</span><span class="pill-handle">my feeds</span></a></li>
+            <li><a href="https://github.com/j4ckxyz" class="pill"><svg class="pill-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg><span>GitHub</span><span class="pill-handle">j4ckxyz</span></a></li>
+            <li><a href="https://blog.j4ck.xyz" class="pill"><span class="pill-icon pill-mask" style="--icon: url('%v:/icons/blog-mark.png%')" aria-hidden="true"></span><span>Blog</span><span class="pill-handle">blog.j4ck.xyz</span></a></li>
+          </ul>
+        </section>
+
+        <section id="projects" class="grid scroll-mt-6 gap-8 py-14">
+          <div class="flex flex-wrap items-baseline justify-between gap-4">
+            <h2 class="font-display text-4xl leading-tight">Projects</h2>
+            <a href="https://github.com/j4ckxyz" class="text-link inline-flex min-h-11 items-center text-[15px] font-semibold">More on GitHub →</a>
+          </div>
+          <ul class="grid gap-5 sm:grid-cols-2">
+            <!--projects-->
+          </ul>
+        </section>
+
+        <section id="now" class="my-14 grid scroll-mt-6 items-start gap-x-16 gap-y-8 rounded-card bg-inverse p-8 text-on-inverse md:p-14 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+        <!--now:panel-->
+        </section>
+
+        <footer class="flex flex-wrap justify-between gap-4 pb-12 pt-8 text-sm text-ink/70">
+          <span>© %YEAR% Jack · j4ck.xyz</span>
+          <span>Say hello: <a href="mailto:jack@j4ck.xyz" class="underline underline-offset-4 hover:text-ink">jack@j4ck.xyz</a></span>
+        </footer>
+      </main>
+    </div>
+
   </body>
 </html>

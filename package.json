@@ -1,7 +1,7 @@
 {
   "name": "j4ck-xyz",
   "version": "1.0.0",
-  "description": "Personal landing page with social links",
+  "description": "Jack's personal site: one static page, weekly Now updates",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,26 +9,16 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^7.0.0",
-    "@fortawesome/free-brands-svg-icons": "^7.0.0",
-    "@fortawesome/free-solid-svg-icons": "^7.0.0",
-    "@fortawesome/react-fontawesome": "^3.0.1",
-    "clsx": "^2.1.1",
-    "framer-motion": "^12.23.26",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-helmet-async": "^2.0.5",
-    "react-router-dom": "^7.10.1",
-    "tailwind-merge": "^3.4.0"
-  },
   "devDependencies": {
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.0.3",
+    "@resvg/resvg-js": "^2.6.2",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.35",
+    "satori": "^0.63.2",
+    "sharp": "^0.35.5",
     "tailwindcss": "^3.4.1",
     "vite": "^4.4.5"
+  },
+  "engines": {
+    "node": ">=20.9"
   }
 }

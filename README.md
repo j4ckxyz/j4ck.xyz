@@ -1,52 +1,40 @@
 # j4ck.xyz
 
-My personal landing page - a fast, accessible React-based site with social links.
+My personal site. Static HTML styled with Tailwind, built with Vite. No JS framework.
 
-## Features
+- `index.html`: the whole site on one page, with `#projects` and `#now` sections
+- `projects.html`, `now.html`: share-card pages. Link previews read their Open Graph tags; visitors are sent on to `/#projects` and `/#now`
+- `weeks.html`: `/weeks`, every past Now update grouped by year and ISO week number (each week linkable, e.g. `/weeks#2026-w44`)
+- `404.html`: not-found page
+- `scripts/render.mjs`: build-time partials (head/meta, nav, project cards, Now) filled in by `vite.config.js`
+- `styles/main.css`: palette tokens for light and dark, plus components
+- `data/projects.json`: the four project cards (home, /projects, OG card); everything else lives on GitHub
+- `data/site.json`: facts the weekly job keeps current (age)
+- `public/fonts/`: self-hosted Caprasimo and Figtree (OFL); `public/icons/`: single-colour Surf and blog marks for the link pills (used as CSS masks; Bluesky and GitHub are inline Simple Icons SVGs, CC0)
+- `data/now.json`: Now updates, newest first
 
-This React-based landing page includes:
-- Full accessibility support (WCAG compliant)
-- Screen reader optimization
-- High contrast and dark mode support
-- Reduced motion support for accessibility
-- FontAwesome icons for social links
-- Space Mono font from Google Fonts
-- Responsive mobile-first design
-- ATmosphere integration with dropdown for Flashes and Whitewind
-- Optimized for Cloudflare Pages deployment
+## Weekly update
 
-## Social Links
+`.github/workflows/weekly.yml` runs every Monday at 08:00 UTC (or by hand from the Actions tab), then commits what changed, which triggers a Cloudflare Pages rebuild.
 
-- **Bluesky**: [@j4ck.xyz](https://bsky.app/profile/j4ck.xyz)
-- **Twitter**: [@jglypt](https://twitter.com/jglypt)
-- **ATmosphere**: Includes Flashes and Whitewind blogs
-- **Email**: [jack@jglypt.net](mailto:jack@jglypt.net)
+1. **Now** (`scripts/update-now.mjs`): collects the last 7 days of public GitHub activity and Bluesky posts (no replies or reposts), asks DeepSeek V4.1 Flash on OpenRouter for 5 short, distinct, general-audience status lines, each linked to its source, and prepends them to `data/now.json` (one entry per ISO week; a re-run replaces that week). Needs the `OPENROUTER_API_KEY` repository secret; skipped without it. Preview the input with `node scripts/update-now.mjs --dry-run`.
+2. **Age** (`scripts/update-age.mjs`): recomputes the age from the `BIRTHDATE` repository secret (`YYYY-MM-DD`) and writes only the number to `data/site.json`. Skipped without the secret.
+3. **Images** (`scripts/update-assets.mjs`): downloads the current Bluesky profile picture and regenerates `public/avatar.png`, the favicon set and the Open Graph cards in `public/og/` (home, projects, now). Cards are rendered with satori + resvg using the vendored fonts in `scripts/og/fonts/` and the palette from `styles/main.css`. `--local` reuses the last downloaded avatar.
+
+Image URLs in the HTML carry a content hash (`?v=…`), so a new avatar or card replaces the cached one.
 
 ## Development
 
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+npm run dev     # local server (the log page is at /now.html in dev)
+npm run build   # outputs to dist/
 ```
 
 ## Deployment
 
-This site is configured for deployment on Cloudflare Pages:
-
-1. Connect your GitHub repository to Cloudflare Pages
-2. Use these build settings:
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-   - Node.js version: 18
+Cloudflare Pages: build command `npm run build`, output directory `dist`, Node 22 (pinned in `.nvmrc`; the image tooling needs Node 20.9+).
+`public/_redirects` sends the old `/photos`, `/blogs` and `/repos` routes to Grain, the blog and GitHub.
 
 ## License
 

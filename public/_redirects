@@ -1,4 +1,7 @@
 /.well-known/webfinger   https://social.j4ck.xyz/.well-known/webfinger   301
 /.well-known/host-meta   https://social.j4ck.xyz/.well-known/host-meta   301
 /.well-known/nodeinfo   https://social.j4ck.xyz/.well-known/nodeinfo   301
-/*    /index.html   200
+/photos    https://grain.social/profile/j4ck.xyz   302
+/blogs     https://blog.j4ck.xyz   302
+/blogs/*   https://blog.j4ck.xyz   302
+/repos     /projects   301
