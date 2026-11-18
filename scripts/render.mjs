@@ -14,6 +14,7 @@
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
+import { isoWeek, mondayOf, weekId, weekRange } from './now/week.mjs'
 
 const root = (p) => fileURLToPath(new URL(`../${p}`, import.meta.url))
 export const NOW_FILE = root('data/now.json')
@@ -230,34 +231,16 @@ export const NOW_FALLBACK = {
   ],
 }
 
+// Newest week first, whatever order the file is in.
 export const loadNow = () => {
   const data = readJson(NOW_FILE, { entries: [] })
-  return Array.isArray(data.entries) ? data.entries : []
+  const entries = Array.isArray(data.entries) ? data.entries : []
+  return [...entries].sort((a, b) => mondayOf(b.week).localeCompare(mondayOf(a.week)))
 }
 
-// ISO-8601 week number and week-year for a YYYY-MM-DD date.
-export function isoWeek(iso) {
-  const d = new Date(`${iso}T00:00:00Z`)
-  d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) + 3) // Thursday of that week
-  const year = d.getUTCFullYear()
-  const firstThursday = new Date(Date.UTC(year, 0, 4))
-  firstThursday.setUTCDate(firstThursday.getUTCDate() - ((firstThursday.getUTCDay() + 6) % 7) + 3)
-  return { year, week: 1 + Math.round((d - firstThursday) / (7 * 86_400_000)) }
-}
-
-// "26 Oct – 1 Nov": the seven days an entry summarises.
-export function weekRange(iso) {
-  const start = new Date(`${iso}T00:00:00Z`)
-  const end = new Date(start.getTime() + 6 * 86_400_000)
-  const fmt = (d) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })
-  return `${fmt(start)} – ${fmt(end)}`
-}
-
+// Week maths live in ./now/week.mjs (ISO weeks, Monday to Sunday, Europe/London).
+export { isoWeek, weekId, weekRange }
 export const weekLabel = (iso) => `Week ${isoWeek(iso).week} · ${weekRange(iso)}`
-export const weekId = (iso) => {
-  const { year, week } = isoWeek(iso)
-  return `${year}-w${String(week).padStart(2, '0')}`
-}
 
 const DOTS = ['bg-red', 'bg-dot-coral']
 
