@@ -1,34 +1,49 @@
 {
   "entries": [
     {
-      "week": "2026-11-02",
-      "generatedAt": "2026-11-09T18:22:11.554Z",
+      "week": "2026-11-09",
+      "generatedAt": "2026-11-18T19:53:01.535Z",
       "model": "deepseek/deepseek-v4.1-flash",
       "items": [
         {
-          "text": "Rebuilding a personal site as a one-page static site.",
-          "url": "https://github.com/j4ckxyz/j4ck.xyz"
+          "text": "Polishing Aurelia, a music player for Jellyfin.",
+          "url": "https://github.com/j4ckxyz/Aurelia/pull/4"
         },
         {
-          "text": "Porting a personalised feed algorithm from Twitter to Bluesky.",
-          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzggvft4ss2s"
+          "text": "Building game worlds with layered terrain and winding switchback roads.",
+          "url": "https://github.com/j4ckxyz/detour/pull/2"
         },
         {
-          "text": "Debugging a news bot that kept reposting the same links.",
-          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzin3wk5nc2z"
+          "text": "Building a new DVD and Blu-ray player for macOS.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3n2a4bgnzhs23"
         },
         {
-          "text": "Listening to the Queen Budapest live album on Spotify.",
-          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzmv3x2g3k2q"
-        },
-        {
-          "text": "Trying out AI-made promo videos for open-source projects.",
-          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzif7kvdt22q"
+          "text": "Playing the new Queen live album on CD.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzxqpmqrok2m"
         }
       ]
     },
     {
-      "week": "2026-10-30",
+      "week": "2026-11-02",
+      "generatedAt": "2026-11-18T19:37:27.743Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Publishing a refreshed personal site with weekly updates.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzn3kuo7722h"
+        },
+        {
+          "text": "Waiting for a pre-ordered Queen live album on CD.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mznma33tys2w"
+        },
+        {
+          "text": "Encouraging people to share starter packs for following others on Bluesky.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mzphhtmnn22h"
+        }
+      ]
+    },
+    {
+      "week": "2026-10-26",
       "generatedAt": "2026-11-06T09:41:52.400Z",
       "model": "deepseek/deepseek-v4.1-flash",
       "items": [
@@ -51,6 +66,1091 @@
         {
           "text": "Porting a social media recommendation algorithm to Bluesky.",
           "url": "https://bsky.app/profile/j4ck.xyz/post/3mzggvft4ss2s"
+        }
+      ]
+    },
+    {
+      "week": "2026-10-19",
+      "generatedAt": "2026-11-18T19:52:50.535Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Releasing Recall, self-hosted memory shared between AI agents.",
+          "url": "https://github.com/j4ckxyz/recall"
+        },
+        {
+          "text": "Building a live storm dashboard with webcams and ferry updates.",
+          "url": "https://github.com/j4ckxyz/jersey-storm/pull/24"
+        },
+        {
+          "text": "Building a tool for sorting Bluesky follows into topics.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mydjkrcpo22s"
+        },
+        {
+          "text": "Working through a CD collection, one album per drive.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mymd6vdrek2g"
+        }
+      ]
+    },
+    {
+      "week": "2026-10-12",
+      "generatedAt": "2026-11-18T19:52:36.371Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a Hermes plugin that learns your interests and surfaces fresh news.",
+          "url": "https://github.com/j4ckxyz/hermes-feed"
+        },
+        {
+          "text": "Releasing Taproot, a self-hosted canvas for growing big projects from one idea.",
+          "url": "https://github.com/j4ckxyz/taproot"
+        },
+        {
+          "text": "Building out a native macOS client for the Hermes agent.",
+          "url": "https://github.com/j4ckxyz/hermacos/releases/tag/v0.2.0"
+        },
+        {
+          "text": "Testing Claude by porting the original Angry Birds to Apple Silicon.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mxsuslph3c2o"
+        },
+        {
+          "text": "Listening through the new Fontaines DC album.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mxysagcnyk27"
+        }
+      ]
+    },
+    {
+      "week": "2026-10-05",
+      "generatedAt": "2026-11-18T19:52:24.657Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building VocalScope, a desktop app that analyses vocal recordings.",
+          "url": "https://github.com/j4ckxyz/VocalScope"
+        },
+        {
+          "text": "Building DBViewer, a lightweight app for working with local SQLite databases.",
+          "url": "https://github.com/j4ckxyz/dbviewer"
+        },
+        {
+          "text": "Adding crossfade and listening stats to Aurelia, a native Jellyfin music player.",
+          "url": "https://github.com/j4ckxyz/Aurelia"
+        },
+        {
+          "text": "Picking up first-press vinyl at a local record fair.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mxjqloqo2c2i"
+        }
+      ]
+    },
+    {
+      "week": "2026-09-28",
+      "generatedAt": "2026-11-18T19:52:11.339Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building Hermlet, an SDK and screen app for a self-hosted AI agent.",
+          "url": "https://github.com/j4ckxyz/hermlet"
+        },
+        {
+          "text": "Working on Detour, an open-source co-op RV road trip game.",
+          "url": "https://github.com/j4ckxyz/detour"
+        },
+        {
+          "text": "Building skills that let personal AI agents use Surf.",
+          "url": "https://github.com/j4ckxyz/surf-skills/pull/1"
+        },
+        {
+          "text": "Building a browser tool that turns social posts into clean screenshots.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mwqw6onhf22k"
+        }
+      ]
+    },
+    {
+      "week": "2026-09-21",
+      "generatedAt": "2026-11-18T19:51:57.409Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Getting old iPhone Twitter apps to work with Bluesky.",
+          "url": "https://github.com/j4ckxyz/mockingbird"
+        },
+        {
+          "text": "Building a command-line tool for controlling Fender Mustang guitar amps.",
+          "url": "https://github.com/j4ckxyz/ltctl"
+        },
+        {
+          "text": "Improving GitHub sign-in for Recon, a terminal tool for developers.",
+          "url": "https://github.com/owenpalfreyman/reconcli/pull/31"
+        },
+        {
+          "text": "Testing AI models by having them build 3D scenes in Blender.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mw6jqkvg522l"
+        }
+      ]
+    },
+    {
+      "week": "2026-09-14",
+      "generatedAt": "2026-11-18T19:51:43.370Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building Guitar Remover, an app that makes backing tracks from any song.",
+          "url": "https://github.com/j4ckxyz/guitar-remover"
+        },
+        {
+          "text": "Building Pitch Scope, a browser tool for inspecting pitch correction on vocals.",
+          "url": "https://github.com/j4ckxyz/pitch-scope"
+        },
+        {
+          "text": "Building a personal tool to search Bluesky bookmarks.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mvxwrxllms2c"
+        },
+        {
+          "text": "Fixing handle changes for mirrored Twitter accounts on Bluesky.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky"
+        }
+      ]
+    },
+    {
+      "week": "2026-09-07",
+      "generatedAt": "2026-11-18T19:51:31.367Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a tool that moves mirrored social accounts to new handles.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky"
+        },
+        {
+          "text": "Restringing and cleaning up the main guitar.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mv6lq5wcczyz"
+        },
+        {
+          "text": "Seeing Roger Taylor talk about his new album.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mvd5lwd67s2n"
+        },
+        {
+          "text": "Trying out moobile, a new app for Bluesky.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mv3sb6evoc2a"
+        }
+      ]
+    },
+    {
+      "week": "2026-08-31",
+      "generatedAt": "2026-11-18T19:51:20.436Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Giving every mirrored account its own page in the Twitter-to-Bluesky mirroring tool.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky/pull/25"
+        },
+        {
+          "text": "Building twall, a fast, plain reader for X posts.",
+          "url": "https://github.com/j4ckxyz/twall"
+        },
+        {
+          "text": "Building a feed that gathers posts about Freddie Mercury's birthday.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mus3nmyybc2t"
+        },
+        {
+          "text": "Fixing a record player and listening to records while checking the speed.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3muevuwon5s2z"
+        }
+      ]
+    },
+    {
+      "week": "2026-08-24",
+      "generatedAt": "2026-11-18T19:51:10.173Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Adding support for posting Twitter videos to Bluesky.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky/pull/20"
+        },
+        {
+          "text": "Fixing accessibility problems and slow photos on a personal website.",
+          "url": "https://github.com/j4ckxyz/j4ck.xyz/pull/10"
+        },
+        {
+          "text": "Building a Mac menu bar app to control a bedroom light.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mu7jgmlapn4q"
+        },
+        {
+          "text": "Trying out a following-only feed as the default on Bluesky.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mu3u6fvxyw2n"
+        },
+        {
+          "text": "Looking forward to a 4K cinema screening of a 1986 Queen concert.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mtz5btazrh2i"
+        }
+      ]
+    },
+    {
+      "week": "2026-08-17",
+      "generatedAt": "2026-11-18T19:50:52.118Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Polishing Tonearm, a browser music player for Navidrome.",
+          "url": "https://github.com/j4ckxyz/navidrome-client-web/releases/tag/v0.2.3"
+        },
+        {
+          "text": "Setting up an old Hitachi hi-fi and starting a vinyl collection.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mtclchjaiy2j"
+        },
+        {
+          "text": "Adding a Fender Strat and a Vox amp to the guitar setup.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mtclxgfx2u2p"
+        },
+        {
+          "text": "Building a feed for sharing CD, vinyl and cassette collections.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mthjbpbqzm2o"
+        },
+        {
+          "text": "Trying out permissioned data and private spaces on the AT Protocol.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mtnulfsjlogx"
+        }
+      ]
+    },
+    {
+      "week": "2026-08-10",
+      "generatedAt": "2026-11-18T19:50:42.369Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building Meclipse, a privacy-conscious solar eclipse checker.",
+          "url": "https://github.com/j4ckxyz/meclipse/pull/5"
+        },
+        {
+          "text": "Photographing the Perseid meteor shower with NightCap Camera.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3msx7ey5cvs2i"
+        },
+        {
+          "text": "Listening through the new Phoebe Bridgers album.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mt2hku5axs2t"
+        },
+        {
+          "text": "Experimenting with AI models for building Bluesky apps.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3msylyk3zkglq"
+        }
+      ]
+    },
+    {
+      "week": "2026-08-03",
+      "generatedAt": "2026-11-18T19:50:26.274Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a terminal chat app for talking with AI agents.",
+          "url": "https://github.com/j4ckxyz/termgpt/pull/1"
+        },
+        {
+          "text": "Picking up a first 12-inch vinyl album.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3msba3xntx22d"
+        },
+        {
+          "text": "Taking photos at a zoo while travelling.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3msiworkf5k24"
+        },
+        {
+          "text": "Trying out an unlimited mobile data plan for travel.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3msn54ntzlk2y"
+        }
+      ]
+    },
+    {
+      "week": "2026-07-27",
+      "generatedAt": "2026-11-18T19:49:47.952Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Releasing Tonearm, a desktop music player for Navidrome and Jellyfin.",
+          "url": "https://github.com/j4ckxyz/navidrome-client-web/pull/11"
+        },
+        {
+          "text": "Updating a fork of Tootify, a Bluesky-to-Mastodon cross-poster.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mrtxlbhqteua"
+        },
+        {
+          "text": "Trying out Blacksky, a native iOS app for Bluesky.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mrsk6wcq2c2z"
+        },
+        {
+          "text": "Extracting hidden wallpapers from old Gorillaz CDs.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mrrr6q4iv22h"
+        },
+        {
+          "text": "Trying Tinycast, a tiny native Mac app launcher.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mrzll423slj7"
+        }
+      ]
+    },
+    {
+      "week": "2026-07-20",
+      "generatedAt": "2026-11-18T19:49:36.160Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building PullDown, a native Mac app for downloading YouTube video and audio.",
+          "url": "https://github.com/j4ckxyz/PullDown"
+        },
+        {
+          "text": "Building a sunrise-powered light automation for Home Assistant.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mr6tyxjg2c2q"
+        },
+        {
+          "text": "Building an app at a two-day hackathon and winning a prize.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mrdci3ku5k26"
+        },
+        {
+          "text": "Setting up a new 27-inch monitor and speakers at the desk.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mrhk4ui2z22r"
+        }
+      ]
+    },
+    {
+      "week": "2026-07-13",
+      "generatedAt": "2026-11-18T19:49:21.179Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Making a browser music player installable, with lock-screen controls.",
+          "url": "https://github.com/j4ckxyz/navidrome-client-web"
+        },
+        {
+          "text": "Trying out AI agent skills for building native Mac apps.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mqk2pkb3rk2v"
+        },
+        {
+          "text": "Building a tool that mirrors Twitter accounts onto Bluesky.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mqmnz5gghc2w"
+        },
+        {
+          "text": "Building an extension for Raycast, the Mac launcher.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mqrtukdrf22m"
+        }
+      ]
+    },
+    {
+      "week": "2026-07-06",
+      "generatedAt": "2026-11-18T19:49:07.005Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Speeding up tweet crossposting with parallel fetch workers.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mqblhtrctw6p"
+        },
+        {
+          "text": "Rewriting a guide to AT Protocol sign-in, with instructions for coding agents.",
+          "url": "https://github.com/j4ckxyz/atproto-oauth-reference"
+        },
+        {
+          "text": "Adding Jellyfin support to a web music player.",
+          "url": "https://github.com/j4ckxyz/navidrome-client-web/pull/6"
+        },
+        {
+          "text": "Starting a small collection of reusable browser tools.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mqd3ycky77ui"
+        },
+        {
+          "text": "Simplifying a personal site into a clean landing page.",
+          "url": "https://github.com/j4ckxyz/j4ck.xyz"
+        }
+      ]
+    },
+    {
+      "week": "2026-06-29",
+      "generatedAt": "2026-11-18T19:48:56.809Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Shipping a long-awaited update to tweets-2-bsky, a tweet-to-Bluesky mirroring tool.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mpwaimgums2e"
+        },
+        {
+          "text": "Trying out Glaze, a tool for building Mac apps by describing them.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mposesjwns2w"
+        },
+        {
+          "text": "Trying out FreePrints for getting phone photos printed and mailed cheaply.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mpoqpv4m2s2b"
+        },
+        {
+          "text": "Trying out Standard.site, and wondering why published posts can't be edited.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mpqot5ggjk2g"
+        }
+      ]
+    },
+    {
+      "week": "2026-06-22",
+      "generatedAt": "2026-11-18T19:48:36.676Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Adding a full-screen music visualiser to the Navidrome web player.",
+          "url": "https://github.com/j4ckxyz/navidrome-client-web/pull/5"
+        },
+        {
+          "text": "Building a tool that announces hot weather on a Sonos speaker.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3moxql36vhs2y"
+        },
+        {
+          "text": "Taking vintage-style photos with an early-2000s digital camera.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mouzkmxivk2u"
+        },
+        {
+          "text": "Collecting all the Queen studio albums on CD.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3moycav243s2d"
+        },
+        {
+          "text": "Writing a new markup language for typing maths.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mpdstcfm52lh"
+        }
+      ]
+    },
+    {
+      "week": "2026-06-15",
+      "generatedAt": "2026-11-18T19:48:27.879Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a desktop-style web player for Navidrome.",
+          "url": "https://github.com/j4ckxyz/navidrome-client-web/pull/4"
+        },
+        {
+          "text": "Building Macroblog, a self-hosted take on Micro.blog.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3moe4thu6b72v"
+        },
+        {
+          "text": "Trying out Quickslice, an all-in-one AppView service for Bluesky.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3modk72i6fs2m"
+        },
+        {
+          "text": "Listening to Daft Punk while studying maths.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3moimfgridj7i"
+        }
+      ]
+    },
+    {
+      "week": "2026-06-08",
+      "generatedAt": "2026-11-18T19:48:12.336Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a social search engine on the AT Protocol.",
+          "url": "https://github.com/j4ckxyz/semble-search"
+        },
+        {
+          "text": "Redesigning the personal site with a cleaner, editorial-style layout.",
+          "url": "https://github.com/j4ckxyz/j4ck.xyz"
+        },
+        {
+          "text": "Adding saved posts and ten-image posts to Skeetdeck, a multi-column Bluesky deck.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mnul62tyhkt6"
+        },
+        {
+          "text": "Testing the new iOS developer beta on an older iPhone.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mns7da5ofy6d"
+        },
+        {
+          "text": "Picking up Olivia Rodrigo's new album on CD the day it came out.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mo3lbll2ns2u"
+        }
+      ]
+    },
+    {
+      "week": "2026-06-01",
+      "generatedAt": "2026-11-18T19:48:00.332Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a faster, multi-column Bluesky client with OAuth login.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mnczx2nkosci"
+        },
+        {
+          "text": "Updating the Streamplace VOD client to support the latest video drops.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mnhxkb63xc2b"
+        },
+        {
+          "text": "Trying out Sill, a newer decentralised social app.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mnfmvzrxpwu4"
+        },
+        {
+          "text": "Adding a couple of new CDs to the collection.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mnn23u2kvc2o"
+        }
+      ]
+    },
+    {
+      "week": "2026-05-25",
+      "generatedAt": "2026-11-18T19:47:49.847Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building Buffer for Mac, a menu bar app for scheduling social posts.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mmu36vckbc2r"
+        },
+        {
+          "text": "Building Pictosky, a retro drawing app for Bluesky.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mmzg76m3ts2g"
+        },
+        {
+          "text": "Making a web app that syncs Bluesky follows over to Semble.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mmx7hdpkec2u"
+        },
+        {
+          "text": "Experimenting with an AT Protocol app for reporting traffic.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mn57pea6w22l"
+        },
+        {
+          "text": "Listening to Queen's A Night at the Opera on CD.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mn3d4egdjb22"
+        }
+      ]
+    },
+    {
+      "week": "2026-05-18",
+      "generatedAt": "2026-11-18T19:47:35.558Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building bsky.md, a tool that turns Bluesky profiles into markdown.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mmknyht5xkww"
+        },
+        {
+          "text": "Updating personal site with new animations and a feed of Grain photos.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mmmaoyj5jqjt"
+        },
+        {
+          "text": "Deploying a fork of Not Twitter with Twitter-style keyboard shortcuts.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mmljxv5g6k27"
+        },
+        {
+          "text": "Listening to Olivia Rodrigo's new single.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mmgcmzibb32q"
+        },
+        {
+          "text": "Watching the new Star Wars film, The Mandalorian and Grogu.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mmloxijcgc2o"
+        }
+      ]
+    },
+    {
+      "week": "2026-05-11",
+      "generatedAt": "2026-11-18T19:47:14.413Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a traffic map for coursework that shows user-submitted congestion.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mllj3oadtk22"
+        },
+        {
+          "text": "Building Prism, a Bluesky experiment based on Twitter's open-sourced algorithm.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mlr6sowo43sp"
+        },
+        {
+          "text": "Publishing Chrome themes, with one recently finding a lot of users.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mm2s3vsphcit"
+        },
+        {
+          "text": "Listening to Arctic Monkeys' AM on CD at home.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mlnvcpi3o22q"
+        },
+        {
+          "text": "Trying out Logseq for notes.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mltkehem5zbp"
+        }
+      ]
+    },
+    {
+      "week": "2026-05-04",
+      "generatedAt": "2026-11-18T19:47:03.415Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a tool that turns a Discogs collection into a shareable collage.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mlhdgvn4ns2k"
+        },
+        {
+          "text": "Preparing a class presentation on research into the AT Protocol.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3ml4fndgoj7kf"
+        },
+        {
+          "text": "Restoring an old guitar with new strings and a cleaned fretboard.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mleitjosnc2f"
+        },
+        {
+          "text": "Trying out a site that suggests guitar and amp settings for song tones.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mlgz3zydj2xw"
+        }
+      ]
+    },
+    {
+      "week": "2026-04-27",
+      "generatedAt": "2026-11-18T19:46:51.949Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Sharing a small command-line tool for merging PDF files.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mkiuq365cdqg"
+        },
+        {
+          "text": "Running small AI models locally on an ageing MacBook.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mkj2f4v2ts2c"
+        },
+        {
+          "text": "Trying out Zen Browser again after a rough first attempt.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mkn55eg3kmlr"
+        },
+        {
+          "text": "Experimenting with video interpolation to smooth old clips.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mksuy6phsb2u"
+        }
+      ]
+    },
+    {
+      "week": "2026-04-20",
+      "generatedAt": "2026-11-18T19:46:37.309Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a vintage-style dashboard for mixing song stems.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mkebw2k45c2b"
+        },
+        {
+          "text": "Publishing a first custom theme for the Firefox browser.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mkg4tb3awk2s"
+        },
+        {
+          "text": "Making custom Bluesky feeds easy to publish.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mkbnmevn2s2g"
+        },
+        {
+          "text": "Trying Exo to run AI models across two Macs.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mjwmglq7ns2p"
+        },
+        {
+          "text": "Scrobbling music plays to teal.fm again.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mjw6j4k75s23"
+        }
+      ]
+    },
+    {
+      "week": "2026-04-13",
+      "generatedAt": "2026-11-18T19:46:26.157Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a video-on-demand client for Streamplace with semantic search.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mjfz37mnm22h"
+        },
+        {
+          "text": "Building a tool that makes custom Chromium themes with AI models.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mjil6n4j322t"
+        },
+        {
+          "text": "Building a command-line tool for posting photos to Grain.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mjuwdy6dos2u"
+        },
+        {
+          "text": "Trying out Flare, a new social app.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mjsfgq75xx2p"
+        },
+        {
+          "text": "Listening to the new Olivia Rodrigo single.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mjoqea3e3425"
+        }
+      ]
+    },
+    {
+      "week": "2026-04-06",
+      "generatedAt": "2026-11-18T19:46:15.996Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building skycoll, a command-line tool for exploring Bluesky social graphs.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mj5woadsht2y"
+        },
+        {
+          "text": "Trying out a small AI model on a Raspberry Pi.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3miwvcw4oe32p"
+        },
+        {
+          "text": "Sending files peer-to-peer with Blip, a fast file transfer tool.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mj3rqjnxvs2r"
+        },
+        {
+          "text": "Using Raycast Focus to block distracting apps and sites.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mj5di26avk2a"
+        },
+        {
+          "text": "Playing Mario Kart DS on a MacBook through an emulator.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mj7lcs6jac2n"
+        }
+      ]
+    },
+    {
+      "week": "2026-03-30",
+      "generatedAt": "2026-11-18T19:46:01.348Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Updating documentation for a Twitter-to-Bluesky crossposting tool.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky"
+        },
+        {
+          "text": "Building a native Mac app for managing multiple accounts.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3minuxaqfwefz"
+        },
+        {
+          "text": "Launching a mirror bot that reposts NASA images.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mimkmpf3g52h"
+        },
+        {
+          "text": "Making custom feeds with Surf, a tool for gathering web content.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mijpbzbbd22j"
+        },
+        {
+          "text": "Taking coastal photos and sharing them on Grain.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3miora76ies2j"
+        }
+      ]
+    },
+    {
+      "week": "2026-03-23",
+      "generatedAt": "2026-11-18T19:45:50.127Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a multi-stream viewer for AtmosphereConf with an embedded live feed.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mi4a6ti2nm3k"
+        },
+        {
+          "text": "Saving recordings of the conference livestreams to catch up on later.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mi5363vuq5jq"
+        },
+        {
+          "text": "Trying out Minecraft with a different renderer on a new laptop.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mhulpzgtylh7"
+        },
+        {
+          "text": "Trying out a push notification service for AT Protocol apps.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mi7tu7jfpau4"
+        },
+        {
+          "text": "Listening to the Queen II remaster.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mhzuugu752vm"
+        }
+      ]
+    },
+    {
+      "week": "2026-03-16",
+      "generatedAt": "2026-11-18T19:45:38.117Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building bsky.md, an API that returns Bluesky data as markdown.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mh77zvlgoxxu"
+        },
+        {
+          "text": "Adding labels for automated accounts to a Twitter-to-Bluesky tool.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mhgen6rwtc2y"
+        },
+        {
+          "text": "Fixing up a 2014 MacBook Air to use as a laptop.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mheipqzvw224"
+        },
+        {
+          "text": "Trying out Firefox again as a main browser.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mhbdq2v3yyfr"
+        },
+        {
+          "text": "Watching This Country, a British sitcom, on the BBC.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mhgvomlp4k2l"
+        }
+      ]
+    },
+    {
+      "week": "2026-03-09",
+      "generatedAt": "2026-11-18T19:45:24.908Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Trying out Orion, a web browser, on Linux.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mh4wjekbtc2d"
+        },
+        {
+          "text": "Swapping a ThinkPad for an indigo MacBook Neo.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mgznre7ozk25"
+        },
+        {
+          "text": "Sitting in on Atmosphere Team office hours.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mgxegmsju72n"
+        },
+        {
+          "text": "Setting up a student plan in Zed, a code editor.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mgntyafidf2n"
+        }
+      ]
+    },
+    {
+      "week": "2026-03-02",
+      "generatedAt": "2026-11-18T19:45:13.812Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Shipping bot labels and profile syncing for a Twitter-to-Bluesky mirroring tool.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky/pull/14"
+        },
+        {
+          "text": "Refreshing the fonts on a personal blog.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mggcvqyq7k2j"
+        },
+        {
+          "text": "Listening through a new album and watching the artist interview.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mglg3ohokk2w"
+        },
+        {
+          "text": "Trying out a fan-made PC port of Minecraft's Xbox One edition.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mg2ncj4iik2l"
+        }
+      ]
+    },
+    {
+      "week": "2026-02-23",
+      "generatedAt": "2026-11-18T19:45:00.201Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Making a Twitter-to-Bluesky mirroring tool run many accounts at once.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky/pull/12"
+        },
+        {
+          "text": "Building a Raycast extension that posts to the AT Protocol.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mfuquhtb4k2r"
+        },
+        {
+          "text": "Setting up a self-hosted AI assistant on a remote server.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mfuqk7vt3c2r"
+        },
+        {
+          "text": "Trying out Dia, a new web browser.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mfmksl32622s"
+        },
+        {
+          "text": "Listening to Conan Gray's Wishbone album.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mfuvewdcolnu"
+        }
+      ]
+    },
+    {
+      "week": "2026-02-16",
+      "generatedAt": "2026-11-18T19:44:34.187Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Adding automatic profile syncing to a Twitter-to-Bluesky mirroring tool.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky"
+        },
+        {
+          "text": "Trying out remote desktop access from an iPad instead of a laptop.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mf3qcnf4hv7m"
+        },
+        {
+          "text": "Trying out Monologue, a voice app for iOS.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mf4ovqifdc2r"
+        },
+        {
+          "text": "Experimenting with AI-generated animated SVG art.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mfdfvhyrrc2e"
+        },
+        {
+          "text": "Digging into how decentralised the AT Protocol really is.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mfcarid2422b"
+        }
+      ]
+    },
+    {
+      "week": "2026-02-09",
+      "generatedAt": "2026-11-18T19:44:14.173Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a dashboard for a Twitter-to-Bluesky mirroring tool.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky/pull/9"
+        },
+        {
+          "text": "Securing a personal server with a key-based login.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3meifjtm277nf"
+        },
+        {
+          "text": "Exploring a way to track music listening through Discord.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3meopscyj4jgv"
+        },
+        {
+          "text": "Joining an open social web community office hours event.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mequxmges22r"
+        },
+        {
+          "text": "Turning off Apple Intelligence on a Mac to free up disk space.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3meud72pxzy2k"
+        }
+      ]
+    },
+    {
+      "week": "2026-02-02",
+      "generatedAt": "2026-11-18T19:43:51.299Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Installing CachyOS, a Linux distribution, on a laptop.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mdxvixmvck27"
+        },
+        {
+          "text": "Trying out new AI coding apps.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3me4unfc74oxc"
+        },
+        {
+          "text": "Looking into self-hosting a bookmark manager.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mecbwbd2vs2p"
+        },
+        {
+          "text": "Playing Peak, a co-op climbing game.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mecm7q2z7xmc"
+        },
+        {
+          "text": "Designing a Bluesky feed for the Winter Olympics.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3meeu7qeqjk2y"
+        }
+      ]
+    },
+    {
+      "week": "2026-01-26",
+      "generatedAt": "2026-11-18T19:42:52.745Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Running a translation model locally on an 8GB Mac mini.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mde667dhn22t"
+        },
+        {
+          "text": "Crossposting Twitter accounts over to Bluesky.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mdgdicmev22r"
+        },
+        {
+          "text": "Getting a music scrobbling setup working again.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mdhre4bsc22v"
+        },
+        {
+          "text": "Turning an old Raspberry Pi into a network relay.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mdf7r532tl2d"
+        },
+        {
+          "text": "Trying out RV There Yet, a co-op driving game.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mdsfyinkkc24"
+        }
+      ]
+    },
+    {
+      "week": "2026-01-19",
+      "generatedAt": "2026-11-18T19:42:42.457Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Launching Skyscraper, a Bluesky app, on the App Store.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mcqyaetgks2d"
+        },
+        {
+          "text": "Building a Traitors feed in Surf, a Bluesky client.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3md23ue6qzd2d"
+        },
+        {
+          "text": "Listening to Wishbone on repeat.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3md25uvcln227"
+        },
+        {
+          "text": "Organising Discord servers into folders.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3md4vlawrm22g"
+        },
+        {
+          "text": "Taking photos of butterflies.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mdbsevsbs5oz"
+        }
+      ]
+    },
+    {
+      "week": "2026-01-12",
+      "generatedAt": "2026-11-18T19:42:30.415Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Hosting a Minecraft server on a Raspberry Pi.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mckhruvjmc2j"
+        },
+        {
+          "text": "Moving a main laptop over to CachyOS, an Arch-based Linux system.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mcku2yhzvc2c"
+        },
+        {
+          "text": "Trying out self-hosting Excalidraw, an open-source drawing app.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mcp2su66xs25"
+        },
+        {
+          "text": "Considering burning Wii soundtrack music onto a CD.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mcq2pdu7rk2j"
+        }
+      ]
+    },
+    {
+      "week": "2026-01-05",
+      "generatedAt": "2026-11-18T19:42:16.798Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Improving how reply threads are stitched together when crossposting tweets to Bluesky.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky/pull/3"
+        },
+        {
+          "text": "Reworking the personal site's social cards and contact links.",
+          "url": "https://github.com/j4ckxyz/j4ck.xyz/pull/8"
+        },
+        {
+          "text": "Backfilling a personal archive of Bluesky posts and likes.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mbp2g3owi22c"
+        },
+        {
+          "text": "Writing up lessons learned from the Goose AI agent.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mbpgwhmyb22e"
+        },
+        {
+          "text": "Trying out a new USB-C guitar tuner.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mc5yq2ykhs2h"
+        }
+      ]
+    },
+    {
+      "week": "2025-12-29",
+      "generatedAt": "2026-11-18T19:42:02.939Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Building a self-hosted tool that automatically crossposts tweets to Bluesky.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky"
+        },
+        {
+          "text": "Trying out a budget AI coding subscription.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mbea7ehtuc2n"
+        },
+        {
+          "text": "Coding from a phone through a browser-based terminal.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mbjgdc4iah2j"
+        },
+        {
+          "text": "Picking up CDs from music shops in town.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mbjokd2lix2j"
+        },
+        {
+          "text": "Shooting sunset photos on an iPhone with Halide.",
+          "url": "https://bsky.app/profile/j4ck.xyz/post/3mbcbyih57x2j"
         }
       ]
     }

@@ -1,7 +1,9 @@
 name: Weekly site update
 
-# 1. Now: summarise the last 7 days of GitHub + Bluesky activity (needs the
-#    OPENROUTER_API_KEY secret; skipped without it).
+# 1. Now: summarise the last finished ISO week (Monday to Sunday, Europe/London)
+#    of GitHub + Bluesky activity, using only that week's items (needs the
+#    OPENROUTER_API_KEY secret; skipped without it). Does nothing if that week
+#    already has an entry. Run by hand with a week (e.g. 2026-W46) to fill one in.
 #    Age: recompute from the BIRTHDATE secret (YYYY-MM-DD); only the number
 #    is committed. Skipped without it.
 # 2. Images: pull the current Bluesky avatar and regenerate the avatar,
@@ -13,6 +15,15 @@ on:
     # Mondays 08:00 UTC
     - cron: '0 8 * * 1'
   workflow_dispatch:
+    inputs:
+      week:
+        description: 'ISO week to generate, e.g. 2026-W46 (default: last finished week)'
+        required: false
+        default: ''
+      force:
+        description: 'Replace the entry if that week already has one'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -37,15 +48,20 @@ jobs:
 
       - run: npm ci
 
-      - name: Generate this week's Now statuses
+      - name: Test week cutoff and duplicate check
+        run: npm test
+
+      - name: Generate last week's Now statuses
         if: env.OPENROUTER_API_KEY != ''
         # A failed model call shouldn't stop the age and image updates below;
         # the job still shows as failed via the final check.
         id: now
         continue-on-error: true
-        run: node scripts/update-now.mjs
+        run: node scripts/update-now.mjs ${WEEK:+--week "$WEEK"} ${FORCE:+--force}
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          WEEK: ${{ inputs.week }}
+          FORCE: ${{ inputs.force && 'yes' || '' }}
 
       - name: Update age
         if: env.HAS_BIRTHDATE == 'true'
@@ -54,7 +70,11 @@ jobs:
           BIRTHDATE: ${{ secrets.BIRTHDATE }}
 
       - name: Refresh avatar, favicons and OG cards
+        # The Now card (also used by /now and /weeks) shows the newest week's items.
         run: node scripts/update-assets.mjs
+
+      - name: Check the new data
+        run: npm test
 
       - name: Commit if changed
         run: |
