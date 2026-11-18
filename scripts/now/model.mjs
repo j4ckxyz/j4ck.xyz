@@ -55,6 +55,7 @@ Rules:
 - Only use what this week's activity actually shows. Never invent projects, events or feelings.
 - Skip anything that would read oddly out of context: one-off jokes, reactions to news or other companies, complaints, arguments, politics, or anything about other people.
 - Never touch personal life: no grief, loss, health, family, friends, relationships, mood or taking breaks, even if a post mentions them. Music, guitar and gigs are fine.
+- Never name places: no towns, islands, countries, venues or schools. No school or exam admin (licences, applications), and nothing about getting round school or work restrictions.
 - If last week's updates are listed, don't repeat or reword them. Items marked "covered last week" were already mentioned. Up to ${Math.max(1, Math.ceil(count * 0.6) - 1)} updates may still cover them when they were among this week's main things, written fresh about what happened this week, not as a rewording of last week's line. Never fill a slot with something the rules above say to skip.
 - For each update, give the id of the single activity item it is based on.`
 
