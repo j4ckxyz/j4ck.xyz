@@ -1,6 +1,33 @@
 {
   "entries": [
     {
+      "week": "2026-11-16",
+      "generatedAt": "2026-11-23T19:52:39.005Z",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "items": [
+        {
+          "text": "Adding a vinyl mode to Aurelia, a music player for Jellyfin.",
+          "url": "https://github.com/j4ckxyz/Aurelia/pull/9"
+        },
+        {
+          "text": "Redesigning the dashboard for a tool that mirrors posts to Bluesky.",
+          "url": "https://github.com/j4ckxyz/tweets-2-bsky/pull/31"
+        },
+        {
+          "text": "Building Lantern, a small desk device that boots into an AI chat.",
+          "url": "https://github.com/j4ckxyz/lantern"
+        },
+        {
+          "text": "Releasing a native desktop client for a personal AI agent.",
+          "url": "https://github.com/j4ckxyz/hermes-desktop"
+        },
+        {
+          "text": "Porting a typing-speed tracker to the macOS menu bar.",
+          "url": "https://github.com/j4ckxyz/wordsPerMinute-macos"
+        }
+      ]
+    },
+    {
       "week": "2026-11-09",
       "generatedAt": "2026-11-18T19:53:01.535Z",
       "model": "deepseek/deepseek-v4.1-flash",
